@@ -52,6 +52,7 @@ namespace BioInformaticsConsoleApp
             string strOutput = "";
             int nSubDistance = 0;
             string strTmp;
+            int dummy = 0;
 
             for (int i = 0; i < strText.Length - strPattern.Length + 1; i++)
             {
