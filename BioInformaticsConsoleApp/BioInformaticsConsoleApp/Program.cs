@@ -7,11 +7,12 @@ namespace BioInformaticsConsoleApp
     {
         static void Main(string[] args)
         {
-            string inputFile = "D:\\Temp\\dataset_9_3.txt";
+            string inputFile = "D:\\Temp\\dataset_9_4.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
-
+            // Hamming Distance Test
+            /*
             if (fileText.Length == 2)
             {
                 string str1 = fileText[0];
@@ -20,13 +21,50 @@ namespace BioInformaticsConsoleApp
 
                 Console.WriteLine("Hamming Distance equals {0}", nDistance);
 
+            }       */
+
+
+            if (fileText.Length == 3)
+            {
+                string str1 = fileText[0];
+                string str2 = fileText[1];
+                string str3 = fileText[2];
+                int nDistance = 0;
+
+                Int32.TryParse(str3, out nDistance);
+
+                string strIndex = ApproximatePatternMatching(str1, str2, nDistance);
+
+                Console.WriteLine("ApproximatePatternMatching {0}", strIndex);
+
             }
+            
+
 
 /*            foreach (string s in fileText)
             {
                 Console.WriteLine(s);
             }       */
           }
+
+        static public string ApproximatePatternMatching(string strPattern, string strText, int nDistance)
+        {
+            string strOutput = "";
+            int nSubDistance = 0;
+            string strTmp;
+
+            for (int i = 0; i < strText.Length - strPattern.Length + 1; i++)
+            {
+                nSubDistance = HammingDistance(strPattern, strText.Substring(i, strPattern.Length));
+                if (nSubDistance <= nDistance)
+                {
+                    strTmp = i.ToString();
+                    strOutput += strTmp + " ";
+                }
+            }
+
+            return strOutput;
+        }
 
         static public int HammingDistance(string str1, string str2)
         {
