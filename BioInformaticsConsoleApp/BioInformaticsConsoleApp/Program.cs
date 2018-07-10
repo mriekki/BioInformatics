@@ -38,8 +38,8 @@ namespace BioInformaticsConsoleApp
                 Console.WriteLine("ApproximatePatternMatching {0}", strIndex);
 
             }
-            
 
+            int iDummy = 0;
 
 /*            foreach (string s in fileText)
             {
