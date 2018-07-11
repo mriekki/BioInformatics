@@ -93,6 +93,7 @@ namespace BioInformaticsConsoleApp
             return strResult;
         }
 
+        // Return index within text that matches pattern with "n" mismatches.
         static public int ApproximatePatternCount(string strPattern, string strText, int nDistance)
         {
             int nResult = 0;
@@ -116,6 +117,7 @@ namespace BioInformaticsConsoleApp
             return nResult;
         }
 
+        // Return number of kmers within text that match pattern with "n" mismatches
         static public string ApproximatePatternMatching(string strPattern, string strText, int nDistance)
         {
             string strOutput = "";
