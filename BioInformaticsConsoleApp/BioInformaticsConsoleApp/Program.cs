@@ -7,9 +7,15 @@ namespace BioInformaticsConsoleApp
     {
         static void Main(string[] args)
         {
-            string inputFile = "D:\\Temp\\dataset_9_4.txt";
+            string inputFile = "D:\\Temp\\dataset_9_6.txt";
 
             string[] fileText = MyReadFile(inputFile);
+
+            // Minimum Skew
+            if (fileText.Length == 1)
+            {
+                Console.WriteLine(MinimumSkew(fileText[0]));
+            }
 
             // Hamming Distance Test
             /*
@@ -33,9 +39,9 @@ namespace BioInformaticsConsoleApp
 
                 Int32.TryParse(str3, out nDistance);
 
-                string strIndex = ApproximatePatternMatching(str1, str2, nDistance);
+                int n = ApproximatePatternCount(str1, str2, nDistance);
 
-                Console.WriteLine("ApproximatePatternMatching {0}", strIndex);
+                Console.WriteLine("ApproximatePatternCount {0}", n);
 
             }
 
@@ -48,10 +54,11 @@ namespace BioInformaticsConsoleApp
 
          private static string MinimumSkew(String strInput)
         {
-            string strResult;
+            string strResult = "";
             int count = 0;
             int skewValue = 0;
             int minIndex = 1000;
+            int[] arrayOffset = new int[strInput.Length + 1];
 
             foreach(char strKmer in strInput)
             {
@@ -70,14 +77,43 @@ namespace BioInformaticsConsoleApp
                     Console.WriteLine($"Position {count}: Value: {strKmer}   skewIndex:  {skewValue}");
 
                     count++;
+
+                    arrayOffset[count] = skewValue;
+
                 }
             }
 
+            for (int i = 0; i < arrayOffset.Length; i++)
+            {
+                if (arrayOffset[i] == minIndex)
+                    strResult += i.ToString() + " ";
+            }
             Console.WriteLine($"Minimum SkewValue:  {minIndex}");
 
-            strResult = "hello world";
-
             return strResult;
+        }
+
+        static public int ApproximatePatternCount(string strPattern, string strText, int nDistance)
+        {
+            int nResult = 0;
+            int nSubDistance = 0;
+            string strTmp;
+            string strOutput = "";
+
+            for (int i = 0; i < strText.Length - strPattern.Length + 1; i++)
+            {
+                strTmp = strText.Substring(i, strPattern.Length);
+                nSubDistance = HammingDistance(strPattern, strText.Substring(i, strPattern.Length));
+                if (nSubDistance <= nDistance)
+                {
+                    strOutput += strTmp + " ";
+                }
+            }
+
+            string[] strKmers = strOutput.Split(" ");
+            nResult = strKmers.Length - 1;
+
+            return nResult;
         }
 
         static public string ApproximatePatternMatching(string strPattern, string strText, int nDistance)
