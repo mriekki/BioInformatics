@@ -39,7 +39,6 @@ namespace BioInformaticsConsoleApp
 
             }
 
-            int iDummy = 0;
 
 /*            foreach (string s in fileText)
             {
@@ -47,12 +46,45 @@ namespace BioInformaticsConsoleApp
             }       */
           }
 
+         private static string MinimumSkew(String strInput)
+        {
+            string strResult;
+            int count = 0;
+            int skewValue = 0;
+            int minIndex = 1000;
+
+            foreach(char strKmer in strInput)
+            {
+                if (strKmer.ToString().Length > 0)
+                {
+                    if (count > 0)
+                    {
+                        if (strKmer == 'G')
+                            skewValue++;
+                        else if (strKmer == 'C')
+                            skewValue--;
+                    }
+                    if (skewValue < minIndex)
+                        minIndex = skewValue;
+
+                    Console.WriteLine($"Position {count}: Value: {strKmer}   skewIndex:  {skewValue}");
+
+                    count++;
+                }
+            }
+
+            Console.WriteLine($"Minimum SkewValue:  {minIndex}");
+
+            strResult = "hello world";
+
+            return strResult;
+        }
+
         static public string ApproximatePatternMatching(string strPattern, string strText, int nDistance)
         {
             string strOutput = "";
             int nSubDistance = 0;
             string strTmp;
-            int dummy = 0;
 
             for (int i = 0; i < strText.Length - strPattern.Length + 1; i++)
             {
