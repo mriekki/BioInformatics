@@ -7,7 +7,7 @@ namespace BioInformaticsConsoleApp
     {
         static void Main(string[] args)
         {
-            string inputFile = "D:\\Temp\\dataset_9_6.txt";
+            string inputFile = "D:\\Temp\\Neighbors.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
@@ -29,6 +29,18 @@ namespace BioInformaticsConsoleApp
 
             }       */
 
+            if (fileText.Length == 2)
+            {
+                string str1 = fileText[0];
+                string str2 = fileText[1];
+                int nDistance = 0;
+                string strNeighborhood = "";
+
+                Int32.TryParse(str2, out nDistance);
+//                strNeighborhood = ImmediateNeighbors(str1);
+
+                strNeighborhood = Neighbors(str1, nDistance);
+            }
 
             if (fileText.Length == 3)
             {
@@ -36,12 +48,16 @@ namespace BioInformaticsConsoleApp
                 string str2 = fileText[1];
                 string str3 = fileText[2];
                 int nDistance = 0;
+                int nKmer = 0;
 
                 Int32.TryParse(str3, out nDistance);
+                Int32.TryParse(str2, out nKmer);
 
-                int n = ApproximatePatternCount(str1, str2, nDistance);
+                ComputingFrequenciesWithMismatches(str1, nKmer, nDistance);
 
-                Console.WriteLine("ApproximatePatternCount {0}", n);
+//                int n = ApproximatePatternCount(str1, str2, nDistance);
+
+//                Console.WriteLine("ApproximatePatternCount {0}", n);
 
             }
 
@@ -90,6 +106,109 @@ namespace BioInformaticsConsoleApp
             }
             Console.WriteLine($"Minimum SkewValue:  {minIndex}");
 
+            return strResult;
+        }
+
+        static public string ComputingFrequenciesWithMismatches(string strInputText, int nKmer, int nDistance)
+        {
+            string strResult = "";
+            int[] freqArray = new int[(int)Math.Pow(4, nKmer)];
+            string strPattern = "";
+
+            for (int i = 0; i < freqArray.Length; i++)
+                freqArray[i] = 0;
+
+            for (int i = 0; i < strInputText.Length - nKmer; i++)
+            {
+                strPattern = strInputText.Substring(i, nKmer);
+            }
+
+            return strResult;
+        }
+
+        static public string Neighbors(string strPattern, int d)
+        {
+            string strResult = strPattern;
+            string strSuffixNeighbors = "";
+            char[] nucleotied = { 'A', 'C', 'T', 'G' };
+
+            if (d == 0)
+                return strResult;
+
+            if (strPattern.Length == 1)
+            {
+                strResult = "A, C, G, T";
+                
+            }
+
+            strResult = "";
+
+            strSuffixNeighbors = Neighbors(strPattern.Substring(1), d);
+
+            foreach (char s in strSuffixNeighbors)
+            {
+                if (HammingDistance(strPattern.Substring(1), s.ToString()) < d)
+                {
+                    foreach (char c in nucleotied)
+                    {
+//                        strResult += ", " + c.ToString + 
+                    }
+
+                }
+            }
+
+   
+            return strResult;
+        }
+
+        static public string IterativeNeighbors(string strPattern, int d)
+        {
+            string strNeighborhood = strPattern;
+
+            for (int i = 1; i <= d; i++)
+            {
+
+            }
+            return strNeighborhood;
+        }
+
+        static public string ImmediateNeighbors(string strPattern)
+        {
+            string strNeighborhood = strPattern;
+            char symbol;
+            char[] nucleotied = { 'A', 'C', 'T', 'G' };
+            string tmpStr = "";
+
+            for (int i = 0; i < strPattern.Length; i++)
+            {
+                symbol = strPattern[i];
+                foreach (char c in nucleotied)
+                {
+                    if (symbol != c)
+                    {
+                        tmpStr = ReplaceString(strPattern, i, c.ToString());
+                        
+                        strNeighborhood += ", " + tmpStr;
+                    }
+                }
+            }
+
+            Console.WriteLine("ImmediateNeighbors - Neighborhood = {0}", strNeighborhood);
+
+            return strNeighborhood;
+        }
+
+        static public string ReplaceString(string strPattern, int index, string strNew)
+        {
+            string strResult = "";
+
+            for (int i = 0; i < strPattern.Length; i+= strNew.Length)
+            {
+                if (i == index)
+                    strResult += strNew;
+                else
+                    strResult += strPattern[i];
+            }
             return strResult;
         }
 
