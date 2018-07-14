@@ -44,6 +44,9 @@ namespace BioInformaticsConsoleApp
 
 
                 //                FrequentWords(str1, nDistance);
+                PatternToNumber("ATGCAA");
+
+                NumberToPattern(5437, 8);
 
                 PatternMatchIndexes(str1, str2);
             }
@@ -67,7 +70,7 @@ namespace BioInformaticsConsoleApp
             int Count = 0;
             string substring = "";
 
-            for (int i = 0; i < Text.Length - Pattern.Length +1; i++)
+            for (int i = 0; i < Text.Length - Pattern.Length + 1; i++)
             {
                 substring = Text.Substring(i, Pattern.Length);
                 if (substring == Pattern)
@@ -92,7 +95,7 @@ namespace BioInformaticsConsoleApp
             for (int i = 0; i < Text.Length - k; i++)
             {
                 pattern = Text.Substring(i, k);
- 
+
                 localCount = PatternCount(Text, pattern);
                 if (localCount > MaxCount)
                     MaxCount = localCount;
@@ -183,7 +186,7 @@ namespace BioInformaticsConsoleApp
             int minIndex = 1000;
             int[] arrayOffset = new int[strInput.Length + 1];
 
-            foreach(char strKmer in strInput)
+            foreach (char strKmer in strInput)
             {
                 if (strKmer.ToString().Length > 0)
                 {
@@ -279,6 +282,75 @@ namespace BioInformaticsConsoleApp
             }
 
             return nDistance;
+        }
+
+        static public string NumberToPattern(int index, int kmerSize)
+        {
+            string result = "";
+
+            List<string> kmerList = new List<string>();
+
+            kmerList = BuildLexicographicallyList(kmerSize);
+
+            result = kmerList[index];
+
+            Console.WriteLine("NumberToPattern:  {0}", result);
+            return result;
+        }
+
+        static public int PatternToNumber(string pattern)
+        {
+            int result = 0;
+            List<string> kmerList = new List<string>();
+
+            kmerList = BuildLexicographicallyList(pattern.Length);
+
+            result = kmerList.BinarySearch(pattern);
+
+            Console.WriteLine("PatternToNumber:  {0}", result);
+            return result;
+        }
+
+        static public List<string> BuildLexicographicallyList(int kmerSize)
+        {
+            List<string> outputList = new List<string>();
+
+            for (int i = 0; i < kmerSize; i++)
+            {
+                outputList = AddTreeLevel(outputList);
+            }
+
+            outputList.Sort();
+
+            return outputList;
+        }
+        static public List<string> AddTreeLevel(List<string> inputList)
+        {
+            char[] nucleotide = { 'A', 'C', 'T', 'G' };
+
+            List<string> outputList = new List<string>();
+
+            if (inputList.Count > 0)
+            {
+                foreach (string str in inputList)
+                {
+                    foreach (char c in nucleotide)
+                    {
+                        outputList.Add(str + c.ToString());
+                    }
+
+                }
+
+            }
+            else
+            {
+                foreach (char c in nucleotide)
+                {
+                    outputList.Add(c.ToString());
+                }
+            }
+
+            return outputList;
         }
 
         static public string[] MyReadFile(string inputFile)
