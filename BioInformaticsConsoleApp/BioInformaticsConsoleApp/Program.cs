@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
+
 
 namespace BioInformaticsConsoleApp
 {
@@ -7,27 +9,50 @@ namespace BioInformaticsConsoleApp
     {
         static void Main(string[] args)
         {
-            string inputFile = "D:\\Temp\\Neighbors.txt";
+            string inputFile = "D:\\Temp\\dataset_9_6.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
             // Minimum Skew
             if (fileText.Length == 1)
             {
-                Console.WriteLine(MinimumSkew(fileText[0]));
+                string str1 = fileText[0];
+                Int64 result = 0;
+
+                result = PatternToNumber2(str1);
+                int k = 0;
+//                ReverseComplement(fileText[0]);
+
+//                Console.WriteLine(MinimumSkew(fileText[0]));
             }
 
-            // Hamming Distance Test
-            /*
+
             if (fileText.Length == 2)
             {
                 string str1 = fileText[0];
                 string str2 = fileText[1];
-                int nDistance = HammingDistance(str1, str2);
+                int nDistance = 0;
+                int index = 0;
+                string result = "";
 
-                Console.WriteLine("Hamming Distance equals {0}", nDistance);
+                Int32.TryParse(str1, out index);
+                Int32.TryParse(str2, out nDistance);
 
-            }       */
+
+                //                FrequentWords(str1, nDistance);
+
+//                result = NumberToPattern2(index, nDistance);
+
+                  result = ComputingFrequencies(str1, nDistance);
+
+                //                PatternToNumber("ATGCAA");
+
+                //              NumberToPattern(5437, 8);
+
+                //            PatternMatchIndexes(str1, str2);
+
+                int k = 11;
+            }
 
             if (fileText.Length == 2)
             {
@@ -53,22 +78,70 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(str3, out nDistance);
                 Int32.TryParse(str2, out nKmer);
 
-                ComputingFrequenciesWithMismatches(str1, nKmer, nDistance);
+                int n = ApproximatePatternCount(str1, str2, nDistance);
 
-//                int n = ApproximatePatternCount(str1, str2, nDistance);
+                Console.WriteLine("ApproximatePatternCount {0}", n);
 
-//                Console.WriteLine("ApproximatePatternCount {0}", n);
+            FrequentPatterns = RemoveDuplicates(tmpKmers);
 
+            return FrequentPatterns;
+
+        }
+
+        static public string ReverseComplement(string input)
+        {
+            string output = "";
+
+            for (int i = input.Length - 1; i >= 0; i--)
+            {
+                if (input[i] == 'A')
+                    output += "T";
+                else if (input[i] == 'T')
+                    output += "A";
+                else if (input[i] == 'G')
+                    output += "C";
+                else if (input[i] == 'C')
+                    output += "G";
+                else
+                    Console.WriteLine("ReverseComplement:  Invalid Value");
             }
 
+            Console.WriteLine("ReverseComplment:  {0}", output);
+            return output;
+        }
 
-/*            foreach (string s in fileText)
+        static public string PatternMatchIndexes(string pattern, string text)
+        {
+            string result = "";
+
+            for (int i = 0; i < text.Length - pattern.Length + 1; i++)
             {
-                Console.WriteLine(s);
-            }       */
-          }
+                if (text.Substring(i, pattern.Length) == pattern)
+                    result += i.ToString() + " ";
+            }
+            Console.WriteLine("PatternMatchIndexes:  {0}", result);
+            return result;
+        }
 
-         private static string MinimumSkew(String strInput)
+        static public List<string> RemoveDuplicates(List<string> inputList)
+        {
+            List<string> outputList = new List<string>();
+
+            for (int i = 0; i < inputList.Count; i++)
+            {
+                if (i == 0)
+                    outputList.Add(inputList[i]);
+                else
+                {
+                    if (!outputList.Contains(inputList[i]))
+                        outputList.Add(inputList[i]);
+                }
+            }
+
+            return outputList;
+        }
+
+        private static string MinimumSkew(String strInput)
         {
             string strResult = "";
             int count = 0;
@@ -76,7 +149,7 @@ namespace BioInformaticsConsoleApp
             int minIndex = 1000;
             int[] arrayOffset = new int[strInput.Length + 1];
 
-            foreach(char strKmer in strInput)
+            foreach (char strKmer in strInput)
             {
                 if (strKmer.ToString().Length > 0)
                 {
@@ -275,6 +348,147 @@ namespace BioInformaticsConsoleApp
             }
 
             return nDistance;
+        }
+
+        static public string NumberToPattern2(Int64 index, int k)
+        {
+            string result = "";
+            Int64 prefixIndex = 0;
+            int remainder = 0;
+            string symbol = "";
+            string prefixPattern = "";
+
+            if (k == 1)
+                return NumberToSymbol(index);
+
+            prefixIndex = index / 4;
+            remainder = (int)index % 4;
+            symbol = NumberToSymbol(remainder);
+            prefixPattern = NumberToPattern2(prefixIndex, k - 1);
+
+            result = prefixPattern + symbol;
+
+            Console.WriteLine("NumberToPattern2:  {0}", result);
+            return result;
+        }
+
+        static public string NumberToPattern(int index, int kmerSize)
+        {
+            string result = "";
+
+            List<string> kmerList = new List<string>();
+
+            kmerList = BuildLexicographicallyList(kmerSize);
+
+            result = kmerList[index];
+
+            Console.WriteLine("NumberToPattern:  {0}", result);
+            return result;
+        }
+
+        static public int SymbolToNumber(string symbol)
+        {
+            int result = -1;
+            if (symbol == "A")
+                result = 0;
+            else if (symbol == "C")
+                result = 1;
+            else if (symbol == "G")
+                result = 2;
+            else if (symbol == "T")
+                result = 3;
+
+            return result;
+        }
+
+        static public string NumberToSymbol(Int64 index)
+        {
+            string result = "";
+
+            if (index == 0)
+                result = "A";
+            else if (index == 1)
+                result = "C";
+            else if (index == 2)
+                result = "G";
+            else if (index == 3)
+                result = "T";
+
+            return result;
+        }
+
+        static public Int64 PatternToNumber2(string pattern)
+        {
+            Int64 result = 0;
+            string symbol = "";
+            string prefix = "";
+            
+            if (pattern.Length == 0)
+                return result;
+
+            symbol = pattern.Substring(pattern.Length - 1, 1);
+            prefix = pattern.Substring(0, pattern.Length - 1);
+
+            result = 4 * PatternToNumber2(prefix) + SymbolToNumber(symbol);
+
+
+//            Console.WriteLine("PatternToNumber2:  {0}", result);
+            return result;
+        }
+
+        static public int PatternToNumber(string pattern)
+        {
+            int result = 0;
+            List<string> kmerList = new List<string>();
+
+            kmerList = BuildLexicographicallyList(pattern.Length);
+
+            result = kmerList.BinarySearch(pattern);
+
+            Console.WriteLine("PatternToNumber:  {0}", result);
+            return result;
+        }
+
+        static public List<string> BuildLexicographicallyList(int kmerSize)
+        {
+            List<string> outputList = new List<string>();
+
+            for (int i = 0; i < kmerSize; i++)
+            {
+                outputList = AddTreeLevel(outputList);
+            }
+
+            outputList.Sort();
+
+            return outputList;
+        }
+        static public List<string> AddTreeLevel(List<string> inputList)
+        {
+            char[] nucleotide = { 'A', 'C', 'T', 'G' };
+
+            List<string> outputList = new List<string>();
+
+            if (inputList.Count > 0)
+            {
+                foreach (string str in inputList)
+                {
+                    foreach (char c in nucleotide)
+                    {
+                        outputList.Add(str + c.ToString());
+                    }
+
+                }
+
+            }
+            else
+            {
+                foreach (char c in nucleotide)
+                {
+                    outputList.Add(c.ToString());
+                }
+            }
+
+            return outputList;
         }
 
         static public string[] MyReadFile(string inputFile)
