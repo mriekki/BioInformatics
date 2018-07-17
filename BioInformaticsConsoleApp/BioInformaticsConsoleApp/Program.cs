@@ -9,7 +9,7 @@ namespace BioInformaticsConsoleApp
     {
         static void Main(string[] args)
         {
-            string inputFile = "c:\\Temp\\large.txt";
+            string inputFile = "c:\\Temp\\Vibrio_cholerae.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
@@ -29,12 +29,45 @@ namespace BioInformaticsConsoleApp
                 string str2 = fileText[1];
                 int nDistance = HammingDistance(str1, str2);
 
-                Console.WriteLine("Hamming Distance equals {0}", nDistance);
+                result = PatternToNumber2(str1);
+                int k = 0;
+//                ReverseComplement(fileText[0]);
+
+//                Console.WriteLine(MinimumSkew(fileText[0]));
+            }
+
+            // Hamming Distance Test
+            /*
+            if (fileText.Length == 2)
+            {
+                string str1 = fileText[0];
+                string str2 = fileText[1];
+                int nDistance = 0;
+                int index = 0;
+                string result = "";
+
+                Int32.TryParse(str1, out index);
+                Int32.TryParse(str2, out nDistance);
 
             }       */
 
+                //                FrequentWords(str1, nDistance);
 
-            if (fileText.Length == 2)
+//                result = NumberToPattern2(index, nDistance);
+
+                  result = ComputingFrequencies(str1, nDistance);
+
+                //                PatternToNumber("ATGCAA");
+
+                //              NumberToPattern(5437, 8);
+
+                //            PatternMatchIndexes(str1, str2);
+
+                int k = 11;
+            }
+
+
+            if (fileText.Length == 3)
             {
                 string str1 = fileText[0];
                 string str2 = fileText[1];
@@ -51,18 +84,59 @@ namespace BioInformaticsConsoleApp
                 PatternMatchIndexes(str1, str2);
             }
 
-            if (fileText.Length == 2)
+
+            if (fileText.Length == 4)
             {
                 string str1 = fileText[0];
                 string str2 = fileText[1];
+                string str3 = fileText[2];
+                string str4 = fileText[3];
+                string result = "";
+
                 int nDistance = 0;
-                string strNeighborhood = "";
+                int k = 0;
+                int L = 0;
+                int t = 0;
 
-                Int32.TryParse(str2, out nDistance);
-//                strNeighborhood = ImmediateNeighbors(str1);
+                Int32.TryParse(str2, out k);
+                Int32.TryParse(str3, out L);
+                Int32.TryParse(str4, out t);
 
-                strNeighborhood = Neighbors(str1, nDistance);
+                result = ClumpFinder(str1, k, L, t);
+
+                k = 1;
             }
+
+        }
+
+        static public string ClumpFinder(string Genome, int k, int L, int t)
+        {
+            string result = "";
+            string pattern = "";
+            string subPattern = "";
+            List<string> FrequentPatterns = new List<string>();
+            List<string> tmpPatterns = new List<string>();
+
+            for (Int64 i = 0; i < Genome.Length - L + 1; i++)
+            {
+                subPattern = Genome.Substring((int)i, L);
+
+                tmpPatterns = FrequentWords2(subPattern, k, t);
+
+                foreach (string s in tmpPatterns)
+                {
+                    FrequentPatterns.Add(s);
+                }
+            }
+
+            FrequentPatterns = RemoveDuplicates(FrequentPatterns);
+
+
+            foreach (string str in FrequentPatterns)
+                result += str + " ";
+
+            Console.WriteLine("ClumpFinder:  {0}", result);
+            return result;
         }
 
         static public int PatternCount(string Text, string Pattern)
