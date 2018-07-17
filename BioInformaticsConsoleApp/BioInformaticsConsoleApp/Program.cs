@@ -9,35 +9,24 @@ namespace BioInformaticsConsoleApp
     {
         static void Main(string[] args)
         {
-            string inputFile = "c:\\Temp\\Vibrio_cholerae.txt";
+            string inputFile = "c:\\Temp\\large.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
             // Minimum Skew
             if (fileText.Length == 1)
             {
-                ReverseComplement(fileText[0]);
-
-                Console.WriteLine(MinimumSkew(fileText[0]));
-            }
-
-            // Hamming Distance Test
-            /*
-            if (fileText.Length == 2)
-            {
                 string str1 = fileText[0];
-                string str2 = fileText[1];
-                int nDistance = HammingDistance(str1, str2);
+                Int64 result = 0;
 
                 result = PatternToNumber2(str1);
                 int k = 0;
-//                ReverseComplement(fileText[0]);
+                //                ReverseComplement(fileText[0]);
 
-//                Console.WriteLine(MinimumSkew(fileText[0]));
+                //                Console.WriteLine(MinimumSkew(fileText[0]));
             }
 
-            // Hamming Distance Test
-            /*
+
             if (fileText.Length == 2)
             {
                 string str1 = fileText[0];
@@ -49,13 +38,12 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(str1, out index);
                 Int32.TryParse(str2, out nDistance);
 
-            }       */
 
                 //                FrequentWords(str1, nDistance);
 
-//                result = NumberToPattern2(index, nDistance);
+                //                result = NumberToPattern2(index, nDistance);
 
-                  result = ComputingFrequencies(str1, nDistance);
+                result = ComputingFrequencies(str1, nDistance);
 
                 //                PatternToNumber("ATGCAA");
 
@@ -71,17 +59,12 @@ namespace BioInformaticsConsoleApp
             {
                 string str1 = fileText[0];
                 string str2 = fileText[1];
+                string str3 = fileText[2];
                 int nDistance = 0;
 
-                //              Int32.TryParse(str2, out nDistance);
+                Int32.TryParse(str3, out nDistance);
 
-
-                //                FrequentWords(str1, nDistance);
-                PatternToNumber("ATGCAA");
-
-                NumberToPattern(5437, 8);
-
-                PatternMatchIndexes(str1, str2);
+                int n = ApproximatePatternCount(str1, str2, nDistance);
             }
 
 
@@ -151,14 +134,39 @@ namespace BioInformaticsConsoleApp
                     Count += 1;
             }
 
-            Console.WriteLine("PatternCount:  {0} = {1}", Pattern, Count);
+            //            Console.WriteLine("PatternCount:  {0} = {1}", Pattern, Count);
 
             return Count;
         }
 
-        static public string FrequentWords(string Text, int k)
+        static public string ComputingFrequencies(string Text, int k)
         {
-            string FrequentPatterns = "";
+            string result = "";
+            Int64 arraySize = (Int64)Math.Pow(4, k);
+            Int64[] frequncyArray = new Int64[arraySize];
+            string pattern = "";
+            Int64 j = 0;
+
+            for (Int64 i = 0; i < arraySize; i++)
+                frequncyArray[i] = 0;
+
+            for (Int64 m = 0; m < Text.Length - k + 1; m++)
+            {
+                pattern = Text.Substring((int)m, k);
+                j = PatternToNumber2(pattern);
+                frequncyArray[j] += 1;
+            }
+
+            for (Int64 i = 0; i < arraySize; i++)
+                result += frequncyArray[i].ToString() + " ";
+
+            Console.WriteLine("ComputingFrequencies:  {0}", result);
+            return result;
+        }
+
+        static public List<string> FrequentWords(string Text, int k)
+        {
+            List<string> FrequentPatterns = new List<string>();
             List<int> Count = new List<int>();
             List<string> Kmers = new List<string>();
             int MaxCount = 0;
@@ -186,14 +194,50 @@ namespace BioInformaticsConsoleApp
                     tmpKmers.Add(Kmers[k]);
             }
 
-            tmpKmers = RemoveDuplicates(tmpKmers);
+            FrequentPatterns = RemoveDuplicates(tmpKmers);
 
-            foreach (string s in tmpKmers)
+            /*            foreach (string s in tmpKmers)
+                        {
+                            FrequentPatterns += s + " ";
+                        } */
+
+            //            Console.WriteLine("FrequentWords:  {0}", FrequentPatterns);
+
+            return FrequentPatterns;
+
+        }
+
+        static public List<string> FrequentWords2(string Text, int k, int t)
+        {
+            List<string> FrequentPatterns = new List<string>();
+            List<int> Count = new List<int>();
+            List<string> Kmers = new List<string>();
+            int MaxCount = 0;
+            int localCount = 0;
+
+            string pattern = "";
+
+            for (int i = 0; i < Text.Length - k; i++)
             {
-                FrequentPatterns += s + " ";
+                pattern = Text.Substring(i, k);
+
+                localCount = PatternCount(Text, pattern);
+                if (localCount > MaxCount)
+                    MaxCount = localCount;
+
+                Count.Add(localCount);
+                Kmers.Add(pattern);
             }
 
-            Console.WriteLine("FrequentWords:  {0}", FrequentPatterns);
+            List<string> tmpKmers = new List<string>();
+
+            for (k = 0; k < Count.Count; k++)
+            {
+                if (Count[k] == MaxCount && Count[k] >= t)
+                    tmpKmers.Add(Kmers[k]);
+            }
+
+            FrequentPatterns = RemoveDuplicates(tmpKmers);
 
             return FrequentPatterns;
 
@@ -293,109 +337,6 @@ namespace BioInformaticsConsoleApp
             return strResult;
         }
 
-        static public string ComputingFrequenciesWithMismatches(string strInputText, int nKmer, int nDistance)
-        {
-            string strResult = "";
-            int[] freqArray = new int[(int)Math.Pow(4, nKmer)];
-            string strPattern = "";
-
-            for (int i = 0; i < freqArray.Length; i++)
-                freqArray[i] = 0;
-
-            for (int i = 0; i < strInputText.Length - nKmer; i++)
-            {
-                strPattern = strInputText.Substring(i, nKmer);
-            }
-
-            return strResult;
-        }
-
-        static public string Neighbors(string strPattern, int d)
-        {
-            string strResult = strPattern;
-            string strSuffixNeighbors = "";
-            char[] nucleotied = { 'A', 'C', 'T', 'G' };
-
-            if (d == 0)
-                return strResult;
-
-            if (strPattern.Length == 1)
-            {
-                strResult = "A, C, G, T";
-                
-            }
-
-            strResult = "";
-
-            strSuffixNeighbors = Neighbors(strPattern.Substring(1), d);
-
-            foreach (char s in strSuffixNeighbors)
-            {
-                if (HammingDistance(strPattern.Substring(1), s.ToString()) < d)
-                {
-                    foreach (char c in nucleotied)
-                    {
-//                        strResult += ", " + c.ToString + 
-                    }
-
-                }
-            }
-
-   
-            return strResult;
-        }
-
-        static public string IterativeNeighbors(string strPattern, int d)
-        {
-            string strNeighborhood = strPattern;
-
-            for (int i = 1; i <= d; i++)
-            {
-
-            }
-            return strNeighborhood;
-        }
-
-        static public string ImmediateNeighbors(string strPattern)
-        {
-            string strNeighborhood = strPattern;
-            char symbol;
-            char[] nucleotied = { 'A', 'C', 'T', 'G' };
-            string tmpStr = "";
-
-            for (int i = 0; i < strPattern.Length; i++)
-            {
-                symbol = strPattern[i];
-                foreach (char c in nucleotied)
-                {
-                    if (symbol != c)
-                    {
-                        tmpStr = ReplaceString(strPattern, i, c.ToString());
-                        
-                        strNeighborhood += ", " + tmpStr;
-                    }
-                }
-            }
-
-            Console.WriteLine("ImmediateNeighbors - Neighborhood = {0}", strNeighborhood);
-
-            return strNeighborhood;
-        }
-
-        static public string ReplaceString(string strPattern, int index, string strNew)
-        {
-            string strResult = "";
-
-            for (int i = 0; i < strPattern.Length; i+= strNew.Length)
-            {
-                if (i == index)
-                    strResult += strNew;
-                else
-                    strResult += strPattern[i];
-            }
-            return strResult;
-        }
-
         // Return index within text that matches pattern with "n" mismatches.
         static public int ApproximatePatternCount(string strPattern, string strText, int nDistance)
         {
@@ -461,6 +402,28 @@ namespace BioInformaticsConsoleApp
             return nDistance;
         }
 
+        static public string NumberToPattern2(Int64 index, int k)
+        {
+            string result = "";
+            Int64 prefixIndex = 0;
+            int remainder = 0;
+            string symbol = "";
+            string prefixPattern = "";
+
+            if (k == 1)
+                return NumberToSymbol(index);
+
+            prefixIndex = index / 4;
+            remainder = (int)index % 4;
+            symbol = NumberToSymbol(remainder);
+            prefixPattern = NumberToPattern2(prefixIndex, k - 1);
+
+            result = prefixPattern + symbol;
+
+            Console.WriteLine("NumberToPattern2:  {0}", result);
+            return result;
+        }
+
         static public string NumberToPattern(int index, int kmerSize)
         {
             string result = "";
@@ -472,6 +435,56 @@ namespace BioInformaticsConsoleApp
             result = kmerList[index];
 
             Console.WriteLine("NumberToPattern:  {0}", result);
+            return result;
+        }
+
+        static public int SymbolToNumber(string symbol)
+        {
+            int result = -1;
+            if (symbol == "A")
+                result = 0;
+            else if (symbol == "C")
+                result = 1;
+            else if (symbol == "G")
+                result = 2;
+            else if (symbol == "T")
+                result = 3;
+
+            return result;
+        }
+
+        static public string NumberToSymbol(Int64 index)
+        {
+            string result = "";
+
+            if (index == 0)
+                result = "A";
+            else if (index == 1)
+                result = "C";
+            else if (index == 2)
+                result = "G";
+            else if (index == 3)
+                result = "T";
+
+            return result;
+        }
+
+        static public Int64 PatternToNumber2(string pattern)
+        {
+            Int64 result = 0;
+            string symbol = "";
+            string prefix = "";
+
+            if (pattern.Length == 0)
+                return result;
+
+            symbol = pattern.Substring(pattern.Length - 1, 1);
+            prefix = pattern.Substring(0, pattern.Length - 1);
+
+            result = 4 * PatternToNumber2(prefix) + SymbolToNumber(symbol);
+
+
+            //            Console.WriteLine("PatternToNumber2:  {0}", result);
             return result;
         }
 
