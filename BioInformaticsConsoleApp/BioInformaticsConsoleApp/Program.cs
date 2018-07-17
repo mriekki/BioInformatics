@@ -31,12 +31,10 @@ namespace BioInformaticsConsoleApp
             {
                 string str1 = fileText[0];
                 string str2 = fileText[1];
-                int nDistance = 0;
-                int index = 0;
                 string result = "";
 
-                Int32.TryParse(str1, out index);
-                Int32.TryParse(str2, out nDistance);
+                Int32.TryParse(str1, out int index);
+                Int32.TryParse(str2, out int nDistance);
 
 
                 //                FrequentWords(str1, nDistance);
@@ -60,9 +58,8 @@ namespace BioInformaticsConsoleApp
                 string str1 = fileText[0];
                 string str2 = fileText[1];
                 string str3 = fileText[2];
-                int nDistance = 0;
 
-                Int32.TryParse(str3, out nDistance);
+                Int32.TryParse(str3, out int nDistance);
 
                 int n = ApproximatePatternCount(str1, str2, nDistance);
             }
@@ -76,14 +73,11 @@ namespace BioInformaticsConsoleApp
                 string str4 = fileText[3];
                 string result = "";
 
-//                int nDistance = 0;
-                int k = 0;
-                int L = 0;
-                int t = 0;
+                //                int nDistance = 0;
 
-                Int32.TryParse(str2, out k);
-                Int32.TryParse(str3, out L);
-                Int32.TryParse(str4, out t);
+                Int32.TryParse(str2, out int k);
+                Int32.TryParse(str3, out int L);
+                Int32.TryParse(str4, out int t);
 
                 result = ClumpFinder(str1, k, L, t);
 
