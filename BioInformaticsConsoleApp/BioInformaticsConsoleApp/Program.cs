@@ -7,9 +7,9 @@ namespace BioInformaticsConsoleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string inputFile = "c:\\Temp\\large.txt";
+            string inputFile = "c:\\Temp\\dataset_4_5.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
@@ -20,7 +20,7 @@ namespace BioInformaticsConsoleApp
                 Int64 result = 0;
 
                 result = PatternToNumber2(str1);
-                int k = 0;
+//                int k = 0;
                 //                ReverseComplement(fileText[0]);
 
                 //                Console.WriteLine(MinimumSkew(fileText[0]));
@@ -51,7 +51,7 @@ namespace BioInformaticsConsoleApp
 
                 //            PatternMatchIndexes(str1, str2);
 
-                int k = 11;
+//                int k = 11;
             }
 
 
@@ -76,7 +76,7 @@ namespace BioInformaticsConsoleApp
                 string str4 = fileText[3];
                 string result = "";
 
-                int nDistance = 0;
+//                int nDistance = 0;
                 int k = 0;
                 int L = 0;
                 int t = 0;
@@ -95,7 +95,7 @@ namespace BioInformaticsConsoleApp
         static public string ClumpFinder(string Genome, int k, int L, int t)
         {
             string result = "";
-            string pattern = "";
+//            string pattern = "";
             string subPattern = "";
             List<string> FrequentPatterns = new List<string>();
             List<string> tmpPatterns = new List<string>();
