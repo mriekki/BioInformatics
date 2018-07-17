@@ -63,60 +63,6 @@ namespace BioInformaticsConsoleApp
 
                 strNeighborhood = Neighbors(str1, nDistance);
             }
-
-
-            if (fileText.Length == 4)
-            {
-                string str1 = fileText[0];
-                string str2 = fileText[1];
-                string str3 = fileText[2];
-                string str4 = fileText[3];
-                string result = "";
-
-                int nDistance = 0;
-                int k = 0;
-                int L = 0;
-                int t = 0;
-
-                Int32.TryParse(str2, out k);
-                Int32.TryParse(str3, out L);
-                Int32.TryParse(str4, out t);
-
-                result = ClumpFinder(str1, k, L, t);
-
-                k = 1;
-            }
-
-        }
-
-        static public string ClumpFinder(string Genome, int k, int L, int t)
-        {
-            string result = "";
-            string pattern = "";
-            string subPattern = "";
-            List<string> FrequentPatterns = new List<string>();
-            List<string> tmpPatterns = new List<string>();
-
-            for (Int64 i = 0; i < Genome.Length - L + 1; i++)
-            {
-                subPattern = Genome.Substring((int)i, L);
-
-                tmpPatterns = FrequentWords2(subPattern, k, t);
-
-                foreach (string s in tmpPatterns)
-                {
-                    FrequentPatterns.Add(s);
-                }
-            }
-
-            FrequentPatterns = RemoveDuplicates(FrequentPatterns);
-
-
-            foreach (string str in FrequentPatterns)
-                result += str + " ";
-
-            Console.WriteLine("ClumpFinder:  {0}", result);
-            return result;
         }
 
         static public int PatternCount(string Text, string Pattern)
@@ -131,39 +77,14 @@ namespace BioInformaticsConsoleApp
                     Count += 1;
             }
 
-//            Console.WriteLine("PatternCount:  {0} = {1}", Pattern, Count);
+            Console.WriteLine("PatternCount:  {0} = {1}", Pattern, Count);
 
             return Count;
         }
 
-        static public string ComputingFrequencies(string Text, int k)
+        static public string FrequentWords(string Text, int k)
         {
-            string result = "";
-            Int64 arraySize = (Int64)Math.Pow(4, k);
-            Int64[] frequncyArray = new Int64[arraySize];
-            string pattern = "";
-            Int64 j = 0;
-
-            for (Int64 i = 0; i < arraySize; i++)
-                frequncyArray[i] = 0;
-
-            for (Int64 m = 0; m < Text.Length - k + 1; m++)
-            {
-                pattern = Text.Substring((int)m, k);
-                j = PatternToNumber2(pattern);
-                frequncyArray[j] += 1;
-            }
-
-            for (Int64 i = 0; i < arraySize; i++)
-                result += frequncyArray[i].ToString() + " ";
-
-            Console.WriteLine("ComputingFrequencies:  {0}", result);
-            return result;
-        }
-
-        static public List<string> FrequentWords(string Text, int k)
-        {
-            List<string> FrequentPatterns = new List<string>();
+            string FrequentPatterns = "";
             List<int> Count = new List<int>();
             List<string> Kmers = new List<string>();
             int MaxCount = 0;
@@ -191,50 +112,14 @@ namespace BioInformaticsConsoleApp
                     tmpKmers.Add(Kmers[k]);
             }
 
-            FrequentPatterns = RemoveDuplicates(tmpKmers);
+            tmpKmers = RemoveDuplicates(tmpKmers);
 
-/*            foreach (string s in tmpKmers)
+            foreach (string s in tmpKmers)
             {
                 FrequentPatterns += s + " ";
-            } */
-
-//            Console.WriteLine("FrequentWords:  {0}", FrequentPatterns);
-
-            return FrequentPatterns;
-
-        }
-
-        static public List<string> FrequentWords2(string Text, int k, int t)
-        {
-            List<string> FrequentPatterns = new List<string>();
-            List<int> Count = new List<int>();
-            List<string> Kmers = new List<string>();
-            int MaxCount = 0;
-            int localCount = 0;
-
-            string pattern = "";
-
-            for (int i = 0; i < Text.Length - k; i++)
-            {
-                pattern = Text.Substring(i, k);
-
-                localCount = PatternCount(Text, pattern);
-                if (localCount > MaxCount)
-                    MaxCount = localCount;
-
-                Count.Add(localCount);
-                Kmers.Add(pattern);
             }
 
-            List<string> tmpKmers = new List<string>();
-
-            for (k = 0; k < Count.Count; k++)
-            {
-                if (Count[k] == MaxCount && Count[k] >= t)
-                    tmpKmers.Add(Kmers[k]);
-            }
-
-            FrequentPatterns = RemoveDuplicates(tmpKmers);
+            Console.WriteLine("FrequentWords:  {0}", FrequentPatterns);
 
             return FrequentPatterns;
 
