@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 
 namespace BioInformaticsConsoleApp
@@ -9,7 +10,7 @@ namespace BioInformaticsConsoleApp
     {
         private static void Main(string[] args)
         {
-            string inputFile = "c:\\Temp\\dataset_4_5.txt";
+            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
 
             string[] fileText = MyReadFile(inputFile);
 
@@ -17,9 +18,14 @@ namespace BioInformaticsConsoleApp
             if (fileText.Length == 1)
             {
                 string str1 = fileText[0];
+                string strResult = "";
                 Int64 result = 0;
 
-                result = PatternToNumber2(str1);
+                strResult = ImmediateNeighbors("ATG");
+
+//                strResult = MinimumSkew(str1);
+
+//                result = PatternToNumber2(str1);
 //                int k = 0;
                 //                ReverseComplement(fileText[0]);
 
@@ -61,7 +67,7 @@ namespace BioInformaticsConsoleApp
 
                 Int32.TryParse(str3, out int nDistance);
 
-                int n = ApproximatePatternCount(str1, str2, nDistance);
+                int n = ApproximatePatternCount(str2, str1, nDistance);
             }
 
 
@@ -84,6 +90,32 @@ namespace BioInformaticsConsoleApp
                 k = 1;
             }
 
+        }
+
+        static public string ImmediateNeighbors(string Pattern)
+        {
+            string Neighborhood = Pattern;
+            char[] nucleotide = { 'A', 'C', 'T', 'G' };
+            char symbol;
+            string kmer = "";
+
+
+            for (int i = 0; i < Pattern.Length; i++)
+            {
+                symbol = Pattern[i];
+                foreach (char c in nucleotide)
+                {
+                    if (symbol != c)
+                    {
+                        kmer = ReplaceStringAt(Pattern, c, i);
+                        Neighborhood += " " + kmer;
+                 
+                    }
+                }
+            }
+
+            Console.WriteLine("ImmediateNeighbors:  {0}", Neighborhood);
+            return Neighborhood;
         }
 
         static public string ClumpFinder(string Genome, int k, int L, int t)
@@ -296,30 +328,33 @@ namespace BioInformaticsConsoleApp
             int count = 0;
             int skewValue = 0;
             int minIndex = 1000;
+            string tmp = "";
             int[] arrayOffset = new int[strInput.Length + 1];
+
+            // set first postion to 0;
+            arrayOffset[0] = skewValue;
+            Console.WriteLine($"Position {count}: Value: skewIndex:  {skewValue}");
+            tmp += skewValue.ToString() + " ";
 
             foreach (char strKmer in strInput)
             {
-                if (strKmer.ToString().Length > 0)
-                {
-                    if (count > 0)
-                    {
-                        if (strKmer == 'G')
-                            skewValue++;
-                        else if (strKmer == 'C')
-                            skewValue--;
-                    }
-                    if (skewValue < minIndex)
-                        minIndex = skewValue;
 
-                    Console.WriteLine($"Position {count}: Value: {strKmer}   skewIndex:  {skewValue}");
+                if (strKmer == 'G')
+                    skewValue += 1;
+                else if (strKmer == 'C')
+                    skewValue -= 1;
 
-                    count++;
+                if (skewValue < minIndex)
+                    minIndex = skewValue;
 
-                    arrayOffset[count] = skewValue;
+                Console.WriteLine($"Position {count}: Value: {strKmer}   skewIndex:  {skewValue}");
 
+                tmp += skewValue.ToString() + " ";
+
+                count++;
+
+                arrayOffset[count] = skewValue;
                 }
-            }
 
             for (int i = 0; i < arrayOffset.Length; i++)
             {
@@ -552,6 +587,14 @@ namespace BioInformaticsConsoleApp
             }
 
             return readText;
+        }
+
+        static public string ReplaceStringAt(string Text, char c, int index)
+        {
+            StringBuilder sb = new StringBuilder(Text);
+            sb[index] = c;
+            string newStr = sb.ToString();
+            return newStr;
         }
 
     }
