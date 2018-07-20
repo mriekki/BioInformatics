@@ -10,86 +10,122 @@ namespace BioInformaticsConsoleApp
     {
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+            string inputFile = "..\\..\\..\\Data Files\\Neighbors.txt";
 
             string[] fileText = MyReadFile(inputFile);
+            string str1 = "";
+            string str2 = "";
+            string str3 = "";
+            string str4 = "";
+            int nResult = 0;
+            string strResult = "";
 
-            // Minimum Skew
+
             if (fileText.Length == 1)
             {
-                string str1 = fileText[0];
-                string strResult = "";
-                Int64 result = 0;
-
-                strResult = ImmediateNeighbors("ATG");
-
-//                strResult = MinimumSkew(str1);
-
-//                result = PatternToNumber2(str1);
-//                int k = 0;
-                //                ReverseComplement(fileText[0]);
-
-                //                Console.WriteLine(MinimumSkew(fileText[0]));
+                str1 = fileText[0];
             }
-
-
-            if (fileText.Length == 2)
+            else if (fileText.Length == 2)
             {
-                string str1 = fileText[0];
-                string str2 = fileText[1];
-                string result = "";
-
-                Int32.TryParse(str1, out int index);
-                Int32.TryParse(str2, out int nDistance);
-
-
-                //                FrequentWords(str1, nDistance);
-
-                //                result = NumberToPattern2(index, nDistance);
-
-                result = ComputingFrequencies(str1, nDistance);
-
-                //                PatternToNumber("ATGCAA");
-
-                //              NumberToPattern(5437, 8);
-
-                //            PatternMatchIndexes(str1, str2);
-
-//                int k = 11;
-            }
-
-
-            if (fileText.Length == 3)
-            {
-                string str1 = fileText[0];
-                string str2 = fileText[1];
-                string str3 = fileText[2];
-
-                Int32.TryParse(str3, out int nDistance);
-
-                int n = ApproximatePatternCount(str2, str1, nDistance);
-            }
-
-
-            if (fileText.Length == 4)
-            {
-                string str1 = fileText[0];
-                string str2 = fileText[1];
-                string str3 = fileText[2];
-                string str4 = fileText[3];
-                string result = "";
-
-                //                int nDistance = 0;
-
+                str1 = fileText[0];
+                str2 = fileText[1];
                 Int32.TryParse(str2, out int k);
-                Int32.TryParse(str3, out int L);
+            }
+            else if (fileText.Length == 3)
+            {
+                str1 = fileText[0];
+                str2 = fileText[1];
+                str3 = fileText[2];
+                Int32.TryParse(str2, out int k);
+                Int32.TryParse(str3, out int d);
+            }
+            else if (fileText.Length == 4)
+            {
+                str1 = fileText[0];
+                str2 = fileText[1];
+                str3 = fileText[2];
+                str4 = fileText[3];
+                Int32.TryParse(str2, out int k);
+                Int32.TryParse(str3, out int d);
                 Int32.TryParse(str4, out int t);
-
-                result = ClumpFinder(str1, k, L, t);
-
-                k = 1;
             }
 
+            strResult = ImmediateNeighbors("ATG");
+
+            // strResult = MinimumSkew(str1);
+
+            //  strResult = PatternToNumber2(str1);
+
+            //  ReverseComplement(str1);
+
+            //  dist = HammingDistance(str1, str2);
+
+            //nb = Neighbors(str1, nDistance);
+
+            //                FrequentWords(str1, nDistance);
+
+            //                result = NumberToPattern2(index, nDistance);
+
+            // result = ComputingFrequencies(str1, nDistance);
+
+            //                PatternToNumber("ATGCAA");
+
+            //              NumberToPattern(5437, 8);
+
+            //            PatternMatchIndexes(str1, str2);
+
+        }
+
+        static public List<string> Neighbors(string Pattern, int d)
+        {
+            List<string> Neighborhood = new List<string>();
+            List<string> suffixNeighbors = new List<string>();
+            string suffix;
+            string prefix;
+            char[] nucleotide = { 'A', 'C', 'T', 'G' };
+            string kmer = "";
+
+            if (0 == d)
+            {
+                Neighborhood.Add(Pattern);
+                return Neighborhood;
+            }
+
+            if (Pattern.Length == 1)
+            {
+                Neighborhood.Add("A");
+                Neighborhood.Add("C");
+                Neighborhood.Add("G");
+                Neighborhood.Add("T");
+                
+                return Neighborhood;
+            }
+
+            Neighborhood.Clear();
+
+            suffix = Pattern.Substring(1, Pattern.Length - 1);
+            prefix = Pattern[0].ToString();
+
+            suffixNeighbors = Neighbors(suffix, d);
+            foreach (string str in suffixNeighbors)
+            {
+                if (HammingDistance(suffix, str) < d)
+                {
+                    foreach (char c in nucleotide)
+                    {
+                        kmer = c.ToString() + str;
+                        Neighborhood.Add(kmer);
+                    }
+                }
+                else
+                {
+                    kmer = prefix + str;
+                    Neighborhood.Add(kmer);
+                }
+            }
+
+//            Console.WriteLine("Neighbors:  {0}", Neighborhood);
+            return Neighborhood;
         }
 
         static public string ImmediateNeighbors(string Pattern)
@@ -121,7 +157,6 @@ namespace BioInformaticsConsoleApp
         static public string ClumpFinder(string Genome, int k, int L, int t)
         {
             string result = "";
-//            string pattern = "";
             string subPattern = "";
             List<string> FrequentPatterns = new List<string>();
             List<string> tmpPatterns = new List<string>();
@@ -163,6 +198,50 @@ namespace BioInformaticsConsoleApp
             //            Console.WriteLine("PatternCount:  {0} = {1}", Pattern, Count);
 
             return Count;
+        }
+
+        static public int[] ComputingFrequenciesWithMismatches(string Text, int k, int d, bool IncludeReverse = false)
+        {
+            string result = "";
+            Int64 arraySize = (Int64)Math.Pow(4, k);
+            int[] frequncyArray = new int[arraySize];
+            List<string> Neighborhood = new List<string>();
+            string pattern = "";
+            string complement = "";
+            Int64 j = 0;
+
+            for (int i = 0; i < Text.Length - k + 1; i++)
+            {
+                pattern = Text.Substring(i, k);
+                Neighborhood = Neighbors(pattern, d);
+
+                foreach (string p in Neighborhood)
+                {
+                    j = PatternToNumber2(p);
+                    frequncyArray[j] += 1;
+                }
+
+                if (IncludeReverse)
+                {
+                    complement = ReverseComplement(pattern);
+
+                    Neighborhood = Neighbors(complement, d);
+
+                    foreach (string p in Neighborhood)
+                    {
+                        j = PatternToNumber2(p);
+                        frequncyArray[j] += 1;
+                    }
+                }
+
+            }
+
+            // Casues exception, look into different implementation.
+            //            for (Int64 i = 0; i < arraySize; i++)
+            //                result += frequncyArray[i].ToString() + " ";
+
+//            Console.WriteLine("ComnputingFrequencieswithMatchs:  {0}", result);
+            return frequncyArray;
         }
 
         static public string ComputingFrequencies(string Text, int k)
@@ -268,6 +347,46 @@ namespace BioInformaticsConsoleApp
             return FrequentPatterns;
 
         }
+
+        static public List<string> FrequentWordsWithMismatches(string Text, int k, int d, bool IncludeReverse = false)
+        {
+            List<string> FrequentPatterns = new List<string>();
+            int [] localCount;
+            int MaxCount = 0;
+            string pattern = "";
+            string str = "";
+
+            localCount = ComputingFrequenciesWithMismatches(Text, k, d, IncludeReverse);
+            for (int m = 0; m < localCount.Length; m++)
+            {
+                if (localCount[m] > MaxCount)
+                    MaxCount = localCount[m];
+            }
+
+            List<string> tmpKmers = new List<string>();
+
+            for (int i = 0; i < localCount.Length; i++)
+            {
+                if (localCount[i] == MaxCount)
+                {
+                    pattern = NumberToPattern2(i, k);
+                    tmpKmers.Add(pattern);
+                }
+            }
+
+            FrequentPatterns = RemoveDuplicates(tmpKmers);
+
+            foreach (string s in FrequentPatterns)
+            {
+                str += s + " ";
+            }
+
+            Console.WriteLine("FrequentWordsWithMismatches:  {0}", str);
+
+            return FrequentPatterns;
+        }
+
+    
 
         static public string ReverseComplement(string input)
         {
@@ -587,6 +706,25 @@ namespace BioInformaticsConsoleApp
             }
 
             return readText;
+        }
+
+        static public void WriteListToFile(string fileName, List<string> strList)
+        {
+            using (System.IO.StreamWriter myfile = new System.IO.StreamWriter(fileName, true))
+            {
+                try
+                {
+                    foreach (string s in strList)
+
+                        myfile.WriteLine(s);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("{0} Exception caught.", e);
+                }
+            }
+
         }
 
         static public string ReplaceStringAt(string Text, char c, int index)
