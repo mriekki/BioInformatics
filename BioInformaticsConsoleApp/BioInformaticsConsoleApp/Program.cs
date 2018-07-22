@@ -10,14 +10,18 @@ namespace BioInformaticsConsoleApp
     {
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\Neighbors.txt";
+            string inputFile = "..\\..\\..\\Data Files\\dataset_5164_1.txt";
 
             string[] fileText = MyReadFile(inputFile);
+            string[] dnaArray = new string[fileText.Length - 2];
             string str1 = "";
             string str2 = "";
             string str3 = "";
             string str4 = "";
             int nResult = 0;
+            int k = 0;
+            int d = 0;
+            int t = 0;
             string strResult = "";
 
 
@@ -29,15 +33,15 @@ namespace BioInformaticsConsoleApp
             {
                 str1 = fileText[0];
                 str2 = fileText[1];
-                Int32.TryParse(str2, out int k);
+                Int32.TryParse(str2, out k);
             }
             else if (fileText.Length == 3)
             {
                 str1 = fileText[0];
                 str2 = fileText[1];
                 str3 = fileText[2];
-                Int32.TryParse(str2, out int k);
-                Int32.TryParse(str3, out int d);
+                Int32.TryParse(str2, out k);
+                Int32.TryParse(str3, out d);
             }
             else if (fileText.Length == 4)
             {
@@ -45,12 +49,27 @@ namespace BioInformaticsConsoleApp
                 str2 = fileText[1];
                 str3 = fileText[2];
                 str4 = fileText[3];
-                Int32.TryParse(str2, out int k);
-                Int32.TryParse(str3, out int d);
-                Int32.TryParse(str4, out int t);
+                Int32.TryParse(str2, out k);
+                Int32.TryParse(str3, out d);
+                Int32.TryParse(str4, out t);
             }
+            else if (fileText.Length > 4)
+            {
+                str1 = fileText[0];
+                str2 = fileText[1];
+                Int32.TryParse(str1, out k);
+                Int32.TryParse(str2, out d);
 
-            strResult = ImmediateNeighbors("ATG");
+                for (int i = 0; i < fileText.Length - 2; i++) // offset of k, d
+                    dnaArray[i] = fileText[i + 2];
+           
+            }
+            int dis = DistanceBetweenPatternAndStrings(str2, dnaArray);
+
+//            strResult = MotifEnumeration(dnaArray, k, d);
+
+
+            // strResult = ImmediateNeighbors("ATG");
 
             // strResult = MinimumSkew(str1);
 
@@ -74,6 +93,97 @@ namespace BioInformaticsConsoleApp
 
             //            PatternMatchIndexes(str1, str2);
 
+        }
+        
+        
+        //===================================================================================================
+        //        DistanceBetweenPatternAndStrings(Pattern, Dna)
+        //              k ← |Pattern|
+        //              distance ← 0
+        //              for each string Text in Dna
+        //                  HammingDistance ← ∞
+        //                  for each k-mer Pattern’ in Text
+        //                      if HammingDistance > HammingDistance(Pattern, Pattern’)
+        //                          HammingDistance ← HammingDistance(Pattern, Pattern’)
+        //                  distance ← distance + HammingDistance
+        //              return distance
+        //===================================================================================================
+        static public int DistanceBetweenPatternAndStrings(string Pattern, string [] Dna)
+        {
+            int distance = 0;
+            int k = Pattern.Length;
+            string str = "";
+            int tmpDistance = 0;
+
+            foreach (string Text in Dna)
+            {
+                int HamDistance = int.MaxValue;
+
+                for (int m = 0; m < Text.Length - Pattern.Length +1; m++)
+                {
+                    str = Text.Substring(m, k);
+                    tmpDistance = HammingDistance(Pattern, str);
+                    if (HamDistance > tmpDistance)
+                        HamDistance = tmpDistance;
+                }
+                distance += HamDistance;
+            }
+
+            Console.WriteLine("DistanceBetweenPatternAndStrings:  {0}", distance);
+            return distance;
+        }
+
+        //===================================================================================================
+        //        Patterns ← an empty set
+        //        
+        //        for each k-mer Pattern in Dna
+        //            for each k-mer Pattern’ differing from Pattern by at most d mismatches
+        //               if Pattern' appears in each string from Dna with at most d ﻿mismatches
+        //                    add Pattern' to Patterns
+        //        
+        //    remove duplicates from Patterns
+        //===================================================================================================
+        static public string MotifEnumeration(string[] Dna, int k, int d)
+        {
+            string Patterns = "";
+            List<string> motifList = new List<string>();
+
+            foreach (string kmer in Dna)
+            {
+                for (int m = 0; m < kmer.Length - k +1; m++)        // All kmers in DNA
+                {
+                    string str = kmer.Substring(m, k);
+                    List<string> neighbors = new List<string>();    // All kmers with d mismatches
+
+                    neighbors = Neighbors(str, d);
+
+                    foreach (string n in neighbors)
+                    {
+                        string strMatch = "";
+                        bool bInDNA = true;
+
+                        foreach (string inner in Dna)       
+                        {
+                            strMatch = ApproximatePatternMatching(n, inner, d);  // Check each DNA for pattern with d mismatch
+                            if (strMatch.Length == 0)
+                            {
+                                bInDNA = false;
+                                break;
+                            }
+                        }
+                        if (bInDNA) // str in all DNA
+                            motifList.Add(n);
+                    }
+                }
+            }
+
+            motifList = RemoveDuplicates(motifList);
+
+            foreach (string s in motifList)
+                Patterns += s + " ";
+
+            Console.WriteLine("MotifEnumeration:  {0}", Patterns);
+            return Patterns;
         }
 
         static public List<string> Neighbors(string Pattern, int d)
@@ -202,7 +312,6 @@ namespace BioInformaticsConsoleApp
 
         static public int[] ComputingFrequenciesWithMismatches(string Text, int k, int d, bool IncludeReverse = false)
         {
-            string result = "";
             Int64 arraySize = (Int64)Math.Pow(4, k);
             int[] frequncyArray = new int[arraySize];
             List<string> Neighborhood = new List<string>();
