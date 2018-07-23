@@ -8,12 +8,15 @@ namespace BioInformaticsConsoleApp
 {
     class Program
     {
+        private const int NucleotideSize = 4;
+
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\dataset_5164_1.txt";
+            string inputFile = "..\\..\\..\\Data Files\\dataset_159_3.txt";
 
             string[] fileText = MyReadFile(inputFile);
             string[] dnaArray = new string[fileText.Length - 2];
+            string Text = "";
             string str1 = "";
             string str2 = "";
             string str3 = "";
@@ -23,6 +26,31 @@ namespace BioInformaticsConsoleApp
             int d = 0;
             int t = 0;
             string strResult = "";
+
+            // Set Method to run
+            string method = "ProfileMostProbableKmer";
+
+            if ("ProfileMostProbableKmer" == method)
+            {
+                string [] strLine;
+                Text = fileText[0];
+                Int32.TryParse(fileText[1], out k);
+                double[,] array = new double[NucleotideSize, k];
+                double value = 0;
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    strLine = fileText[i].Split(" ");
+                    for (int n = 0; n < k; n++)
+                    {
+                        Double.TryParse(strLine[n], out value);
+                        array[i - 2, n] = value;
+                    }
+                }
+
+                strResult = ProfileMostProbableKmer(Text, k, array);
+            }
+
 
 
             if (fileText.Length == 1)
@@ -64,7 +92,10 @@ namespace BioInformaticsConsoleApp
                     dnaArray[i] = fileText[i + 2];
            
             }
-            int dis = DistanceBetweenPatternAndStrings(str2, dnaArray);
+
+//            strResult = MedianString(dnaArray, d);
+
+//            int dis = DistanceBetweenPatternAndStrings(str2, dnaArray);
 
 //            strResult = MotifEnumeration(dnaArray, k, d);
 
@@ -94,8 +125,76 @@ namespace BioInformaticsConsoleApp
             //            PatternMatchIndexes(str1, str2);
 
         }
-        
-        
+
+
+        static public string ProfileMostProbableKmer(string Text, int k, double[,] matrix)
+        {
+            string result = "";
+            string pattern = "";
+            string c = "";
+            double probability = 1;
+            double highestProbabilty = 0;
+
+            for (int i = 0; i < Text.Length - k + 1; i++)
+            {
+                pattern = Text.Substring(i, k);
+                probability = 1;
+                for (int m = 0; m < pattern.Length; m++)
+                {
+                    c = pattern.Substring(m, 1);
+                    if (c == "A")
+                        probability *= matrix[0, m];
+                    else if (c == "C")
+                        probability *= matrix[1, m];
+                    else if (c == "G")
+                        probability *= matrix[2, m];
+                    else if (c == "T")
+                        probability *= matrix[3, m];
+                }
+
+                if (probability > highestProbabilty)
+                {
+                    highestProbabilty = probability;
+                    result = pattern;
+                }
+            }
+
+
+            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
+            return result;
+        }
+
+        // MedianString(Dna, k)
+        //      distance ← ∞
+        //      for i ←0 to 4k −1
+        //          Pattern ← NumberToPattern(i, k)
+        //          if distance > DistanceBetweenPatternAndStrings(Pattern, Dna)
+        //              distance ← DistanceBetweenPatternAndStrings(Pattern, Dna)
+        //              Median ← Pattern
+        //      return Median
+        static public string MedianString(string[] Dna, int k)
+        {
+            string Median = "";
+            int distance = int.MaxValue;
+            Int64 arraySize = (Int64)Math.Pow(4, k);
+            string pattern = "";
+            int tmpDistance = 0;
+
+            for (Int64 i = 0; i < arraySize - 1; i++)
+            {
+                pattern = NumberToPattern2(i, k);
+                tmpDistance = DistanceBetweenPatternAndStrings(pattern, Dna);
+                if (distance > tmpDistance)
+                {
+                    distance = tmpDistance;
+                    Median = pattern;
+                }
+            }
+
+            Console.WriteLine("MedianString:  {0}", Median);
+            return Median;
+        }
+
         //===================================================================================================
         //        DistanceBetweenPatternAndStrings(Pattern, Dna)
         //              k ← |Pattern|
@@ -129,7 +228,7 @@ namespace BioInformaticsConsoleApp
                 distance += HamDistance;
             }
 
-            Console.WriteLine("DistanceBetweenPatternAndStrings:  {0}", distance);
+//            Console.WriteLine("DistanceBetweenPatternAndStrings:  {0}", distance);
             return distance;
         }
 
@@ -677,7 +776,7 @@ namespace BioInformaticsConsoleApp
 
             result = prefixPattern + symbol;
 
-            Console.WriteLine("NumberToPattern2:  {0}", result);
+//            Console.WriteLine("NumberToPattern2:  {0}", result);
             return result;
         }
 
