@@ -12,23 +12,42 @@ namespace BioInformaticsConsoleApp
 
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\dataset_159_3.txt";
+            string inputFile = "..\\..\\..\\Data Files\\dataset_160_9.txt";
 
             string[] fileText = MyReadFile(inputFile);
             string[] dnaArray = new string[fileText.Length - 2];
             string Text = "";
-            string str1 = "";
-            string str2 = "";
-            string str3 = "";
-            string str4 = "";
-            int nResult = 0;
+//            string str1 = "";
+//            string str2 = "";
+//            string str3 = "";
+//            string str4 = "";
+//            int nResult = 0;
             int k = 0;
             int d = 0;
             int t = 0;
             string strResult = "";
 
             // Set Method to run
-            string method = "ProfileMostProbableKmer";
+            string method = "GreedyMotifSearch";
+
+
+
+            if ("GreedyMotifSearch" == method)
+            {
+                string[] strLine = new string[fileText.Length - 2];
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out t);
+                List<string> searchResult = new List<string>();
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    strLine[i - 2] = fileText[i];
+                }
+
+                searchResult = GreedyMotifSearch(strLine, k, t);
+            }
+
+
 
             if ("ProfileMostProbableKmer" == method)
             {
@@ -53,46 +72,7 @@ namespace BioInformaticsConsoleApp
 
 
 
-            if (fileText.Length == 1)
-            {
-                str1 = fileText[0];
-            }
-            else if (fileText.Length == 2)
-            {
-                str1 = fileText[0];
-                str2 = fileText[1];
-                Int32.TryParse(str2, out k);
-            }
-            else if (fileText.Length == 3)
-            {
-                str1 = fileText[0];
-                str2 = fileText[1];
-                str3 = fileText[2];
-                Int32.TryParse(str2, out k);
-                Int32.TryParse(str3, out d);
-            }
-            else if (fileText.Length == 4)
-            {
-                str1 = fileText[0];
-                str2 = fileText[1];
-                str3 = fileText[2];
-                str4 = fileText[3];
-                Int32.TryParse(str2, out k);
-                Int32.TryParse(str3, out d);
-                Int32.TryParse(str4, out t);
-            }
-            else if (fileText.Length > 4)
-            {
-                str1 = fileText[0];
-                str2 = fileText[1];
-                Int32.TryParse(str1, out k);
-                Int32.TryParse(str2, out d);
-
-                for (int i = 0; i < fileText.Length - 2; i++) // offset of k, d
-                    dnaArray[i] = fileText[i + 2];
-           
-            }
-
+ 
 //            strResult = MedianString(dnaArray, d);
 
 //            int dis = DistanceBetweenPatternAndStrings(str2, dnaArray);
@@ -127,13 +107,172 @@ namespace BioInformaticsConsoleApp
         }
 
 
+        static public List<string> GreedyMotifSearch(string[] Dna, int k, int t)
+        {
+            List<string> BestMotifs = new List<string>();
+            List<string> tmpMotifs = new List<string>();
+            string kmer = "";
+            string nextMotif = "";
+            string strand = "";
+            string baseStrand = "";
+
+            for (int i = 0; i < Dna.Length; i++)
+                BestMotifs.Add(Dna[i].Substring(0, k));
+
+            baseStrand = Dna[0];
+
+            for (int m = 0; m < baseStrand.Length - k + 1; m++)
+            {
+                tmpMotifs.Clear();
+                kmer = baseStrand.Substring(m, k);
+                tmpMotifs.Add(kmer);
+            
+                for (int n = 1; n < t; n++)
+                {
+                    double[,] profileMatrix = Profile(tmpMotifs, true);
+
+                    strand = Dna[n];
+
+                    nextMotif = ProfileMostProbableKmer(strand, k, profileMatrix);
+
+                    tmpMotifs.Add(nextMotif);
+                }
+
+                if (Score(tmpMotifs) < Score(BestMotifs))
+                {
+                    BestMotifs.Clear();
+                    foreach (string s in tmpMotifs)
+                        BestMotifs.Add(s);
+                }
+            }
+
+            string tmp = "";
+
+            foreach (string s in BestMotifs)
+                tmp += s + "  ";
+
+            return BestMotifs;
+        }
+
+        static public int Score(List<string> Motifs)
+        {
+            int motifLength = 1;
+            int t = 0;
+            int maxCount = 0;
+            int totalScore = 0;
+
+            if (Motifs.Count > 0)
+            {
+                motifLength = Motifs[0].Length;
+                t = Motifs.Count;
+            }
+
+            double[,] countArray = new double[NucleotideSize, motifLength];
+            int[] scoreArray = new int[motifLength];
+            string str = "";
+            string c = "";
+
+
+            for (int i = 0; i < Motifs.Count; i++)
+            {
+                str = Motifs[i];
+                for (int m = 0; m < motifLength; m++)
+                {
+                    c = str.Substring(m, 1);
+                    if (c == "A")
+                        countArray[0, m] += 1;
+                    else if (c == "C")
+                        countArray[1, m] += 1;
+                    else if (c == "G")
+                        countArray[2, m] += 1;
+                    else if (c == "T")
+                        countArray[3, m] += 1;
+                }
+            }
+
+            for (int i = 0; i < motifLength; i++)
+            {
+                for (int m = 0; m < NucleotideSize; m++)
+                {
+                    if (countArray[m, i] > maxCount)
+                        maxCount = (int)countArray[m, i];
+                }
+                scoreArray[i] = t - maxCount;
+                totalScore += scoreArray[i];
+                maxCount = 0;
+            }
+
+            return totalScore;
+        }
+
+        static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = false)
+        {
+            int motifLength = 1;
+            int t = 0;
+            int pCount = 0;
+
+
+            if (Motifs.Count > 0)
+            {
+                motifLength = Motifs[0].Length;
+                t = Motifs.Count;
+            }
+
+            double[,] profileArray = new double[NucleotideSize, motifLength];
+            double[,] countArray = new double[NucleotideSize, motifLength];
+            string str = "";
+            string c = "";
+
+            if (bIncludePseudocounts == true)
+            {
+                t += 1;
+                for (int a = 0; a < NucleotideSize; a++)
+                    for (int b = 0; b < motifLength; b++)
+                        countArray[a, b] = 1;
+            }
+
+
+            for (int i = 0; i < Motifs.Count; i++)
+            {
+                str = Motifs[i];
+                for (int m = 0; m < motifLength; m++)
+                {
+                    c = str.Substring(m, 1);
+
+                    if (c == "A")
+                    {
+                        countArray[0, m] += 1;
+                    }
+                    else if (c == "C")
+                    {
+                        countArray[1, m] += 1;
+                    }
+                    else if (c == "G")
+                    {
+                        countArray[2, m] += 1;
+                    }
+                    else if (c == "T")
+                    {
+                        countArray[3, m] += 1;
+                    }   
+                }
+            }
+
+            for (int x = 0; x < NucleotideSize; x++)
+                for (int y = 0; y < motifLength; y++)
+                    profileArray[x, y] = countArray[x, y] / t;
+                    
+
+            return profileArray;
+        }
+
         static public string ProfileMostProbableKmer(string Text, int k, double[,] matrix)
         {
             string result = "";
             string pattern = "";
             string c = "";
             double probability = 1;
-            double highestProbabilty = 0;
+            double highestProbabilty = -1;
 
             for (int i = 0; i < Text.Length - k + 1; i++)
             {
@@ -142,6 +281,7 @@ namespace BioInformaticsConsoleApp
                 for (int m = 0; m < pattern.Length; m++)
                 {
                     c = pattern.Substring(m, 1);
+
                     if (c == "A")
                         probability *= matrix[0, m];
                     else if (c == "C")
@@ -159,8 +299,7 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
-
-            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
+//            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
             return result;
         }
 
