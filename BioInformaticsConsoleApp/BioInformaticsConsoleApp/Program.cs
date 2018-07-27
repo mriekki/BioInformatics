@@ -182,7 +182,7 @@ namespace BioInformaticsConsoleApp
             List<string> tmpMotifs = new List<string>();
             List<string> lowestMotifs = new List<string>();
             int tmpScore = 0;
-            int bestScore = 0;
+            int bestScore = int.MaxValue;
             int lowestScore = int.MaxValue;
          
 
