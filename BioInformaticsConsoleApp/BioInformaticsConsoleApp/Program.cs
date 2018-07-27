@@ -12,7 +12,7 @@ namespace BioInformaticsConsoleApp
 
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+            string inputFile = "..\\..\\..\\Data Files\\dataset_161_5.txt";
 
             string[] fileText = MyReadFile(inputFile);
             string[] dnaArray = new string[fileText.Length - 2];
@@ -180,6 +180,12 @@ namespace BioInformaticsConsoleApp
         {
             List<string> BestMotifs = new List<string>();
             List<string> tmpMotifs = new List<string>();
+            List<string> lowestMotifs = new List<string>();
+            int tmpScore = 0;
+            int bestScore = 0;
+            int lowestScore = int.MaxValue;
+         
+
             Random random = new Random();
 
 
@@ -200,16 +206,39 @@ namespace BioInformaticsConsoleApp
                     double[,] profileMatrix = Profile(tmpMotifs, true);
 
                     tmpMotifs = Motif(profileMatrix, Dna, k);
-                    if (Score(tmpMotifs) < Score(BestMotifs))
+                    tmpScore = Score(tmpMotifs);
+                    bestScore = Score(BestMotifs);
+
+                    if (tmpScore < bestScore)
                     {
                         BestMotifs.Clear();
                         foreach (string s in tmpMotifs)
                             BestMotifs.Add(s);
+
+                        if (tmpScore < lowestScore)
+                        {
+                            lowestScore = tmpScore;
+                            lowestMotifs.Clear();
+                            foreach (string s in tmpMotifs)
+                                lowestMotifs.Add(s);
+                        }
+
                     }
                     else
                         break;
                 }
+
+                BestMotifs.Clear();
+                foreach (string s in lowestMotifs)
+                    BestMotifs.Add(s);
+
             }
+
+            string tmp = "";
+
+            foreach (string s in BestMotifs)
+                tmp += s + "  ";
+
             return BestMotifs;
         }
 
