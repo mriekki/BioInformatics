@@ -10,27 +10,29 @@ namespace BioInformaticsConsoleApp
     {
         private const int NucleotideSize = 4;
 
+
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\dataset_161_5.txt";
+            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
 
             string[] fileText = MyReadFile(inputFile);
             string[] dnaArray = new string[fileText.Length - 2];
             string Text = "";
-//            string str1 = "";
-//            string str2 = "";
-//            string str3 = "";
-//            string str4 = "";
-//            int nResult = 0;
             int k = 0;
             int d = 0;
             int t = 0;
+            int N = 1;
             string strResult = "";
 
             // Set Method to run
-            string method = "RandominzedMotifSearch";
+            string method = "GibbsSampler";
 
 
+            if ("Random" == method)
+            {
+                double[] array = { .1, .2, .3, .2};
+                int index = Random(array);
+            }
 
             if ("GreedyMotifSearch" == method)
             {
@@ -62,6 +64,23 @@ namespace BioInformaticsConsoleApp
                 searchResult = RandominzedMotifSearch(strLine, k, t);
             }
 
+            if ("GibbsSampler" == method)
+            {
+                string[] strLine = new string[fileText.Length - 3];
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out t);
+                List<string> searchResult = new List<string>();
+                Int32.TryParse(fileText[2], out N);
+
+
+
+                for (int i = 3; i < fileText.Length; i++)
+                {
+                    strLine[i - 3] = fileText[i];
+                }
+
+                searchResult = GibbsSampler(strLine, k, t, N);
+            }
 
             if ("MedianString" == method)
             {
@@ -184,10 +203,8 @@ namespace BioInformaticsConsoleApp
             int tmpScore = 0;
             int bestScore = int.MaxValue;
             int lowestScore = int.MaxValue;
-         
 
             Random random = new Random();
-
 
             for (int a = 0; a < 1000; a++)
             {
@@ -199,13 +216,13 @@ namespace BioInformaticsConsoleApp
 
                     BestMotifs.Add(kmer);
                     tmpMotifs.Add(kmer);
-                }
+                }   
 
                 while (true)
                 {
                     double[,] profileMatrix = Profile(tmpMotifs, true);
 
-                    tmpMotifs = Motif(profileMatrix, Dna, k);
+                    tmpMotifs = Motif(profileMatrix, Dna, k, true);
                     tmpScore = Score(tmpMotifs);
                     bestScore = Score(BestMotifs);
 
@@ -222,7 +239,6 @@ namespace BioInformaticsConsoleApp
                             foreach (string s in tmpMotifs)
                                 lowestMotifs.Add(s);
                         }
-
                     }
                     else
                         break;
@@ -231,7 +247,133 @@ namespace BioInformaticsConsoleApp
                 BestMotifs.Clear();
                 foreach (string s in lowestMotifs)
                     BestMotifs.Add(s);
+            }
 
+            string tmp = "";
+
+            foreach (string s in BestMotifs)
+                tmp += s + "  ";
+
+            return BestMotifs;
+        }
+
+        static public int Random(double[] array)
+        {
+            int index = array.Length-1;     // Set to last index by default
+            double total = 0;
+            double[] distributionArray = new double[array.Length];
+            Random random = new Random();
+
+            foreach (double d in array)
+                total += d;
+
+            for (int i = 0; i < distributionArray.Length; i++)
+            {
+                if (i == 0)
+                    distributionArray[i] = (array[i] / total);
+                else
+                    distributionArray[i] = ((array[i] / total) + distributionArray[i-1]);
+            }
+
+            double dRan = random.NextDouble();
+            for (int a = 0; a < distributionArray.Length; a++)
+            {
+                if (dRan <= distributionArray[a])
+                {
+                    index = a;
+                    break;
+                }
+            }
+
+            return index;
+        }
+
+        static public List<string> GibbsSampler(string[] Dna, int k, int t, int N)
+        {
+            List<string> BestMotifs = new List<string>();
+            List<string> tmpMotifs = new List<string>();
+            List<string> lowestMotifs = new List<string>();
+            List<string> seedMotifs = new List<string>();
+
+            string selectedMotif = "";
+            int tmpScore = 0;
+            int ranMotif = 0;
+            int bestScore = int.MaxValue;
+            int lowestScore = int.MaxValue;
+//            int randomStarts = 20;
+//            int samples = 0;
+//
+            Random random = new Random();
+
+            for (int a = 0; a < N; a++)
+            {
+                for (int b = 0; b < 3; b++)
+                {
+                    seedMotifs = RandominzedMotifSearch(Dna, k, t);
+                    if (b == 0)
+                    {
+                        BestMotifs.Clear();
+                        foreach (string s in seedMotifs)
+                            BestMotifs.Add(s);
+                    }
+
+                    if (Score(seedMotifs) < Score(BestMotifs))
+                    {
+                        BestMotifs.Clear();
+                        foreach (string s in seedMotifs)
+                            BestMotifs.Add(s);
+                    }
+                }
+
+                if (a == 0)
+                {
+                    tmpMotifs.Clear();
+                    foreach (string s in BestMotifs)
+                        tmpMotifs.Add(s);
+
+                }
+
+                while (true)
+                {
+                    ranMotif = random.Next(0, t - 1);
+
+                    selectedMotif = tmpMotifs[ranMotif];
+
+                    tmpMotifs.RemoveAt(ranMotif);
+
+                    double[,] profileMatrix = Profile(tmpMotifs, true);
+
+                    selectedMotif = ProfileRandom(Dna[ranMotif], k, profileMatrix);
+
+                    tmpMotifs.Insert(0, selectedMotif);
+
+                    tmpScore = Score(tmpMotifs);
+                    bestScore = Score(BestMotifs);
+
+                    if (tmpScore < bestScore)
+                    {
+                        BestMotifs.Clear();
+                        foreach (string s in tmpMotifs)
+                            BestMotifs.Add(s);
+
+                        if (tmpScore < lowestScore)
+                        {
+                            lowestScore = tmpScore;
+                            lowestMotifs.Clear();
+                            foreach (string s in tmpMotifs)
+                                lowestMotifs.Add(s);
+                        }
+                    }
+                    else
+                        break;
+                }
+
+                if (lowestMotifs.Count > 0)
+                {
+                    BestMotifs.Clear();
+                    foreach (string s in lowestMotifs)
+                        BestMotifs.Add(s);
+                }
             }
 
             string tmp = "";
@@ -289,12 +431,15 @@ namespace BioInformaticsConsoleApp
             return BestMotifs;
         }
 
+        /*
         static public int Score(List<string> Motifs)
         {
             int motifLength = 1;
             int t = 0;
             int maxCount = 0;
             int totalScore = 0;
+            string consensusMotif = "";
+            char[] Nucleotides = { 'A', 'C', 'G', 'T' };
 
             if (Motifs.Count > 0)
             {
@@ -306,6 +451,10 @@ namespace BioInformaticsConsoleApp
             int[] scoreArray = new int[motifLength];
             string str = "";
             string c = "";
+            int aCount = 0;
+            int cCount = 0;
+            int gCount = 0;
+            int tCount = 0;
 
             for (int i = 0; i < Motifs.Count; i++)
             {
@@ -324,20 +473,169 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
+            int NucleoTideIndex = 0;
+
             for (int i = 0; i < motifLength; i++)
             {
+                NucleoTideIndex = 0;
                 for (int m = 0; m < NucleotideSize; m++)
                 {
                     if (countArray[m, i] > maxCount)
+                    {
                         maxCount = (int)countArray[m, i];
+                        NucleoTideIndex = m;
+                    }
                 }
+                consensusMotif += Nucleotides[NucleoTideIndex].ToString();
+
                 scoreArray[i] = t - maxCount;
                 totalScore += scoreArray[i];
                 maxCount = 0;
             }
 
+            Console.WriteLine("Score - Consensu Mofit = {0}", consensusMotif);
+            int distance = 0;
+            int lowestDistance = int.MaxValue;
+
+            foreach (string s in Motifs)
+            {
+                distance = HammingDistance(consensusMotif, s);
+                if (distance < lowestDistance)
+                    lowestDistance = distance;
+
+                Console.WriteLine(s, "  distance:  {0}", distance);
+            }
+
+            totalScore = lowestDistance;
+
+            return totalScore;
+        }   */
+
+
+        static public int Score(List<string> Motifs)
+        {
+            int motifLength = 1;
+            int t = 0;
+            int maxCount = 0;
+            int totalScore = 0;
+            string consensusMotif = "";
+            char[] Nucleotides = { 'A', 'C', 'G', 'T' };
+
+            if (Motifs.Count > 0)
+            {
+                motifLength = Motifs[0].Length;
+                t = Motifs.Count;
+            }
+
+            int[,] countArray = new int[NucleotideSize, motifLength];
+            int[] scoreArray = new int[motifLength];
+            string str = "";
+            string c = "";
+            string currentMotif = "";
+            char currentChar = ' ';
+
+            for (int i = 0; i < motifLength; i++)
+            {
+                for (int x = 0; x < t; x++)     // row of Motifs
+                {
+                    currentMotif = Motifs[x];
+                    currentChar = currentMotif[i];
+
+                    for (int m = 0; m < Nucleotides.Length; m++)
+                    {
+                        if (currentChar == Nucleotides[m])
+                        {
+                            countArray[m, i] += 1;
+                            break;
+                        }
+                    }
+                }
+
+                maxCount = 0;
+                int index = 0;
+                for (int b = 0; b < Nucleotides.Length; b++)
+                {
+                    if (countArray[b, i] > maxCount)
+                    {
+                        maxCount = countArray[b, i];
+                        index = b;
+                    }
+                }
+                currentChar = Nucleotides[index];
+                consensusMotif += currentChar.ToString();
+            }
+
+//            Console.WriteLine("Score - Consensu Mofit = {0}", consensusMotif);
+//            int distance = 0;
+//            int lowestDistance = int.MaxValue;
+            totalScore = 0;
+
+            foreach (string s in Motifs)
+            {
+                totalScore += HammingDistance(consensusMotif, s);
+
+//                Console.WriteLine(s, "  distance:  {0}", distance);
+            }
+
+  //          totalScore = distance;
+
             return totalScore;
         }
+
+        /*
+        static public int Score2(List<string> Motifs)
+        {
+            int motifLength = 1;
+            int t = 0;
+            int maxCount = 0;
+            int totalScore = 0;
+
+            if (Motifs.Count > 0)
+            {
+                motifLength = Motifs[0].Length;
+                t = Motifs.Count;
+            }
+
+            double[,] countArray = new double[NucleotideSize, t];
+            int[] scoreArray = new int[t];
+            string str = "";
+            string c = "";
+
+            for (int i = 0; i < t; i++)
+            {
+                str = Motifs[i];
+                for (int m = 0; m < motifLength; m++)
+                {
+                    c = str.Substring(m, 1);
+                    if (c == "A")
+                        countArray[0, i] += 1;
+                    else if (c == "C")
+                        countArray[1, i] += 1;
+                    else if (c == "G")
+                        countArray[2, i] += 1;
+                    else if (c == "T")
+                        countArray[3, i] += 1;
+                }
+            }
+
+            for (int a = 0; a < t; a++)
+            { 
+//                for (int i = 0; i < motifLength; i++)
+                {
+                    for (int m = 0; m < NucleotideSize; m++)
+                    {
+                        if (countArray[m, a] > maxCount)
+                            maxCount = (int)countArray[m, a];
+                    }
+                    scoreArray[a] = motifLength - maxCount;
+                    totalScore += scoreArray[a];
+                    maxCount = 0;
+                }
+            }
+
+            return totalScore;
+        }   */
+
 
         static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = false)
         {
@@ -398,9 +696,9 @@ namespace BioInformaticsConsoleApp
                     
 
             return profileArray;
-        }
+        }   
 
-        static public List<string> Motif(double[,] profile, string[] Dna, int k)
+        static public List<string> Motif(double[,] profile, string[] Dna, int k, bool bRandom = false)
         {
             List<string> motifs = new List<string>();
             string mostCommon = "";
@@ -414,13 +712,14 @@ namespace BioInformaticsConsoleApp
             return motifs;
         }
 
-        static public string ProfileMostProbableKmer(string Text, int k, double[,] matrix)
+         static public string ProfileMostProbableKmer(string Text, int k, double[,] matrix, bool bUseRandom = false)
         {
             string result = "";
             string pattern = "";
             string c = "";
             double probability = 1;
             double highestProbabilty = -1;
+            double[] probArray = new double[Text.Length - k + 1];
 
             for (int i = 0; i < Text.Length - k + 1; i++)
             {
@@ -440,6 +739,8 @@ namespace BioInformaticsConsoleApp
                         probability *= matrix[3, m];
                 }
 
+                probArray[i] = probability;
+
                 if (probability > highestProbabilty)
                 {
                     highestProbabilty = probability;
@@ -447,7 +748,59 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
+            if (bUseRandom)
+            {
+                int ranIndex = Random(probArray);
+                result = Text.Substring(ranIndex, k);
+            }
+
 //            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
+            return result;
+        }
+
+        static public string ProfileRandom(string Text, int k, double[,] matrix)
+        {
+            string result = "";
+            string origPattern = "";
+            int origKmerIndex = 0;
+            string pattern = "";
+            string c = "";
+            double probability = 1;
+            double highestProbabilty = -1;
+            double[] probArray = new double[Text.Length - k + 1];
+
+            for (int i = 0; i < Text.Length - k + 1; i++)
+            {
+                pattern = Text.Substring(i, k);
+                probability = 1;
+                for (int m = 0; m < pattern.Length; m++)
+                {
+                    c = pattern.Substring(m, 1);
+
+                    if (c == "A")
+                        probability *= matrix[0, m];
+                    else if (c == "C")
+                        probability *= matrix[1, m];
+                    else if (c == "G")
+                        probability *= matrix[2, m];
+                    else if (c == "T")
+                        probability *= matrix[3, m];
+                }
+
+                probArray[i] = probability;
+
+                if (probability > highestProbabilty)
+                {
+                    highestProbabilty = probability;
+                    origPattern = pattern;
+                    origKmerIndex = i;
+                }
+            }
+
+            int ranIndex = Random(probArray);
+            result = Text.Substring(ranIndex, k);
+
+            //            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
             return result;
         }
 
