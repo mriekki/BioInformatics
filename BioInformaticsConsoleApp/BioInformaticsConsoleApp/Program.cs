@@ -195,7 +195,7 @@ namespace BioInformaticsConsoleApp
         //          else
         //              return BestMotifs
         //===================================================================================================
-        static public List<string> RandominzedMotifSearch(string[] Dna, int k, int t)
+        static public List<string> RandominzedMotifSearch(string[] Dna, int k, int t, int N = 1000)
         {
             List<string> BestMotifs = new List<string>();
             List<string> tmpMotifs = new List<string>();
@@ -206,7 +206,7 @@ namespace BioInformaticsConsoleApp
 
             Random random = new Random();
 
-            for (int a = 0; a < 1000; a++)
+            for (int a = 0; a < N; a++)
             {
                 for (int i = 0; i < Dna.Length; i++)
                 {
@@ -300,16 +300,31 @@ namespace BioInformaticsConsoleApp
             int ranMotif = 0;
             int bestScore = int.MaxValue;
             int lowestScore = int.MaxValue;
-//            int randomStarts = 20;
-//            int samples = 0;
-//
+
             Random random = new Random();
+
+
+            seedMotifs = RandominzedMotifSearch(Dna, k, t, 500);
 
             for (int a = 0; a < N; a++)
             {
-                for (int b = 0; b < 3; b++)
+                for (int b = 0; b < 200; b++)
                 {
-                    seedMotifs = RandominzedMotifSearch(Dna, k, t);
+                    if (a > 0)
+                    {
+                        seedMotifs.Clear();
+
+                        for (int c = 0; c < Dna.Length; c++)
+                        {
+                            int length = Dna[c].Length;
+                            int ran = random.Next(0, length - k);
+                            string kmer = Dna[c].Substring(ran, k);
+
+                            seedMotifs.Add(kmer);
+                        }
+                    }
+
+//                    seedMotifs = RandominzedMotifSearch(Dna, k, t, 5);
                     if (b == 0)
                     {
                         BestMotifs.Clear();
@@ -375,6 +390,9 @@ namespace BioInformaticsConsoleApp
                         BestMotifs.Add(s);
                 }
             }
+
+
+            WriteListToFile("C:\\Temp\\Output.txt", BestMotifs);
 
             string tmp = "";
 
