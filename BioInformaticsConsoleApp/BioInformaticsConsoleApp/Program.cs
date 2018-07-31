@@ -13,9 +13,10 @@ namespace BioInformaticsConsoleApp
 
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
-
+//            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
+            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
             string[] fileText = MyReadFile(inputFile);
+
             string[] dnaArray = new string[fileText.Length - 2];
             string Text = "";
             int k = 0;
@@ -280,7 +281,9 @@ namespace BioInformaticsConsoleApp
             {
                 if (dRan <= distributionArray[a])
                 {
-                    index = a;
+                    index = a - 1;
+                    if (index < 0)
+                        index = 0;
                     break;
                 }
             }
@@ -304,13 +307,13 @@ namespace BioInformaticsConsoleApp
             Random random = new Random();
 
 
-            seedMotifs = RandominzedMotifSearch(Dna, k, t, 500);
+//            seedMotifs = RandominzedMotifSearch(Dna, k, t, 30);
 
             for (int a = 0; a < N; a++)
             {
-                for (int b = 0; b < 200; b++)
+                for (int b = 0; b < 300; b++)
                 {
-                    if (a > 0)
+ //                   if (a > 0)
                     {
                         seedMotifs.Clear();
 
@@ -595,65 +598,8 @@ namespace BioInformaticsConsoleApp
 //                Console.WriteLine(s, "  distance:  {0}", distance);
             }
 
-  //          totalScore = distance;
-
             return totalScore;
         }
-
-        /*
-        static public int Score2(List<string> Motifs)
-        {
-            int motifLength = 1;
-            int t = 0;
-            int maxCount = 0;
-            int totalScore = 0;
-
-            if (Motifs.Count > 0)
-            {
-                motifLength = Motifs[0].Length;
-                t = Motifs.Count;
-            }
-
-            double[,] countArray = new double[NucleotideSize, t];
-            int[] scoreArray = new int[t];
-            string str = "";
-            string c = "";
-
-            for (int i = 0; i < t; i++)
-            {
-                str = Motifs[i];
-                for (int m = 0; m < motifLength; m++)
-                {
-                    c = str.Substring(m, 1);
-                    if (c == "A")
-                        countArray[0, i] += 1;
-                    else if (c == "C")
-                        countArray[1, i] += 1;
-                    else if (c == "G")
-                        countArray[2, i] += 1;
-                    else if (c == "T")
-                        countArray[3, i] += 1;
-                }
-            }
-
-            for (int a = 0; a < t; a++)
-            { 
-//                for (int i = 0; i < motifLength; i++)
-                {
-                    for (int m = 0; m < NucleotideSize; m++)
-                    {
-                        if (countArray[m, a] > maxCount)
-                            maxCount = (int)countArray[m, a];
-                    }
-                    scoreArray[a] = motifLength - maxCount;
-                    totalScore += scoreArray[a];
-                    maxCount = 0;
-                }
-            }
-
-            return totalScore;
-        }   */
-
 
         static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = false)
         {
@@ -723,7 +669,7 @@ namespace BioInformaticsConsoleApp
  
             foreach (string str in Dna)
             {
-                mostCommon = ProfileMostProbableKmer(str, k, profile);
+                mostCommon = ProfileMostProbableKmer(str, k, profile, bRandom);
                 motifs.Add(mostCommon);
             }
 
@@ -1576,6 +1522,11 @@ namespace BioInformaticsConsoleApp
 
         static public void WriteListToFile(string fileName, List<string> strList)
         {
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
             using (System.IO.StreamWriter myfile = new System.IO.StreamWriter(fileName, true))
             {
                 try
