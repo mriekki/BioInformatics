@@ -13,8 +13,8 @@ namespace BioInformaticsConsoleApp
 
         private static void Main(string[] args)
         {
-            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
-//            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+//            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
+            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
             string[] fileText = MyReadFile(inputFile);
 
             string[] dnaArray = new string[fileText.Length - 2];
@@ -26,7 +26,7 @@ namespace BioInformaticsConsoleApp
             string strResult = "";
 
             // Set Method to run
-            string method = "GibbsSampler";
+            string method = "RandominzedMotifSearch";
 
 
             if ("Random" == method)
@@ -209,7 +209,7 @@ namespace BioInformaticsConsoleApp
 
             for (int a = 0; a < N; a++)
             {
-                for (int i = 0; i < Dna.Length; i++)
+               for (int i = 0; i < Dna.Length; i++)
                 {
                     int length = Dna[i].Length;
                     int ran = random.Next(0, length - k);
@@ -219,9 +219,20 @@ namespace BioInformaticsConsoleApp
                     tmpMotifs.Add(kmer);
                 }   
 
+/*                BestMotifs.Add("CCA");
+                BestMotifs.Add("CCT");
+                BestMotifs.Add("CTT");
+                BestMotifs.Add("TTG");
+
+                tmpMotifs.Add("CCA");
+                tmpMotifs.Add("CCT");
+                tmpMotifs.Add("CTT");
+                tmpMotifs.Add("TTG");   */
+
                 while (true)
                 {
-                    double[,] profileMatrix = Profile(tmpMotifs, true);
+                    double[,] profileMatrix = Profile(tmpMotifs, false);
+//                    double[,] profileMatrix = Profile(tmpMotifs, true);
 
                     tmpMotifs = Motif(profileMatrix, Dna, k, true);
                     tmpScore = Score(tmpMotifs);
@@ -511,7 +522,7 @@ namespace BioInformaticsConsoleApp
             return totalScore;
         }
 
-        static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = true)
+        static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = false)
         {
             int motifLength = 1;
             int t = 0;
