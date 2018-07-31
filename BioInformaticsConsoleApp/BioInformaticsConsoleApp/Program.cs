@@ -13,8 +13,8 @@ namespace BioInformaticsConsoleApp
 
         private static void Main(string[] args)
         {
-//            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
-            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
+//            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
             string[] fileText = MyReadFile(inputFile);
 
             string[] dnaArray = new string[fileText.Length - 2];
@@ -281,9 +281,7 @@ namespace BioInformaticsConsoleApp
             {
                 if (dRan <= distributionArray[a])
                 {
-                    index = a - 1;
-                    if (index < 0)
-                        index = 0;
+                    index = a;
                     break;
                 }
             }
@@ -306,14 +304,13 @@ namespace BioInformaticsConsoleApp
 
             Random random = new Random();
 
-
-//            seedMotifs = RandominzedMotifSearch(Dna, k, t, 30);
+            seedMotifs = RandominzedMotifSearch(Dna, k, t, 30);
 
             for (int a = 0; a < N; a++)
             {
-                for (int b = 0; b < 300; b++)
+                for (int b = 0; b < 100; b++)
                 {
- //                   if (a > 0)
+                    if (a > 0)
                     {
                         seedMotifs.Clear();
 
@@ -327,7 +324,6 @@ namespace BioInformaticsConsoleApp
                         }
                     }
 
-//                    seedMotifs = RandominzedMotifSearch(Dna, k, t, 5);
                     if (b == 0)
                     {
                         BestMotifs.Clear();
@@ -363,7 +359,7 @@ namespace BioInformaticsConsoleApp
 
                     selectedMotif = ProfileRandom(Dna[ranMotif], k, profileMatrix);
 
-                    tmpMotifs.Insert(0, selectedMotif);
+                    tmpMotifs.Insert(ranMotif, selectedMotif);
 
                     tmpScore = Score(tmpMotifs);
                     bestScore = Score(BestMotifs);
@@ -452,87 +448,6 @@ namespace BioInformaticsConsoleApp
             return BestMotifs;
         }
 
-        /*
-        static public int Score(List<string> Motifs)
-        {
-            int motifLength = 1;
-            int t = 0;
-            int maxCount = 0;
-            int totalScore = 0;
-            string consensusMotif = "";
-            char[] Nucleotides = { 'A', 'C', 'G', 'T' };
-
-            if (Motifs.Count > 0)
-            {
-                motifLength = Motifs[0].Length;
-                t = Motifs.Count;
-            }
-
-            double[,] countArray = new double[NucleotideSize, motifLength];
-            int[] scoreArray = new int[motifLength];
-            string str = "";
-            string c = "";
-            int aCount = 0;
-            int cCount = 0;
-            int gCount = 0;
-            int tCount = 0;
-
-            for (int i = 0; i < Motifs.Count; i++)
-            {
-                str = Motifs[i];
-                for (int m = 0; m < motifLength; m++)
-                {
-                    c = str.Substring(m, 1);
-                    if (c == "A")
-                        countArray[0, m] += 1;
-                    else if (c == "C")
-                        countArray[1, m] += 1;
-                    else if (c == "G")
-                        countArray[2, m] += 1;
-                    else if (c == "T")
-                        countArray[3, m] += 1;
-                }
-            }
-
-            int NucleoTideIndex = 0;
-
-            for (int i = 0; i < motifLength; i++)
-            {
-                NucleoTideIndex = 0;
-                for (int m = 0; m < NucleotideSize; m++)
-                {
-                    if (countArray[m, i] > maxCount)
-                    {
-                        maxCount = (int)countArray[m, i];
-                        NucleoTideIndex = m;
-                    }
-                }
-                consensusMotif += Nucleotides[NucleoTideIndex].ToString();
-
-                scoreArray[i] = t - maxCount;
-                totalScore += scoreArray[i];
-                maxCount = 0;
-            }
-
-            Console.WriteLine("Score - Consensu Mofit = {0}", consensusMotif);
-            int distance = 0;
-            int lowestDistance = int.MaxValue;
-
-            foreach (string s in Motifs)
-            {
-                distance = HammingDistance(consensusMotif, s);
-                if (distance < lowestDistance)
-                    lowestDistance = distance;
-
-                Console.WriteLine(s, "  distance:  {0}", distance);
-            }
-
-            totalScore = lowestDistance;
-
-            return totalScore;
-        }   */
-
-
         static public int Score(List<string> Motifs)
         {
             int motifLength = 1;
@@ -587,31 +502,30 @@ namespace BioInformaticsConsoleApp
             }
 
 //            Console.WriteLine("Score - Consensu Mofit = {0}", consensusMotif);
-//            int distance = 0;
-//            int lowestDistance = int.MaxValue;
+
             totalScore = 0;
 
             foreach (string s in Motifs)
-            {
                 totalScore += HammingDistance(consensusMotif, s);
-
-//                Console.WriteLine(s, "  distance:  {0}", distance);
-            }
 
             return totalScore;
         }
 
-        static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = false)
+        static public double[,] Profile(List<string> Motifs, bool bIncludePseudocounts = true)
         {
             int motifLength = 1;
             int t = 0;
             int pCount = 0;
-
+            int denominator = 0;
 
             if (Motifs.Count > 0)
             {
                 motifLength = Motifs[0].Length;
                 t = Motifs.Count;
+                if (bIncludePseudocounts)
+                    denominator = t * 2;        // Strange Denominator effect
+                else
+                    denominator = t;
             }
 
             double[,] profileArray = new double[NucleotideSize, motifLength];
@@ -621,7 +535,6 @@ namespace BioInformaticsConsoleApp
 
             if (bIncludePseudocounts == true)
             {
-                t += 1;
                 for (int a = 0; a < NucleotideSize; a++)
                     for (int b = 0; b < motifLength; b++)
                         countArray[a, b] = 1;
@@ -656,9 +569,8 @@ namespace BioInformaticsConsoleApp
 
             for (int x = 0; x < NucleotideSize; x++)
                 for (int y = 0; y < motifLength; y++)
-                    profileArray[x, y] = countArray[x, y] / t;
+                    profileArray[x, y] = countArray[x, y] / denominator;
                     
-
             return profileArray;
         }   
 
