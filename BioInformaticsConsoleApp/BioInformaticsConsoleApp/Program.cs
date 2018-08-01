@@ -219,20 +219,9 @@ namespace BioInformaticsConsoleApp
                     tmpMotifs.Add(kmer);
                 }   
 
-/*                BestMotifs.Add("CCA");
-                BestMotifs.Add("CCT");
-                BestMotifs.Add("CTT");
-                BestMotifs.Add("TTG");
-
-                tmpMotifs.Add("CCA");
-                tmpMotifs.Add("CCT");
-                tmpMotifs.Add("CTT");
-                tmpMotifs.Add("TTG");   */
-
                 while (true)
                 {
                     double[,] profileMatrix = Profile(tmpMotifs, false);
-//                    double[,] profileMatrix = Profile(tmpMotifs, true);
 
                     tmpMotifs = Motif(profileMatrix, Dna, k, true);
                     tmpScore = Score(tmpMotifs);

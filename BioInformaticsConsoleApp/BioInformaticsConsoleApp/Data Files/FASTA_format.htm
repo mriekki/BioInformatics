@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html class="client-nojs" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<title>FASTA format - Wikipedia</title>
+<script>document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, "$1client-js$2" );</script>
+<script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"FASTA_format","wgTitle":"FASTA format","wgCurRevisionId":845404542,"wgRevisionId":845404542,"wgArticleId":468001,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["All articles with unsourced statements","Articles with unsourced statements from March 2018","Bioinformatics","Biological sequence format"],"wgBreakFrames":false,"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgMonthNamesShort":["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"wgRelevantPageName":"FASTA_format","wgRelevantArticleId":468001,"wgRequestId":"W2BkiQpAICMAAB2oPVUAAACH","wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgFlaggedRevsParams":{"tags":{}},"wgStableRevisionId":null,"wgCategoryTreePageCategoryOptions":"{\"mode\":0,\"hideprefix\":20,\"showcount\":true,\"namespaces\":false}","wgWikiEditorEnabledModules":[],"wgBetaFeaturesFeatures":[],"wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true,"wgPopupsShouldSendModuleToUser":true,"wgPopupsConflictsWithNavPopupGadget":false,"wgVisualEditor":{"pageLanguageCode":"en","pageLanguageDir":"ltr","pageVariantFallbacks":"en","usePageImages":true,"usePageDescriptions":true},"wgMFExpandAllSectionsUserOption":true,"wgMFEnableFontChanger":true,"wgMFDisplayWikibaseDescriptions":{"search":true,"nearby":true,"watchlist":true,"tagline":false},"wgRelatedArticles":null,"wgRelatedArticlesUseCirrusSearch":true,"wgRelatedArticlesOnlyUseCirrusSearch":false,"wgULSCurrentAutonym":"English","wgNoticeProject":"wikipedia","wgCentralNoticeCookiesToDelete":[],"wgCentralNoticeCategoriesUsingLegacy":["Fundraising","fundraising"],"wgWikibaseItemId":"Q1593782","wgScoreNoteLanguages":{"arabic":"العربية","catalan":"català","deutsch":"Deutsch","english":"English","espanol":"español","italiano":"italiano","nederlands":"Nederlands","norsk":"norsk","portugues":"português","suomi":"suomi","svenska":"svenska","vlaams":"West-Vlams"},"wgScoreDefaultNoteLanguage":"nederlands","wgCentralAuthMobileDomain":false,"wgCodeMirrorEnabled":true,"wgVisualEditorToolbarScrollOffset":0,"wgVisualEditorUnsupportedEditParams":["undo","undoafter","veswitched"],"wgEditSubmitButtonLabelPublish":true});mw.loader.state({"ext.gadget.charinsert-styles":"ready","ext.globalCssJs.user.styles":"ready","ext.globalCssJs.site.styles":"ready","site.styles":"ready","noscript":"ready","user.styles":"ready","ext.globalCssJs.user":"ready","ext.globalCssJs.site":"ready","user":"ready","user.options":"ready","user.tokens":"loading","ext.cite.styles":"ready","ext.pygments":"ready","mediawiki.legacy.shared":"ready","mediawiki.legacy.commonPrint":"ready","mediawiki.toc.styles":"ready","wikibase.client.init":"ready","ext.visualEditor.desktopArticleTarget.noscript":"ready","ext.uls.interlanguage":"ready","ext.wikimediaBadges":"ready","mediawiki.skinning.interface":"ready","skins.vector.styles":"ready"});mw.loader.implement("user.tokens@1dqfd7l",function($,jQuery,require,module){/*@nomin*/mw.user.tokens.set({"editToken":"+\\","patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+});mw.loader.load(["ext.cite.a11y","site","mediawiki.page.startup","mediawiki.user","mediawiki.page.ready","jquery.tablesorter","mediawiki.toc","mediawiki.searchSuggest","ext.gadget.teahouse","ext.gadget.ReferenceTooltips","ext.gadget.watchlist-notice","ext.gadget.DRN-wizard","ext.gadget.charinsert","ext.gadget.refToolbar","ext.gadget.extra-toolbar-buttons","ext.gadget.switcher","ext.centralauth.centralautologin","mmv.head","mmv.bootstrap.autostart","ext.popups","ext.visualEditor.desktopArticleTarget.init","ext.visualEditor.targetLoader","ext.eventLogging.subscriber","ext.wikimediaEvents","ext.navigationTiming","ext.uls.eventlogger","ext.uls.init","ext.uls.compactlinks","ext.uls.interface","ext.3d","ext.centralNotice.geoIP","ext.centralNotice.startUp","skins.vector.js"]);});</script>
+<link rel="stylesheet" href="/w/load.php?debug=false&amp;lang=en&amp;modules=ext.cite.styles%7Cext.pygments%2CwikimediaBadges%7Cext.uls.interlanguage%7Cext.visualEditor.desktopArticleTarget.noscript%7Cmediawiki.legacy.commonPrint%2Cshared%7Cmediawiki.skinning.interface%7Cmediawiki.toc.styles%7Cskins.vector.styles%7Cwikibase.client.init&amp;only=styles&amp;skin=vector"/>
+<script async="" src="/w/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=vector"></script>
+<meta name="ResourceLoaderDynamicStyles" content=""/>
+<link rel="stylesheet" href="/w/load.php?debug=false&amp;lang=en&amp;modules=ext.gadget.charinsert-styles&amp;only=styles&amp;skin=vector"/>
+<link rel="stylesheet" href="/w/load.php?debug=false&amp;lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector"/>
+<meta name="generator" content="MediaWiki 1.32.0-wmf.14"/>
+<meta name="referrer" content="origin"/>
+<meta name="referrer" content="origin-when-crossorigin"/>
+<meta name="referrer" content="origin-when-cross-origin"/>
+<link rel="alternate" href="android-app://org.wikipedia/http/en.m.wikipedia.org/wiki/FASTA_format"/>
+<link rel="alternate" type="application/x-wiki" title="Edit this page" href="/w/index.php?title=FASTA_format&amp;action=edit"/>
+<link rel="edit" title="Edit this page" href="/w/index.php?title=FASTA_format&amp;action=edit"/>
+<link rel="apple-touch-icon" href="/static/apple-touch/wikipedia.png"/>
+<link rel="shortcut icon" href="/static/favicon/wikipedia.ico"/>
+<link rel="search" type="application/opensearchdescription+xml" href="/w/opensearch_desc.php" title="Wikipedia (en)"/>
+<link rel="EditURI" type="application/rsd+xml" href="//en.wikipedia.org/w/api.php?action=rsd"/>
+<link rel="license" href="//creativecommons.org/licenses/by-sa/3.0/"/>
+<link rel="canonical" href="https://en.wikipedia.org/wiki/FASTA_format"/>
+<link rel="dns-prefetch" href="//login.wikimedia.org"/>
+<link rel="dns-prefetch" href="//meta.wikimedia.org" />
+<!--[if lt IE 9]><script src="/w/load.php?debug=false&amp;lang=en&amp;modules=html5shiv&amp;only=scripts&amp;skin=vector&amp;sync=1"></script><![endif]-->
+</head>
+<body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-FASTA_format rootpage-FASTA_format skin-vector action-view">		<div id="mw-page-base" class="noprint"></div>
+		<div id="mw-head-base" class="noprint"></div>
+		<div id="content" class="mw-body" role="main">
+			<a id="top"></a>
+			<div id="siteNotice" class="mw-body-content"><!-- CentralNotice --></div><div class="mw-indicators mw-body-content">
+</div>
+<h1 id="firstHeading" class="firstHeading" lang="en">FASTA format</h1>			<div id="bodyContent" class="mw-body-content">
+				<div id="siteSub" class="noprint">From Wikipedia, the free encyclopedia</div>				<div id="contentSub"></div>
+				<div id="jump-to-nav"></div>				<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+				<a class="mw-jump-link" href="#p-search">Jump to search</a>
+				<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><div class="mw-parser-output"><table class="infobox" style="width:22em"><caption style="font-size:130%; padding-bottom:0.15em;">FASTA format</caption><tbody><tr><th scope="row" style="padding:0.2em 0;line-height:1.2em; padding-right:0.65em;">Developed&#160;by</th><td style="line-height:1.35em;">
+<a href="/wiki/David_J._Lipman" title="David J. Lipman">David J. Lipman</a><br /><a href="/wiki/William_Pearson_(scientist)" title="William Pearson (scientist)">William R. Pearson</a><sup id="cite_ref-rapid_1-0" class="reference"><a href="#cite_note-rapid-1">&#91;1&#93;</a></sup><sup id="cite_ref-improved_2-0" class="reference"><a href="#cite_note-improved-2">&#91;2&#93;</a></sup></td></tr><tr><th scope="row" style="padding:0.2em 0;line-height:1.2em; padding-right:0.65em;">Initial release</th><td style="line-height:1.35em;">
+1985</td></tr><tr><th scope="row" style="padding:0.2em 0;line-height:1.2em; padding-right:0.65em;">Type of format</th><td style="line-height:1.35em;">
+<a href="/wiki/Bioinformatics" title="Bioinformatics">Bioinformatics</a></td></tr><tr><th scope="row" style="padding:0.2em 0;line-height:1.2em; padding-right:0.65em;">Extended&#160;from</th><td style="line-height:1.35em;">
+<a href="/wiki/ASCII" title="ASCII">ASCII</a> for <a href="/wiki/FASTA" title="FASTA">FASTA</a></td></tr><tr><th scope="row" style="padding:0.2em 0;line-height:1.2em; padding-right:0.65em;">Extended&#160;to</th><td style="line-height:1.35em;">
+<a href="/wiki/FASTQ_format" title="FASTQ format">FASTQ format</a><sup id="cite_ref-fastq_3-0" class="reference"><a href="#cite_note-fastq-3">&#91;3&#93;</a></sup></td></tr><tr><th scope="row" style="padding:0.2em 0;line-height:1.2em; padding-right:0.65em;">Website</th><td style="line-height:1.35em;">
+<span class="url"><a rel="nofollow" class="external text" href="https://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml">www<wbr />.ncbi<wbr />.nlm<wbr />.nih<wbr />.gov<wbr />/BLAST<wbr />/fasta<wbr />.shtml</a></span></td></tr></tbody></table><p>In <a href="/wiki/Bioinformatics" title="Bioinformatics">bioinformatics</a>, <b>FASTA format</b> is a text-based <a href="/wiki/File_format" title="File format">format</a> for representing either <a href="/wiki/Nucleotide_sequence" class="mw-redirect" title="Nucleotide sequence">nucleotide sequences</a> or <a href="/wiki/Peptide_sequence" class="mw-redirect" title="Peptide sequence">peptide sequences</a>, in which nucleotides or <a href="/wiki/Amino_acid" title="Amino acid">amino acids</a> are represented using single-letter codes. The format also allows for sequence names and comments to precede the sequences. The format originates from the <a href="/wiki/FASTA" title="FASTA">FASTA</a> software package, but has now become a standard in the field of <a href="/wiki/Bioinformatics" title="Bioinformatics">bioinformatics</a>.<sup id="cite_ref-4" class="reference"><a href="#cite_note-4">&#91;4&#93;</a></sup>
+</p><p>The simplicity of FASTA format makes it easy to manipulate and parse sequences using text-processing tools and <a href="/wiki/Scripting_language" title="Scripting language">scripting languages</a> like the <a href="/wiki/R_(programming_language)" title="R (programming language)">R programming language</a>, <a href="/wiki/Python_(programming_language)" title="Python (programming language)">Python</a>, <a href="/wiki/Ruby_(programming_language)" title="Ruby (programming language)">Ruby</a>, and <a href="/wiki/Perl" title="Perl">Perl</a>.
+</p>
+<div id="toc" class="toc"><input type="checkbox" role="button" id="toctogglecheckbox" class="toctogglecheckbox" style="display:none" /><div class="toctitle" lang="en" dir="ltr"><h2>Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Original_format_&amp;_overview"><span class="tocnumber">1</span> <span class="toctext">Original format &amp; overview</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#Description_line"><span class="tocnumber">2</span> <span class="toctext">Description line</span></a>
+<ul>
+<li class="toclevel-2 tocsection-3"><a href="#NCBI_identifiers"><span class="tocnumber">2.1</span> <span class="toctext">NCBI identifiers</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-4"><a href="#Sequence_representation"><span class="tocnumber">3</span> <span class="toctext">Sequence representation</span></a></li>
+<li class="toclevel-1 tocsection-5"><a href="#FASTA_file"><span class="tocnumber">4</span> <span class="toctext">FASTA file</span></a>
+<ul>
+<li class="toclevel-2 tocsection-6"><a href="#Filename_extension"><span class="tocnumber">4.1</span> <span class="toctext">Filename extension</span></a></li>
+<li class="toclevel-2 tocsection-7"><a href="#Compression"><span class="tocnumber">4.2</span> <span class="toctext">Compression</span></a></li>
+<li class="toclevel-2 tocsection-8"><a href="#Encryption"><span class="tocnumber">4.3</span> <span class="toctext">Encryption</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-9"><a href="#Extended_Format"><span class="tocnumber">5</span> <span class="toctext">Extended Format</span></a></li>
+<li class="toclevel-1 tocsection-10"><a href="#Working_with_FASTA_files"><span class="tocnumber">6</span> <span class="toctext">Working with FASTA files</span></a></li>
+<li class="toclevel-1 tocsection-11"><a href="#References"><span class="tocnumber">7</span> <span class="toctext">References</span></a></li>
+</ul>
+</div>
+
+<h2><span id="Original_format_.26_overview"></span><span class="mw-headline" id="Original_format_&amp;_overview">Original format &amp; overview</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=1" title="Edit section: Original format &amp; overview">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>The original FASTA/<a href="/wiki/William_Pearson_(scientist)" title="William Pearson (scientist)">Pearson</a> format is described in the documentation for the <a href="/wiki/FASTA" title="FASTA">FASTA</a> suite of programs. It can be downloaded with any free distribution of FASTA (see fasta20.doc, fastaVN.doc or fastaVN.me—where VN is the Version Number).
+</p><p>In the original format, a sequence was represented as a series of lines, each of which was no longer than 120 characters and usually
+did not exceed 80 characters. This probably was to allow for preallocation of fixed line sizes in software: at the time most users relied on <a href="/wiki/Digital_Equipment_Corporation" title="Digital Equipment Corporation">Digital Equipment Corporation</a> (DEC) <a href="/wiki/VT220" title="VT220">VT220</a> (or compatible) terminals which could display 80 or 132 characters per line.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (March 2018)">citation needed</span></a></i>&#93;</sup> Most people preferred the bigger font in 80-character modes and so it became the recommended fashion to use 80 characters or less (often 70)
+in FASTA lines. Also, the width of a standard printed page is 70 to 80 characters (depending on the font).
+</p><p>The first line in a FASTA file started either with a "&gt;" (greater-than) symbol or, less frequently, a ";" (semicolon) and was taken as a comment. Subsequent lines starting with a semicolon would be ignored by software. Since the only comment used was the first, it quickly became used to hold a summary description of the sequence, often starting with a unique library accession number, and with time it has become commonplace to always use "&gt;" for the first line and to not use ";" comments (which would otherwise be ignored).
+</p><p>Following the initial line (used for a unique description of the sequence) is the actual sequence itself in standard
+one-letter character string. Anything other than a valid character would be ignored (including spaces, tabulators, asterisks, etc...). Originally it was also common to end the sequence with an "*" (asterisk) character (in analogy with use in PIR formatted sequences) and, for the same reason, to leave a blank line between the description and the sequence. A few sample sequences:
+</p>
+<div class="mw-highlight mw-content-ltr" dir="ltr"><pre><span></span><span class="go">;LCBO - Prolactin precursor - Bovine</span>
+<span class="go">; a sample sequence in FASTA format</span>
+<span class="go">MDSKGSSQKGSRLLLLLVVSNLLLCQGVVSTPVCPNGPGNCQVSLRDLFDRAVMVSHYIHDLSS</span>
+<span class="go">EMFNEFDKRYAQGKGFITMALNSCHTSSLPTPEDKEQAQQTHHEVLMSLILGLLRSWNDPLYHL</span>
+<span class="go">VTEVRGMKGAPDAILSRAIEIEEENKRLLEGMEMIFGQVIPGAKETEPYPVWSGLPSLQTKDED</span>
+<span class="go">ARYSAFYNLLHCLRRDSSKIDTYLKLLNCRIIYNNNC*</span>
+
+<span class="gp">&gt;</span>MCHU - Calmodulin - Human, rabbit, bovine, rat, and chicken
+<span class="go">ADQLTEEQIAEFKEAFSLFDKDGDGTITTKELGTVMRSLGQNPTEAELQDMINEVDADGNGTID</span>
+<span class="go">FPEFLTMMARKMKDTDSEEEIREAFRVFDKDGNGYISAAELRHVMTNLGEKLTDEEVDEMIREA</span>
+<span class="go">DIDGDGQVNYEEFVQMMTAK*</span>
+
+<span class="gp">&gt;</span>gi<span class="p">|</span><span class="m">5524211</span><span class="p">|</span>gb<span class="p">|</span>AAD44166.1<span class="p">|</span> cytochrome b <span class="o">[</span>Elephas maximus maximus<span class="o">]</span>
+<span class="go">LCLYTHIGRNIYYGSYLYSETWNTGIMLLLITMATAFMGYVLPWGQMSFWGATVITNLFSAIPYIGTNLV</span>
+<span class="go">EWIWGGFSVDKATLNRFFAFHFILPFTMVALAGVHLTFLHETGSNNPLGLTSDSDKIPFHPYYTIKDFLG</span>
+<span class="go">LLILILLLLLLALLSPDMLGDPDNHMPADPLNTPLHIKPEWYFLFAYAILRSVPNKLGGVLALFLSIVIL</span>
+<span class="go">GLMPFLHTSKHRSMMLRPLSQALFWTLTMDLLTLTWIGSQPVEYPYTIIGQMASILYFSIILAFLPIAGX</span>
+<span class="go">IENY</span>
+</pre></div>
+<p>A multiple sequence FASTA format would be obtained by concatenating several single sequence FASTA files in a common file (also known as multi-FASTA format). This does not imply a contradiction with the format as only the first line in a FASTA file may start with a ";" or "&gt;", hence forcing all subsequent sequences to start with a "&gt;" in order to be taken as different ones (and further forcing the exclusive reservation of "&gt;" for the sequence definition line). Thus, the examples above may as well be taken as a multisequence (i.e multi-FASTA) file if taken together.
+</p><p>Nowadays, modern bioinformatic programs that rely on the FASTA format expect the sequence headers to be preceded by "&gt;", and the actual sequence, while generally represented as "interleaved", i.e. on multiple lines as in the above example, may also be "sequential" when the full stretch is found on a single line. Users may often need to perform conversion between "Sequential" and "Interleaved" FASTA format to run different bioinformatic programs.
+</p>
+<h2><span class="mw-headline" id="Description_line">Description line</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=2" title="Edit section: Description line">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>The description line (defline) or header/identifier line, which begins with '&gt;', gives a name and/or a unique identifier for the sequence, and may also contain additional information. In a deprecated practice, the header line sometimes contained more than one header, separated by a ^A (Control-A) character. In the original <a href="/wiki/William_Pearson_(scientist)" title="William Pearson (scientist)">Pearson</a> FASTA format, one or more comments, distinguished by a semi-colon at the beginning of the line, may occur after the header. Some databases and bioinformatics applications do not recognize these comments and follow <a rel="nofollow" class="external text" href="https://www.ncbi.nlm.nih.gov/blast/fasta.shtml">the NCBI FASTA specification</a>. An example of a multiple sequence FASTA file follows:
+</p>
+<div class="mw-highlight mw-content-ltr" dir="ltr"><pre><span></span><span class="gp">&gt;</span>SEQUENCE_1
+<span class="go">MTEITAAMVKELRESTGAGMMDCKNALSETNGDFDKAVQLLREKGLGKAAKKADRLAAEG</span>
+<span class="go">LVSVKVSDDFTIAAMRPSYLSYEDLDMTFVENEYKALVAELEKENEERRRLKDPNKPEHK</span>
+<span class="go">IPQFASRKQLSDAILKEAEEKIKEELKAQGKPEKIWDNIIPGKMNSFIADNSQLDSKLTL</span>
+<span class="go">MGQFYVMDDKKTVEQVIAEKEKEFGGKIKIVEFICFEVGEGLEKKTEDFAAEVAAQL</span>
+<span class="gp">&gt;</span>SEQUENCE_2
+<span class="go">SATVSEINSETDFVAKNDQFIALTKDTTAHIQSNSLQSVEELHSSTINGVKFEEYLKSQI</span>
+<span class="go">ATIGENLVVRRFATLKAGANGVVNGYIHTNGRVGVVIAAACDSAEVASKSRDLLRQICMH</span>
+</pre></div>
+<h3><span class="mw-headline" id="NCBI_identifiers">NCBI identifiers</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=3" title="Edit section: NCBI identifiers">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<p>The <a href="/wiki/National_Center_for_Biotechnology_Information" title="National Center for Biotechnology Information">NCBI</a> defined a standard for the unique identifier used for the sequence (SeqID) in the header line. The <a href="/wiki/Formatdb" title="Formatdb">formatdb</a> <a href="/wiki/Man_page" title="Man page">man page</a> has this to say on the subject: "formatdb will automatically parse the SeqID and create indexes, but the database identifiers in the FASTA definition line must follow the conventions of the FASTA Defline Format." The following list describes the NCBI FASTA defined format, see <sup id="cite_ref-5" class="reference"><a href="#cite_note-5">&#91;5&#93;</a></sup>
+</p>
+<table class="wikitable sortable" style="border: 1px solid black; margin-bottom: 10px;">
+
+<tbody><tr>
+<th>Database</th>
+<th>Format
+</th></tr>
+<tr>
+<td>GenBank
+</td>
+<td><code>gb&#124;<i>accession</i>&#124;<i>locus</i></code>
+</td></tr>
+<tr>
+<td>EMBL Data Library
+</td>
+<td><code>emb&#124;<i>accession</i>&#124;<i>locus</i></code>
+</td></tr>
+<tr>
+<td>DDBJ, DNA Database of Japan
+</td>
+<td><code>dbj&#124;<i>accession</i>&#124;<i>locus</i></code>
+</td></tr>
+<tr>
+<td>NBRF PIR
+</td>
+<td><code>pir&#124;&#124;<i>entry</i></code>
+</td></tr>
+<tr>
+<td>Protein Research Foundation
+</td>
+<td><code>prf&#124;&#124;<i>name</i></code>
+</td></tr>
+<tr>
+<td>SWISS-PROT
+</td>
+<td><code>sp&#124;<i>accession</i>&#124;<i>entry name</i></code>
+</td></tr>
+<tr>
+<td>Brookhaven Protein Data Bank
+</td>
+<td><code>pdb&#124;<i>entry</i>&#124;<i>chain</i></code>
+</td></tr>
+<tr>
+<td>Patents
+</td>
+<td><code>pat&#124;country&#124;number</code>
+</td></tr>
+<tr>
+<td>GenInfo Backbone Id
+</td>
+<td><code>bbs&#124;number</code>
+</td></tr>
+<tr>
+<td>General database identifier
+</td>
+<td><code>gnl&#124;database&#124;identifier</code>
+</td></tr>
+<tr>
+<td>NCBI Reference Sequence
+</td>
+<td><code>ref&#124;accession&#124;locus</code>
+</td></tr>
+<tr>
+<td>Local Sequence identifier
+</td>
+<td><code>lcl&#124;identifier</code>
+</td></tr></tbody></table>
+<p>The vertical bars ("|") in the above list are not separators in the sense of the <a href="/wiki/Backus%E2%80%93Naur_form" title="Backus–Naur form">Backus–Naur form</a>, but are part of the format. Multiple identifiers can be concatenated, also separated by vertical bars.
+</p>
+<h2><span class="mw-headline" id="Sequence_representation">Sequence representation</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=4" title="Edit section: Sequence representation">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>Following the header line, the actual sequence is represented. Sequences may be <a href="/wiki/Primary_structure" class="mw-redirect" title="Primary structure">protein sequences</a> or <a href="/wiki/Nucleic_acid" title="Nucleic acid">nucleic acid</a> sequences, and they can contain gaps or alignment characters (see <a href="/wiki/Sequence_alignment" title="Sequence alignment">sequence alignment</a>). Sequences are expected to be represented in the standard IUB/IUPAC <a href="/wiki/Amino_acid" title="Amino acid">amino acid</a> and <a href="/wiki/Nucleic_acid" title="Nucleic acid">nucleic acid</a> codes, with these exceptions: lower-case letters are accepted and are mapped into upper-case; a single hyphen or dash can be used to represent a gap character; and in amino acid sequences, U and * are acceptable letters (see below). Numerical digits are not allowed but are used in some databases to indicate the position in the sequence. The nucleic acid codes supported are:<sup id="cite_ref-6" class="reference"><a href="#cite_note-6">&#91;6&#93;</a></sup><sup id="cite_ref-7" class="reference"><a href="#cite_note-7">&#91;7&#93;</a></sup>
+</p>
+<table class="wikitable sortable" style="border:solid 1px black;">
+<tbody><tr>
+<th>Nucleic Acid Code
+</th>
+<th>Meaning
+</th>
+<th>Mnemonic
+</th></tr>
+<tr>
+<td>A
+</td>
+<td>A
+</td>
+<td><a href="/wiki/Adenine" title="Adenine"><b>A</b>denine</a>
+</td></tr>
+<tr>
+<td>C
+</td>
+<td>C
+</td>
+<td><a href="/wiki/Cytosine" title="Cytosine"><b>C</b>ytosine</a>
+</td></tr>
+<tr>
+<td>G
+</td>
+<td>G
+</td>
+<td><a href="/wiki/Guanine" title="Guanine"><b>G</b>uanine</a>
+</td></tr>
+<tr>
+<td>T
+</td>
+<td>T
+</td>
+<td><a href="/wiki/Thymine" title="Thymine"><b>T</b>hymine</a>
+</td></tr>
+<tr>
+<td>U
+</td>
+<td>U
+</td>
+<td><a href="/wiki/Uracil" title="Uracil"><b>U</b>racil</a>
+</td></tr>
+<tr>
+<td>R
+</td>
+<td>A or G
+</td>
+<td><a href="/wiki/Purine" title="Purine">pu<b>R</b>ine</a>
+</td></tr>
+<tr>
+<td>Y
+</td>
+<td>C, T or U
+</td>
+<td><a href="/wiki/Pyrimidine" title="Pyrimidine">p<b>Y</b>rimidines</a>
+</td></tr>
+<tr>
+<td>K
+</td>
+<td>G, T or U
+</td>
+<td>bases which are <a href="/wiki/Ketone" title="Ketone"><b>K</b>etones</a>
+</td></tr>
+<tr>
+<td>M
+</td>
+<td>A or C
+</td>
+<td>bases with <a href="/wiki/Amino" class="mw-redirect" title="Amino">a<b>M</b>ino groups</a>
+</td></tr>
+<tr>
+<td>S
+</td>
+<td>C or G
+</td>
+<td><b>S</b>trong interaction
+</td></tr>
+<tr>
+<td>W
+</td>
+<td>A, T or U
+</td>
+<td><b>W</b>eak interaction
+</td></tr>
+<tr>
+<td>B
+</td>
+<td>not A (i.e. C, G, T or U)
+</td>
+<td><b>B</b> comes after A
+</td></tr>
+<tr>
+<td>D
+</td>
+<td>not C (i.e. A, G, T or U)
+</td>
+<td><b>D</b> comes after C
+</td></tr>
+<tr>
+<td>H
+</td>
+<td>not G (i.e., A, C, T or U)
+</td>
+<td><b>H</b> comes after G
+</td></tr>
+<tr>
+<td>V
+</td>
+<td>neither T nor U (i.e. A, C or G)
+</td>
+<td><b>V</b> comes after U
+</td></tr>
+<tr>
+<td>N
+</td>
+<td>A C G T U
+</td>
+<td><b>N</b>ucleic acid
+</td></tr>
+<tr>
+<td>-
+</td>
+<td>gap of indeterminate length
+</td>
+<td>
+</td></tr></tbody></table>
+<p>The amino acid codes supported (22 amino acids and 3 special codes) are:
+</p>
+<table class="wikitable sortable" style="border:solid 1px black;">
+<tbody><tr>
+<th>Amino Acid Code
+</th>
+<th>Meaning
+</th></tr>
+<tr>
+<td>A
+</td>
+<td><a href="/wiki/Alanine" title="Alanine">Alanine</a>
+</td></tr>
+<tr>
+<td>B
+</td>
+<td><a href="/wiki/Aspartic_acid" title="Aspartic acid">Aspartic acid</a> (D) or <a href="/wiki/Asparagine" title="Asparagine">Asparagine</a> (N)
+</td></tr>
+<tr>
+<td>C
+</td>
+<td><a href="/wiki/Cysteine" title="Cysteine">Cysteine</a>
+</td></tr>
+<tr>
+<td>D
+</td>
+<td><a href="/wiki/Aspartic_acid" title="Aspartic acid">Aspartic acid</a>
+</td></tr>
+<tr>
+<td>E
+</td>
+<td><a href="/wiki/Glutamic_acid" title="Glutamic acid">Glutamic acid</a>
+</td></tr>
+<tr>
+<td>F
+</td>
+<td><a href="/wiki/Phenylalanine" title="Phenylalanine">Phenylalanine</a>
+</td></tr>
+<tr>
+<td>G
+</td>
+<td><a href="/wiki/Glycine" title="Glycine">Glycine</a>
+</td></tr>
+<tr>
+<td>H
+</td>
+<td><a href="/wiki/Histidine" title="Histidine">Histidine</a>
+</td></tr>
+<tr>
+<td>I
+</td>
+<td><a href="/wiki/Isoleucine" title="Isoleucine">Isoleucine</a>
+</td></tr>
+<tr>
+<td>J
+</td>
+<td><a href="/wiki/Leucine" title="Leucine">Leucine</a> (L) or <a href="/wiki/Isoleucine" title="Isoleucine">Isoleucine</a> (I)
+</td></tr>
+<tr>
+<td>K
+</td>
+<td><a href="/wiki/Lysine" title="Lysine">Lysine</a>
+</td></tr>
+<tr>
+<td>L
+</td>
+<td><a href="/wiki/Leucine" title="Leucine">Leucine</a>
+</td></tr>
+<tr>
+<td>M
+</td>
+<td><a href="/wiki/Methionine" title="Methionine">Methionine</a>
+</td></tr>
+<tr>
+<td>N
+</td>
+<td><a href="/wiki/Asparagine" title="Asparagine">Asparagine</a>
+</td></tr>
+<tr>
+<td>O
+</td>
+<td><a href="/wiki/Pyrrolysine" title="Pyrrolysine">Pyrrolysine</a>
+</td></tr>
+<tr>
+<td>P
+</td>
+<td><a href="/wiki/Proline" title="Proline">Proline</a>
+</td></tr>
+<tr>
+<td>Q
+</td>
+<td><a href="/wiki/Glutamine" title="Glutamine">Glutamine</a>
+</td></tr>
+<tr>
+<td>R
+</td>
+<td><a href="/wiki/Arginine" title="Arginine">Arginine</a>
+</td></tr>
+<tr>
+<td>S
+</td>
+<td><a href="/wiki/Serine" title="Serine">Serine</a>
+</td></tr>
+<tr>
+<td>T
+</td>
+<td><a href="/wiki/Threonine" title="Threonine">Threonine</a>
+</td></tr>
+<tr>
+<td>U
+</td>
+<td><a href="/wiki/Selenocysteine" title="Selenocysteine">Selenocysteine</a>
+</td></tr>
+<tr>
+<td>V
+</td>
+<td><a href="/wiki/Valine" title="Valine">Valine</a>
+</td></tr>
+<tr>
+<td>W
+</td>
+<td><a href="/wiki/Tryptophan" title="Tryptophan">Tryptophan</a>
+</td></tr>
+<tr>
+<td>Y
+</td>
+<td><a href="/wiki/Tyrosine" title="Tyrosine">Tyrosine</a>
+</td></tr>
+<tr>
+<td>Z
+</td>
+<td><a href="/wiki/Glutamic_acid" title="Glutamic acid">Glutamic acid</a> (E) or <a href="/wiki/Glutamine" title="Glutamine">Glutamine</a> (Q)
+</td></tr>
+<tr>
+<td>X
+</td>
+<td>any
+</td></tr>
+<tr>
+<td>*
+</td>
+<td>translation stop
+</td></tr>
+<tr>
+<td>-
+</td>
+<td>gap of indeterminate length
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="FASTA_file">FASTA file</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=5" title="Edit section: FASTA file">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<h3><span class="mw-headline" id="Filename_extension">Filename extension</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=6" title="Edit section: Filename extension">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<p>There is no standard <a href="/wiki/Filename_extension" title="Filename extension">filename extension</a> for a text file containing FASTA formatted sequences. The table below shows each extension and its respective meaning.
+</p>
+<table class="wikitable sortable" style="border:solid 1px black;">
+<tbody><tr>
+<th>Extension
+</th>
+<th>Meaning
+</th>
+<th>Notes
+</th></tr>
+<tr>
+<td>fasta
+</td>
+<td>generic fasta
+</td>
+<td>Any generic fasta file.  Other extensions can be fas, fa, seq, fsa
+</td></tr>
+<tr>
+<td>fna
+</td>
+<td>fasta nucleic acid
+</td>
+<td>Used generically to specify nucleic acids.
+</td></tr>
+<tr>
+<td>ffn
+</td>
+<td>FASTA nucleotide of gene regions
+</td>
+<td>Contains coding regions for a genome.
+</td></tr>
+<tr>
+<td>faa
+</td>
+<td>fasta amino acid
+</td>
+<td>Contains amino acids.  A multiple protein fasta file can have the more specific extension mpfa.
+</td></tr>
+<tr>
+<td>frn
+</td>
+<td>FASTA non-coding RNA
+</td>
+<td>Contains non-coding RNA regions for a genome, in DNA alphabet e.g. tRNA, rRNA
+</td></tr>
+</tbody></table>
+<h3><span class="mw-headline" id="Compression">Compression</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=7" title="Edit section: Compression">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<p>The compression of FASTA files requires a specific compressor to handle both channels of information: identifiers and sequence. For improved compression results, these are mainly divided in two streams where the compression is made assuming independence. For example, the algorithm MFCompress <sup id="cite_ref-MFCompress_8-0" class="reference"><a href="#cite_note-MFCompress-8">&#91;8&#93;</a></sup> performs lossless compression of these files using context modelling and arithmetic encoding. For a benchmark on FASTA files compression algorithms, see <sup id="cite_ref-Morteza_9-0" class="reference"><a href="#cite_note-Morteza-9">&#91;9&#93;</a></sup>.
+</p>
+<h3><span class="mw-headline" id="Encryption">Encryption</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=8" title="Edit section: Encryption">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<p>The encryption of FASTA files has been mostly addressed with a specific encryption tool: Cryfa.<sup id="cite_ref-CRYFA_10-0" class="reference"><a href="#cite_note-CRYFA-10">&#91;10&#93;</a></sup> Cryfa uses AES encryption and enables to compact data besides encryption. It can also address FASTQ files.
+</p>
+<h2><span class="mw-headline" id="Extended_Format">Extended Format</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=9" title="Edit section: Extended Format">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>FASTA format was extended by <a href="/wiki/FASTQ" class="mw-redirect" title="FASTQ">FASTQ</a> format from the <a href="/wiki/Sanger_Centre" class="mw-redirect" title="Sanger Centre">Sanger Centre</a> in Cambridge.<sup id="cite_ref-fastq_3-1" class="reference"><a href="#cite_note-fastq-3">&#91;3&#93;</a></sup>
+</p>
+<h2><span class="mw-headline" id="Working_with_FASTA_files">Working with FASTA files</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=10" title="Edit section: Working with FASTA files">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>A plethora of user-friendly scripts are available from the community to perform FASTA file manipulations. Online toolbox are also available such as FaBox<sup id="cite_ref-FaBox_11-0" class="reference"><a href="#cite_note-FaBox-11">&#91;11&#93;</a></sup> or the FASTX-Toolkit (<a rel="nofollow" class="external free" href="http://hannonlab.cshl.edu/fastx_toolkit/">http://hannonlab.cshl.edu/fastx_toolkit/</a>) within Galaxy servers<sup id="cite_ref-Galaxyserver_12-0" class="reference"><a href="#cite_note-Galaxyserver-12">&#91;12&#93;</a></sup>. For instance, these can be used to segregate sequence headers/identifiers, rename them, shorten them, or extract sequences of interest from large FASTA files based on a list of wanted identifiers (among other available functions). A tree-based approach to sorting multi-FASTA files (TREE2FASTA<sup id="cite_ref-tree2fasta_13-0" class="reference"><a href="#cite_note-tree2fasta-13">&#91;13&#93;</a></sup>) also exists based on the coloring and/or annotation of sequence of interest in the FigTree viewer (<a rel="nofollow" class="external free" href="http://tree.bio.ed.ac.uk/software/figtree/">http://tree.bio.ed.ac.uk/software/figtree/</a>).
+</p><p>Several online format converters exist to rapidly reformat multi-FASTA files to different formats (e.g. NEXUS, PHYLIP) for their use with different phylogenetic programs (e.g. such as the converter available on phylogeny.fr<sup id="cite_ref-phylodotfr_14-0" class="reference"><a href="#cite_note-phylodotfr-14">&#91;14&#93;</a></sup>; <a rel="nofollow" class="external free" href="http://phylogeny.lirmm.fr/phylo_cgi/data_converter.cgi">http://phylogeny.lirmm.fr/phylo_cgi/data_converter.cgi</a>).
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=FASTA_format&amp;action=edit&amp;section=11" title="Edit section: References">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<div class="reflist columns references-column-width" style="-moz-column-width: 35em; -webkit-column-width: 35em; column-width: 35em; list-style-type: decimal;">
+<ol class="references">
+<li id="cite_note-rapid-1"><span class="mw-cite-backlink"><b><a href="#cite_ref-rapid_1-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Lipman DJ, Pearson WR (March 1985). "Rapid and sensitive protein similarity searches". <i>Science</i>. <b>227</b> (4693): 1435–41. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1126/science.2983426">10.1126/science.2983426</a>. <a href="/wiki/PubMed_Identifier" class="mw-redirect" title="PubMed Identifier">PMID</a>&#160;<a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pubmed/2983426">2983426</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Science&amp;rft.atitle=Rapid+and+sensitive+protein+similarity+searches&amp;rft.volume=227&amp;rft.issue=4693&amp;rft.pages=1435-41&amp;rft.date=1985-03&amp;rft_id=info%3Adoi%2F10.1126%2Fscience.2983426&amp;rft_id=info%3Apmid%2F2983426&amp;rft.aulast=Lipman&amp;rft.aufirst=DJ&amp;rft.au=Pearson%2C+WR&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span> <span style="position:relative; top: -2px;"><a href="/wiki/Paywall" title="closed access publication – behind paywall"><img alt="closed access publication – behind paywall" src="//upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Closed_Access_logo_alternative.svg/9px-Closed_Access_logo_alternative.svg.png" width="9" height="14" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Closed_Access_logo_alternative.svg/14px-Closed_Access_logo_alternative.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Closed_Access_logo_alternative.svg/18px-Closed_Access_logo_alternative.svg.png 2x" data-file-width="640" data-file-height="1000" /></a></span></span>
+</li>
+<li id="cite_note-improved-2"><span class="mw-cite-backlink"><b><a href="#cite_ref-improved_2-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Pearson WR, Lipman DJ (April 1988). <a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pmc/articles/PMC280013">"Improved tools for biological sequence comparison"</a>. <i>Proceedings of the National Academy of Sciences of the United States of America</i>. <b>85</b> (8): 2444–8. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1073/pnas.85.8.2444">10.1073/pnas.85.8.2444</a>. <a href="/wiki/PubMed_Central" title="PubMed Central">PMC</a>&#160;<span class="plainlinks"><a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pmc/articles/PMC280013">280013</a>&#8239;<img alt="Freely accessible" src="//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/9px-Lock-green.svg.png" title="Freely accessible" width="9" height="14" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/14px-Lock-green.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/18px-Lock-green.svg.png 2x" data-file-width="512" data-file-height="813" /></span>. <a href="/wiki/PubMed_Identifier" class="mw-redirect" title="PubMed Identifier">PMID</a>&#160;<a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pubmed/3162770">3162770</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Proceedings+of+the+National+Academy+of+Sciences+of+the+United+States+of+America&amp;rft.atitle=Improved+tools+for+biological+sequence+comparison&amp;rft.volume=85&amp;rft.issue=8&amp;rft.pages=2444-8&amp;rft.date=1988-04&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC280013&amp;rft_id=info%3Apmid%2F3162770&amp;rft_id=info%3Adoi%2F10.1073%2Fpnas.85.8.2444&amp;rft.aulast=Pearson&amp;rft.aufirst=WR&amp;rft.au=Lipman%2C+DJ&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC280013&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-fastq-3"><span class="mw-cite-backlink">^ <a href="#cite_ref-fastq_3-0"><sup><i><b>a</b></i></sup></a> <a href="#cite_ref-fastq_3-1"><sup><i><b>b</b></i></sup></a></span> <span class="reference-text"><cite class="citation journal">Cock PJ, Fields CJ, Goto N, Heuer ML, Rice PM (April 2010). <a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pmc/articles/PMC2847217">"The Sanger FASTQ file format for sequences with quality scores, and the Solexa/Illumina FASTQ variants"</a>. <i>Nucleic Acids Research</i>. <b>38</b> (6): 1767–71. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1093/nar/gkp1137">10.1093/nar/gkp1137</a>. <a href="/wiki/PubMed_Central" title="PubMed Central">PMC</a>&#160;<span class="plainlinks"><a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pmc/articles/PMC2847217">2847217</a>&#8239;<img alt="Freely accessible" src="//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/9px-Lock-green.svg.png" title="Freely accessible" width="9" height="14" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/14px-Lock-green.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/18px-Lock-green.svg.png 2x" data-file-width="512" data-file-height="813" /></span>. <a href="/wiki/PubMed_Identifier" class="mw-redirect" title="PubMed Identifier">PMID</a>&#160;<a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pubmed/20015970">20015970</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Nucleic+Acids+Research&amp;rft.atitle=The+Sanger+FASTQ+file+format+for+sequences+with+quality+scores%2C+and+the+Solexa%2FIllumina+FASTQ+variants&amp;rft.volume=38&amp;rft.issue=6&amp;rft.pages=1767-71&amp;rft.date=2010-04&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC2847217&amp;rft_id=info%3Apmid%2F20015970&amp;rft_id=info%3Adoi%2F10.1093%2Fnar%2Fgkp1137&amp;rft.aulast=Cock&amp;rft.aufirst=PJ&amp;rft.au=Fields%2C+CJ&amp;rft.au=Goto%2C+N&amp;rft.au=Heuer%2C+ML&amp;rft.au=Rice%2C+PM&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC2847217&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-4"><span class="mw-cite-backlink"><b><a href="#cite_ref-4">^</a></b></span> <span class="reference-text"><cite class="citation web"><a rel="nofollow" class="external text" href="http://zhanglab.ccmb.med.umich.edu/FASTA/">"What is FASTA Format?"</a>. <i>zhanglab.ccmb.med.umich.edu</i>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=zhanglab.ccmb.med.umich.edu&amp;rft.atitle=What+is+FASTA+Format%3F&amp;rft_id=http%3A%2F%2Fzhanglab.ccmb.med.umich.edu%2FFASTA%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span> explains the FASTA format</span>
+</li>
+<li id="cite_note-5"><span class="mw-cite-backlink"><b><a href="#cite_ref-5">^</a></b></span> <span class="reference-text"><cite class="citation web"><a rel="nofollow" class="external text" href="https://www.ncbi.nlm.nih.gov/books/NBK21097/">"The NCBI Handbook", Chapter 16, The BLAST Sequence Analysis Tool"</a>. <i>www.ncbi.nlm.nih.gov</i>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=www.ncbi.nlm.nih.gov&amp;rft.atitle=The+NCBI+Handbook%22%2C+Chapter+16%2C+The+BLAST+Sequence+Analysis+Tool&amp;rft_id=https%3A%2F%2Fwww.ncbi.nlm.nih.gov%2Fbooks%2FNBK21097%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-6"><span class="mw-cite-backlink"><b><a href="#cite_ref-6">^</a></b></span> <span class="reference-text">
+<cite class="citation web">Tao Tao (2011-08-24). <a rel="nofollow" class="external text" href="https://www.ncbi.nlm.nih.gov/staff/tao/tools/tool_lettercode.html">"Single Letter Codes for Nucleotides"</a>. <i>[NCBI Learning Center]</i>. <a href="/wiki/National_Center_for_Biotechnology_Information" title="National Center for Biotechnology Information">National Center for Biotechnology Information</a><span class="reference-accessdate">. Retrieved <span class="nowrap">2012-03-15</span></span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=%5BNCBI+Learning+Center%5D&amp;rft.atitle=Single+Letter+Codes+for+Nucleotides&amp;rft.date=2011-08-24&amp;rft.au=Tao+Tao&amp;rft_id=https%3A%2F%2Fwww.ncbi.nlm.nih.gov%2Fstaff%2Ftao%2Ftools%2Ftool_lettercode.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-7"><span class="mw-cite-backlink"><b><a href="#cite_ref-7">^</a></b></span> <span class="reference-text"><cite class="citation web"><a rel="nofollow" class="external text" href="https://web.archive.org/web/20110811073845/http://www.dna.affrc.go.jp/misc/MPsrch/InfoIUPAC.html">"IUPAC code table"</a>. NIAS DNA Bank. Archived from <a rel="nofollow" class="external text" href="http://www.dna.affrc.go.jp/misc/MPsrch/InfoIUPAC.html">the original</a> on 2011-08-11.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=IUPAC+code+table&amp;rft.pub=NIAS+DNA+Bank&amp;rft_id=http%3A%2F%2Fwww.dna.affrc.go.jp%2Fmisc%2FMPsrch%2FInfoIUPAC.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-MFCompress-8"><span class="mw-cite-backlink"><b><a href="#cite_ref-MFCompress_8-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Pinho AJ, Pratas D (January 2014). <a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pmc/articles/PMC3866555">"MFCompress: a compression tool for FASTA and multi-FASTA data"</a>. <i>Bioinformatics</i>. <b>30</b> (1): 117–8. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1093/bioinformatics/btt594">10.1093/bioinformatics/btt594</a>. <a href="/wiki/PubMed_Central" title="PubMed Central">PMC</a>&#160;<span class="plainlinks"><a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pmc/articles/PMC3866555">3866555</a>&#8239;<img alt="Freely accessible" src="//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/9px-Lock-green.svg.png" title="Freely accessible" width="9" height="14" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/14px-Lock-green.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/18px-Lock-green.svg.png 2x" data-file-width="512" data-file-height="813" /></span>. <a href="/wiki/PubMed_Identifier" class="mw-redirect" title="PubMed Identifier">PMID</a>&#160;<a rel="nofollow" class="external text" href="//www.ncbi.nlm.nih.gov/pubmed/24132931">24132931</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Bioinformatics&amp;rft.atitle=MFCompress%3A+a+compression+tool+for+FASTA+and+multi-FASTA+data&amp;rft.volume=30&amp;rft.issue=1&amp;rft.pages=117-8&amp;rft.date=2014-01&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC3866555&amp;rft_id=info%3Apmid%2F24132931&amp;rft_id=info%3Adoi%2F10.1093%2Fbioinformatics%2Fbtt594&amp;rft.aulast=Pinho&amp;rft.aufirst=AJ&amp;rft.au=Pratas%2C+D&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC3866555&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-Morteza-9"><span class="mw-cite-backlink"><b><a href="#cite_ref-Morteza_9-0">^</a></b></span> <span class="reference-text">M. Hosseini, D. Pratas, and A. Pinho. 2016. A survey on data compression methods for biological sequences. <i>Information</i> <b>7</b>(4):(2016): 56</span>
+</li>
+<li id="cite_note-CRYFA-10"><span class="mw-cite-backlink"><b><a href="#cite_ref-CRYFA_10-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Pratas D, Hosseini M, Pinho A (2017). "Cryfa: a tool to compact and encrypt FASTA files". <i>11'th International Conference on Practical Applications of Computational Biology &amp; Bioinformatics (PACBB), Springer</i>: 305–312. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1007/978-3-319-60816-7_37">10.1007/978-3-319-60816-7_37</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=11%27th+International+Conference+on+Practical+Applications+of+Computational+Biology+%26+Bioinformatics+%28PACBB%29%2C+Springer&amp;rft.atitle=Cryfa%3A+a+tool+to+compact+and+encrypt+FASTA+files.&amp;rft.pages=305-312&amp;rft.date=2017&amp;rft_id=info%3Adoi%2F10.1007%2F978-3-319-60816-7_37&amp;rft.aulast=Pratas&amp;rft.aufirst=D&amp;rft.au=Hosseini%2C+M&amp;rft.au=Pinho%2C+A&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-FaBox-11"><span class="mw-cite-backlink"><b><a href="#cite_ref-FaBox_11-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Villesen P (April 2007). "FaBox: an online toolbox for fasta sequences". <i>Molecular Ecology Resources</i>. <b>7</b>: 965–968. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1111/j.1471-8286.2007.01821.x">10.1111/j.1471-8286.2007.01821.x</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Molecular+Ecology+Resources&amp;rft.atitle=FaBox%3A+an+online+toolbox+for+fasta+sequences&amp;rft.volume=7&amp;rft.pages=965-968&amp;rft.date=2007-04&amp;rft_id=info%3Adoi%2F10.1111%2Fj.1471-8286.2007.01821.x&amp;rft.aulast=Villesen&amp;rft.aufirst=P&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-Galaxyserver-12"><span class="mw-cite-backlink"><b><a href="#cite_ref-Galaxyserver_12-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Blankenberg D, Von Kuster G, Bouvier E, Baker D, Afgan E, Stoler N, Galaxy Team, Taylor J, Nekrutenko A (2014). "Dissemination of scientific software with Galaxy ToolShed". <i>Genome Biology</i>. <b>15</b>: 403. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1186/gb4161">10.1186/gb4161</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Genome+Biology&amp;rft.atitle=Dissemination+of+scientific+software+with+Galaxy+ToolShed&amp;rft.volume=15&amp;rft.pages=403&amp;rft.date=2014&amp;rft_id=info%3Adoi%2F10.1186%2Fgb4161&amp;rft.aulast=Blankenberg&amp;rft.aufirst=D&amp;rft.au=Von+Kuster%2C+G&amp;rft.au=Bouvier%2C+E&amp;rft.au=Baker%2C+D&amp;rft.au=Afgan%2C+E&amp;rft.au=Stoler%2C+N&amp;rft.au=Galaxy+Team&amp;rft.au=Taylor%2C+J&amp;rft.au=Nekrutenko%2C+A&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-tree2fasta-13"><span class="mw-cite-backlink"><b><a href="#cite_ref-tree2fasta_13-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Sauvage T, Plouviez S, Schmidt WE, Fredericq S (March 2018). "TREE2FASTA: a flexible Perl script for batch extraction of FASTA sequences from exploratory phylogenetic trees". <i>BMC Research Notes</i>. <b>11</b> (1): 403. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1186/s13104-018-3268-y">10.1186/s13104-018-3268-y</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=BMC+Research+Notes&amp;rft.atitle=TREE2FASTA%3A+a+flexible+Perl+script+for+batch+extraction+of+FASTA+sequences+from+exploratory+phylogenetic+trees&amp;rft.volume=11&amp;rft.issue=1&amp;rft.pages=403&amp;rft.date=2018-03&amp;rft_id=info%3Adoi%2F10.1186%2Fs13104-018-3268-y&amp;rft.aulast=Sauvage&amp;rft.aufirst=T&amp;rft.au=Plouviez%2C+S&amp;rft.au=Schmidt%2C+WE&amp;rft.au=Fredericq%2C+S&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+<li id="cite_note-phylodotfr-14"><span class="mw-cite-backlink"><b><a href="#cite_ref-phylodotfr_14-0">^</a></b></span> <span class="reference-text"><cite class="citation journal">Dereeper A, Guignon V, Blanc G, Audic S, Buffet S, Chevenet F, Dufayard JF, Guindon S, Lefort V, Lescot M, Claverie JM, Gascuel O (July 2008). "Phylogeny.fr: robust phylogenetic analysis for the non-specialist". <i>Nucleic Acids Research</i>. <b>36</b>: W465–9. <a href="/wiki/Digital_object_identifier" title="Digital object identifier">doi</a>:<a rel="nofollow" class="external text" href="//doi.org/10.1093/nar/gkn180">10.1093/nar/gkn180</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Nucleic+Acids+Research&amp;rft.atitle=Phylogeny.fr%3A+robust+phylogenetic+analysis+for+the+non-specialist&amp;rft.volume=36&amp;rft.pages=W465-9&amp;rft.date=2008-07&amp;rft_id=info%3Adoi%2F10.1093%2Fnar%2Fgkn180&amp;rft.aulast=Dereeper&amp;rft.aufirst=A&amp;rft.au=Guignon%2C+V&amp;rft.au=Blanc%2C+G&amp;rft.au=Audic%2C+S&amp;rft.au=Buffet%2C+S&amp;rft.au=Chevenet%2C+F&amp;rft.au=Dufayard%2C+JF&amp;rft.au=Guindon%2C+S&amp;rft.au=Lefort%2C+V&amp;rft.au=Lescot%2C+M&amp;rft.au=Claverie%2C+JM&amp;rft.au=Gascuel%2C+O&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFASTA+format" class="Z3988"><span style="display:none;">&#160;</span></span></span>
+</li>
+</ol></div>
+
+<!-- 
+NewPP limit report
+Parsed by mw1323
+Cached time: 20180729081823
+Cache expiry: 1900800
+Dynamic content: false
+CPU time usage: 0.260 seconds
+Real time usage: 0.309 seconds
+Preprocessor visited node count: 1057/1000000
+Preprocessor generated node count: 0/1500000
+Post‐expand include size: 31089/2097152 bytes
+Template argument size: 1105/2097152 bytes
+Highest expansion depth: 11/40
+Expensive parser function count: 1/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 21344/5000000 bytes
+Number of Wikibase entities loaded: 0/400
+Lua time usage: 0.118/10.000 seconds
+Lua memory usage: 4.74 MB/50 MB
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  250.515      1 -total
+ 48.40%  121.242      1 Template:Reflist
+ 31.09%   77.897      9 Template:Cite_journal
+ 28.11%   70.418      1 Template:Infobox_file_format
+ 22.88%   57.328      1 Template:Infobox
+ 20.02%   50.141      1 Template:Fact
+ 16.83%   42.168      1 Template:Fix
+ 11.91%   29.836      2 Template:Category_handler
+  5.91%   14.812      4 Template:Cite_web
+  3.70%    9.262      1 Template:Delink
+-->
+</div>
+<!-- Saved in parser cache with key enwiki:pcache:idhash:468001-0!canonical and timestamp 20180729081823 and revision id 845404542
+ -->
+<noscript><img src="//en.wikipedia.org/wiki/Special:CentralAutoLogin/start?type=1x1" alt="" title="" width="1" height="1" style="border: none; position: absolute;" /></noscript></div>					<div class="printfooter">
+						Retrieved from "<a dir="ltr" href="https://en.wikipedia.org/w/index.php?title=FASTA_format&amp;oldid=845404542">https://en.wikipedia.org/w/index.php?title=FASTA_format&amp;oldid=845404542</a>"					</div>
+				<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/wiki/Help:Category" title="Help:Category">Categories</a>: <ul><li><a href="/wiki/Category:Bioinformatics" title="Category:Bioinformatics">Bioinformatics</a></li><li><a href="/wiki/Category:Biological_sequence_format" title="Category:Biological sequence format">Biological sequence format</a></li></ul></div><div id="mw-hidden-catlinks" class="mw-hidden-catlinks mw-hidden-cats-hidden">Hidden categories: <ul><li><a href="/wiki/Category:All_articles_with_unsourced_statements" title="Category:All articles with unsourced statements">All articles with unsourced statements</a></li><li><a href="/wiki/Category:Articles_with_unsourced_statements_from_March_2018" title="Category:Articles with unsourced statements from March 2018">Articles with unsourced statements from March 2018</a></li></ul></div></div>				<div class="visualClear"></div>
+							</div>
+		</div>
+		<div id="mw-navigation">
+			<h2>Navigation menu</h2>
+			<div id="mw-head">
+									<div id="p-personal" role="navigation" class="" aria-labelledby="p-personal-label">
+						<h3 id="p-personal-label">Personal tools</h3>
+						<ul>
+							<li id="pt-anonuserpage">Not logged in</li><li id="pt-anontalk"><a href="/wiki/Special:MyTalk" title="Discussion about edits from this IP address [n]" accesskey="n">Talk</a></li><li id="pt-anoncontribs"><a href="/wiki/Special:MyContributions" title="A list of edits made from this IP address [y]" accesskey="y">Contributions</a></li><li id="pt-createaccount"><a href="/w/index.php?title=Special:CreateAccount&amp;returnto=FASTA+format" title="You are encouraged to create an account and log in; however, it is not mandatory">Create account</a></li><li id="pt-login"><a href="/w/index.php?title=Special:UserLogin&amp;returnto=FASTA+format" title="You&#039;re encouraged to log in; however, it&#039;s not mandatory. [o]" accesskey="o">Log in</a></li>						</ul>
+					</div>
+									<div id="left-navigation">
+										<div id="p-namespaces" role="navigation" class="vectorTabs" aria-labelledby="p-namespaces-label">
+						<h3 id="p-namespaces-label">Namespaces</h3>
+						<ul>
+							<li id="ca-nstab-main" class="selected"><span><a href="/wiki/FASTA_format" title="View the content page [c]" accesskey="c">Article</a></span></li><li id="ca-talk"><span><a href="/wiki/Talk:FASTA_format" rel="discussion" title="Discussion about the content page [t]" accesskey="t">Talk</a></span></li>						</ul>
+					</div>
+										<div id="p-variants" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-variants-label">
+												<input type="checkbox" class="vectorMenuCheckbox" aria-labelledby="p-variants-label" />
+						<h3 id="p-variants-label">
+							<span>Variants</span>
+						</h3>
+						<div class="menu">
+							<ul>
+															</ul>
+						</div>
+					</div>
+									</div>
+				<div id="right-navigation">
+										<div id="p-views" role="navigation" class="vectorTabs" aria-labelledby="p-views-label">
+						<h3 id="p-views-label">Views</h3>
+						<ul>
+							<li id="ca-view" class="collapsible selected"><span><a href="/wiki/FASTA_format">Read</a></span></li><li id="ca-edit" class="collapsible"><span><a href="/w/index.php?title=FASTA_format&amp;action=edit" title="Edit this page [e]" accesskey="e">Edit</a></span></li><li id="ca-history" class="collapsible"><span><a href="/w/index.php?title=FASTA_format&amp;action=history" title="Past revisions of this page [h]" accesskey="h">View history</a></span></li>						</ul>
+					</div>
+										<div id="p-cactions" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-cactions-label">
+						<input type="checkbox" class="vectorMenuCheckbox" aria-labelledby="p-cactions-label" />
+						<h3 id="p-cactions-label"><span>More</span></h3>
+						<div class="menu">
+							<ul>
+															</ul>
+						</div>
+					</div>
+										<div id="p-search" role="search">
+						<h3>
+							<label for="searchInput">Search</label>
+						</h3>
+						<form action="/w/index.php" id="searchform">
+							<div id="simpleSearch">
+								<input type="search" name="search" placeholder="Search Wikipedia" title="Search Wikipedia [f]" accesskey="f" id="searchInput"/><input type="hidden" value="Special:Search" name="title"/><input type="submit" name="fulltext" value="Search" title="Search Wikipedia for this text" id="mw-searchButton" class="searchButton mw-fallbackSearchButton"/><input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="searchButton" class="searchButton"/>							</div>
+						</form>
+					</div>
+									</div>
+			</div>
+			<div id="mw-panel">
+				<div id="p-logo" role="banner"><a class="mw-wiki-logo" href="/wiki/Main_Page"  title="Visit the main page"></a></div>
+						<div class="portal" role="navigation" id="p-navigation" aria-labelledby="p-navigation-label">
+			<h3 id="p-navigation-label">Navigation</h3>
+			<div class="body">
+								<ul>
+					<li id="n-mainpage-description"><a href="/wiki/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li><li id="n-contents"><a href="/wiki/Portal:Contents" title="Guides to browsing Wikipedia">Contents</a></li><li id="n-featuredcontent"><a href="/wiki/Portal:Featured_content" title="Featured content – the best of Wikipedia">Featured content</a></li><li id="n-currentevents"><a href="/wiki/Portal:Current_events" title="Find background information on current events">Current events</a></li><li id="n-randompage"><a href="/wiki/Special:Random" title="Load a random article [x]" accesskey="x">Random article</a></li><li id="n-sitesupport"><a href="https://donate.wikimedia.org/wiki/Special:FundraiserRedirector?utm_source=donate&amp;utm_medium=sidebar&amp;utm_campaign=C13_en.wikipedia.org&amp;uselang=en" title="Support us">Donate to Wikipedia</a></li><li id="n-shoplink"><a href="//shop.wikimedia.org" title="Visit the Wikipedia store">Wikipedia store</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-interaction" aria-labelledby="p-interaction-label">
+			<h3 id="p-interaction-label">Interaction</h3>
+			<div class="body">
+								<ul>
+					<li id="n-help"><a href="/wiki/Help:Contents" title="Guidance on how to use and edit Wikipedia">Help</a></li><li id="n-aboutsite"><a href="/wiki/Wikipedia:About" title="Find out about Wikipedia">About Wikipedia</a></li><li id="n-portal"><a href="/wiki/Wikipedia:Community_portal" title="About the project, what you can do, where to find things">Community portal</a></li><li id="n-recentchanges"><a href="/wiki/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li><li id="n-contactpage"><a href="//en.wikipedia.org/wiki/Wikipedia:Contact_us" title="How to contact Wikipedia">Contact page</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-tb" aria-labelledby="p-tb-label">
+			<h3 id="p-tb-label">Tools</h3>
+			<div class="body">
+								<ul>
+					<li id="t-whatlinkshere"><a href="/wiki/Special:WhatLinksHere/FASTA_format" title="List of all English Wikipedia pages containing links to this page [j]" accesskey="j">What links here</a></li><li id="t-recentchangeslinked"><a href="/wiki/Special:RecentChangesLinked/FASTA_format" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li><li id="t-upload"><a href="/wiki/Wikipedia:File_Upload_Wizard" title="Upload files [u]" accesskey="u">Upload file</a></li><li id="t-specialpages"><a href="/wiki/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q">Special pages</a></li><li id="t-permalink"><a href="/w/index.php?title=FASTA_format&amp;oldid=845404542" title="Permanent link to this revision of the page">Permanent link</a></li><li id="t-info"><a href="/w/index.php?title=FASTA_format&amp;action=info" title="More information about this page">Page information</a></li><li id="t-wikibase"><a href="https://www.wikidata.org/wiki/Special:EntityPage/Q1593782" title="Link to connected data repository item [g]" accesskey="g">Wikidata item</a></li><li id="t-cite"><a href="/w/index.php?title=Special:CiteThisPage&amp;page=FASTA_format&amp;id=845404542" title="Information on how to cite this page">Cite this page</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-coll-print_export" aria-labelledby="p-coll-print_export-label">
+			<h3 id="p-coll-print_export-label">Print/export</h3>
+			<div class="body">
+								<ul>
+					<li id="coll-create_a_book"><a href="/w/index.php?title=Special:Book&amp;bookcmd=book_creator&amp;referer=FASTA+format">Create a book</a></li><li id="coll-download-as-rdf2latex"><a href="/w/index.php?title=Special:ElectronPdf&amp;page=FASTA+format&amp;action=show-download-screen">Download as PDF</a></li><li id="t-print"><a href="/w/index.php?title=FASTA_format&amp;printable=yes" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-lang" aria-labelledby="p-lang-label">
+			<h3 id="p-lang-label">Languages</h3>
+			<div class="body">
+								<ul>
+					<li class="interlanguage-link interwiki-ar"><a href="https://ar.wikipedia.org/wiki/%D8%B5%D9%8A%D8%BA%D8%A9_%D9%81%D8%A7%D8%B3%D8%AA%D8%A7" title="صيغة فاستا – Arabic" lang="ar" hreflang="ar" class="interlanguage-link-target">العربية</a></li><li class="interlanguage-link interwiki-ca"><a href="https://ca.wikipedia.org/wiki/Format_FASTA" title="Format FASTA – Catalan" lang="ca" hreflang="ca" class="interlanguage-link-target">Català</a></li><li class="interlanguage-link interwiki-de"><a href="https://de.wikipedia.org/wiki/FASTA-Format" title="FASTA-Format – German" lang="de" hreflang="de" class="interlanguage-link-target">Deutsch</a></li><li class="interlanguage-link interwiki-es"><a href="https://es.wikipedia.org/wiki/Formato_FASTA" title="Formato FASTA – Spanish" lang="es" hreflang="es" class="interlanguage-link-target">Español</a></li><li class="interlanguage-link interwiki-fa"><a href="https://fa.wikipedia.org/wiki/%D9%82%D8%A7%D9%84%D8%A8_%D9%81%D8%B3%D8%AA%D8%A7" title="قالب فستا – Persian" lang="fa" hreflang="fa" class="interlanguage-link-target">فارسی</a></li><li class="interlanguage-link interwiki-fr"><a href="https://fr.wikipedia.org/wiki/FASTA_(format_de_fichier)" title="FASTA (format de fichier) – French" lang="fr" hreflang="fr" class="interlanguage-link-target">Français</a></li><li class="interlanguage-link interwiki-ko"><a href="https://ko.wikipedia.org/wiki/FASTA_%ED%8F%AC%EB%A7%B7" title="FASTA 포맷 – Korean" lang="ko" hreflang="ko" class="interlanguage-link-target">한국어</a></li><li class="interlanguage-link interwiki-he"><a href="https://he.wikipedia.org/wiki/%D7%A4%D7%95%D7%A8%D7%9E%D7%98_FASTA" title="פורמט FASTA – Hebrew" lang="he" hreflang="he" class="interlanguage-link-target">עברית</a></li><li class="interlanguage-link interwiki-pl"><a href="https://pl.wikipedia.org/wiki/FASTA_format" title="FASTA format – Polish" lang="pl" hreflang="pl" class="interlanguage-link-target">Polski</a></li><li class="interlanguage-link interwiki-pt"><a href="https://pt.wikipedia.org/wiki/Formato_FASTA" title="Formato FASTA – Portuguese" lang="pt" hreflang="pt" class="interlanguage-link-target">Português</a></li><li class="interlanguage-link interwiki-ru"><a href="https://ru.wikipedia.org/wiki/FASTA" title="FASTA – Russian" lang="ru" hreflang="ru" class="interlanguage-link-target">Русский</a></li><li class="interlanguage-link interwiki-uk"><a href="https://uk.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%BC%D0%B0%D1%82_FASTA" title="Формат FASTA – Ukrainian" lang="uk" hreflang="uk" class="interlanguage-link-target">Українська</a></li><li class="interlanguage-link interwiki-zh"><a href="https://zh.wikipedia.org/wiki/FASTA%E6%A0%BC%E5%BC%8F" title="FASTA格式 – Chinese" lang="zh" hreflang="zh" class="interlanguage-link-target">中文</a></li>				</ul>
+				<div class="after-portlet after-portlet-lang"><span class="wb-langlinks-edit wb-langlinks-link"><a href="https://www.wikidata.org/wiki/Special:EntityPage/Q1593782#sitelinks-wikipedia" title="Edit interlanguage links" class="wbc-editpage">Edit links</a></span></div>			</div>
+		</div>
+				</div>
+		</div>
+				<div id="footer" role="contentinfo">
+						<ul id="footer-info">
+								<li id="footer-info-lastmod"> This page was last edited on 11 June 2018, at 15:37<span class="anonymous-show"> (UTC)</span>.</li>
+								<li id="footer-info-copyright">Text is available under the <a rel="license" href="//en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">Creative Commons Attribution-ShareAlike License</a><a rel="license" href="//creativecommons.org/licenses/by-sa/3.0/" style="display:none;"></a>;
+additional terms may apply.  By using this site, you agree to the <a href="//wikimediafoundation.org/wiki/Terms_of_Use">Terms of Use</a> and <a href="//wikimediafoundation.org/wiki/Privacy_policy">Privacy Policy</a>. Wikipedia® is a registered trademark of the <a href="//www.wikimediafoundation.org/">Wikimedia Foundation, Inc.</a>, a non-profit organization.</li>
+							</ul>
+						<ul id="footer-places">
+								<li id="footer-places-privacy"><a href="https://foundation.wikimedia.org/wiki/Privacy_policy" class="extiw" title="wmf:Privacy policy">Privacy policy</a></li>
+								<li id="footer-places-about"><a href="/wiki/Wikipedia:About" title="Wikipedia:About">About Wikipedia</a></li>
+								<li id="footer-places-disclaimer"><a href="/wiki/Wikipedia:General_disclaimer" title="Wikipedia:General disclaimer">Disclaimers</a></li>
+								<li id="footer-places-contact"><a href="//en.wikipedia.org/wiki/Wikipedia:Contact_us">Contact Wikipedia</a></li>
+								<li id="footer-places-developers"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/How_to_contribute">Developers</a></li>
+								<li id="footer-places-cookiestatement"><a href="https://foundation.wikimedia.org/wiki/Cookie_statement">Cookie statement</a></li>
+								<li id="footer-places-mobileview"><a href="//en.m.wikipedia.org/w/index.php?title=FASTA_format&amp;mobileaction=toggle_view_mobile" class="noprint stopMobileRedirectToggle">Mobile view</a></li>
+							</ul>
+										<ul id="footer-icons" class="noprint">
+										<li id="footer-copyrightico">
+						<a href="https://foundation.wikimedia.org/"><img src="/static/images/wikimedia-button.png" srcset="/static/images/wikimedia-button-1.5x.png 1.5x, /static/images/wikimedia-button-2x.png 2x" width="88" height="31" alt="Wikimedia Foundation"/></a>					</li>
+										<li id="footer-poweredbyico">
+						<a href="//www.mediawiki.org/"><img src="/static/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="/static/images/poweredby_mediawiki_132x47.png 1.5x, /static/images/poweredby_mediawiki_176x62.png 2x" width="88" height="31"/></a>					</li>
+									</ul>
+						<div style="clear: both;"></div>
+		</div>
+		
+<script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.260","walltime":"0.309","ppvisitednodes":{"value":1057,"limit":1000000},"ppgeneratednodes":{"value":0,"limit":1500000},"postexpandincludesize":{"value":31089,"limit":2097152},"templateargumentsize":{"value":1105,"limit":2097152},"expansiondepth":{"value":11,"limit":40},"expensivefunctioncount":{"value":1,"limit":500},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":21344,"limit":5000000},"entityaccesscount":{"value":0,"limit":400},"timingprofile":["100.00%  250.515      1 -total"," 48.40%  121.242      1 Template:Reflist"," 31.09%   77.897      9 Template:Cite_journal"," 28.11%   70.418      1 Template:Infobox_file_format"," 22.88%   57.328      1 Template:Infobox"," 20.02%   50.141      1 Template:Fact"," 16.83%   42.168      1 Template:Fix"," 11.91%   29.836      2 Template:Category_handler","  5.91%   14.812      4 Template:Cite_web","  3.70%    9.262      1 Template:Delink"]},"scribunto":{"limitreport-timeusage":{"value":"0.118","limit":"10.000"},"limitreport-memusage":{"value":4970285,"limit":52428800}},"cachereport":{"origin":"mw1323","timestamp":"20180729081823","ttl":1900800,"transientcontent":false}}});mw.config.set({"wgBackendResponseTime":84,"wgHostname":"mw1333"});});</script>
+	</body>
+</html>
