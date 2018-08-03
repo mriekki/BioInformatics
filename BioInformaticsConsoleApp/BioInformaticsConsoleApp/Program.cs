@@ -13,11 +13,11 @@ namespace BioInformaticsConsoleApp
 
         private static void Main(string[] args)
         {
-//            string inputFile = "..\\..\\..\\Data Files\\dataset_163_4.txt";
-            string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+                         string inputFile = "..\\..\\..\\Data Files\\dataset_198_3.txt";
+            // string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
             string[] fileText = MyReadFile(inputFile);
 
-            string[] dnaArray = new string[fileText.Length - 2];
+//            string[] dnaArray = new string[fileText.Length - 2];
             string Text = "";
             int k = 0;
             int d = 0;
@@ -26,7 +26,32 @@ namespace BioInformaticsConsoleApp
             string strResult = "";
 
             // Set Method to run
-            string method = "RandominzedMotifSearch";
+            string method = "StringSpelledByGenomePath";
+
+
+            if ("StringSpelledByGenomePath" == method)
+            {
+                //                string[] strLine = new string[fileText.Length];
+                Int32.TryParse(fileText[0], out k);
+
+                strResult = StringSpelledByGenomePath(fileText);
+
+     
+
+            }
+
+
+            if ("Composition" == method)
+            {
+//                string[] strLine = new string[fileText.Length];
+                Int32.TryParse(fileText[0], out k);
+                List<string> searchResult = new List<string>();
+
+                searchResult = Composition(fileText[1], k);
+
+                WriteListToFile("C:\\Temp\\output.txt", searchResult);
+                
+            }
 
 
             if ("Random" == method)
@@ -182,6 +207,69 @@ namespace BioInformaticsConsoleApp
 
             //            PatternMatchIndexes(str1, str2);
 
+        }
+
+        static public string StringSpelledByGenomePath(string[] kmers)
+        {
+            string sequence = "";
+            string prefix = "";
+            int k = kmers[0].Length;
+            string prevVal = "";
+
+            sequence = kmers[0];
+
+            for (int i = 1; i < kmers.Length; i++)
+            {
+                prefix = kmers[i].Substring(0, k - 1);
+
+                prevVal = sequence.Substring(sequence.Length - k + 1, k - 1);
+                    
+                if (prefix == prevVal)
+                {
+                    sequence += kmers[i].Substring(k - 1, 1);
+                }
+            }
+
+            return sequence;
+        }
+
+        static public string Reconstruction(int k, List<string> kmerArray)
+        {
+            string sequence = "";
+            string suffix = "";
+            string prefix = "";
+            bool found = false;
+
+            foreach (string kmer in kmerArray)
+            {
+                suffix = kmer.Substring(0, kmer.Length - 1);
+                found = false;
+
+                for (int i = 0; i < kmerArray.Count; i++)
+                {
+                    prefix = kmerArray[i];
+                    if (prefix == suffix)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                sequence += "";
+            }
+
+            return sequence;
+        }
+
+        static public List<string> Composition(string Text, int k)
+        {
+            List<string> kmerArray = new List<string>();
+
+            for (int i = 0; i < Text.Length - k + 1; i++)
+            {
+                kmerArray.Add(Text.Substring(i, k));
+            }
+
+            return kmerArray;
         }
 
         //===================================================================================================
