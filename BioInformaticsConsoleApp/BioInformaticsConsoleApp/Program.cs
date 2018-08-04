@@ -9,207 +9,214 @@ namespace BioInformaticsConsoleApp
     class Program
     {
         private const int NucleotideSize = 4;
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_199_6.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "DeBruijnGraph";
 
 
-        private static void Main(string[] args)
+        static public List<string> DeBruijnGraph(int k, string Text)
         {
-                         string inputFile = "..\\..\\..\\Data Files\\dataset_198_3.txt";
-            // string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-            string[] fileText = MyReadFile(inputFile);
+            List<string> output = new List<string>();
+            List<string> kmers = new List<string>();
 
-//            string[] dnaArray = new string[fileText.Length - 2];
-            string Text = "";
-            int k = 0;
-            int d = 0;
-            int t = 0;
-            int N = 1;
-            string strResult = "";
+            kmers = Composition(Text, k);
 
-            // Set Method to run
-            string method = "StringSpelledByGenomePath";
+            output = OverlapGraph2(kmers);
 
-
-            if ("StringSpelledByGenomePath" == method)
-            {
-                //                string[] strLine = new string[fileText.Length];
-                Int32.TryParse(fileText[0], out k);
-
-                strResult = StringSpelledByGenomePath(fileText);
-
-     
-
-            }
-
-
-            if ("Composition" == method)
-            {
-//                string[] strLine = new string[fileText.Length];
-                Int32.TryParse(fileText[0], out k);
-                List<string> searchResult = new List<string>();
-
-                searchResult = Composition(fileText[1], k);
-
-                WriteListToFile("C:\\Temp\\output.txt", searchResult);
-                
-            }
-
-
-            if ("Random" == method)
-            {
-                double[] array = { .1, .2, .3, .2};
-                int index = Random(array);
-            }
-
-            if ("GreedyMotifSearch" == method)
-            {
-                string[] strLine = new string[fileText.Length - 2];
-                Int32.TryParse(fileText[0], out k);
-                Int32.TryParse(fileText[1], out t);
-                List<string> searchResult = new List<string>();
-
-                for (int i = 2; i < fileText.Length; i++)
-                {
-                    strLine[i - 2] = fileText[i];
-                }
-
-                searchResult = GreedyMotifSearch(strLine, k, t);
-            }
-
-            if ("RandominzedMotifSearch" == method)
-            {
-                string[] strLine = new string[fileText.Length - 2];
-                Int32.TryParse(fileText[0], out k);
-                Int32.TryParse(fileText[1], out t);
-                List<string> searchResult = new List<string>();
-
-                for (int i = 2; i < fileText.Length; i++)
-                {
-                    strLine[i - 2] = fileText[i];
-                }
-
-                searchResult = RandominzedMotifSearch(strLine, k, t);
-            }
-
-            if ("GibbsSampler" == method)
-            {
-                string[] strLine = new string[fileText.Length - 3];
-                Int32.TryParse(fileText[0], out k);
-                Int32.TryParse(fileText[1], out t);
-                List<string> searchResult = new List<string>();
-                Int32.TryParse(fileText[2], out N);
-
-
-
-                for (int i = 3; i < fileText.Length; i++)
-                {
-                    strLine[i - 3] = fileText[i];
-                }
-
-                searchResult = GibbsSampler(strLine, k, t, N);
-            }
-
-            if ("MedianString" == method)
-            {
-                string[] strLine = new string[fileText.Length-1];
-
-                Int32.TryParse(fileText[0], out k);
-                List<string> searchResult = new List<string>();
-
-                for (int i = 1; i < fileText.Length; i++)
-                {
-                    strLine[i-1] = fileText[i];
-                }
-
-                MedianString(strLine, k);
-            }
-
-
-            if ("ProfileMostProbableKmer" == method)
-            {
-                string [] strLine;
-                Text = fileText[0];
-                Int32.TryParse(fileText[1], out k);
-                double[,] array = new double[NucleotideSize, k];
-                double value = 0;
-
-                for (int i = 2; i < fileText.Length; i++)
-                {
-                    strLine = fileText[i].Split(" ");
-                    for (int n = 0; n < k; n++)
-                    {
-                        Double.TryParse(strLine[n], out value);
-                        array[i - 2, n] = value;
-                    }
-                }
-
-                strResult = ProfileMostProbableKmer(Text, k, array);
-            }
-
-
-            if ("Motif" == method)
-            {
-                string[] strLine;
-                string[] strLine2 = new string[5];
-                double[,] array = new double[NucleotideSize, 4];
-                double value = 0;
-
-                for (int i = 0; i < 4; i++)
-                {
-                    strLine = fileText[i].Split(" ");
-                    for (int n = 0; n < 4; n++)
-                    {
-                        Double.TryParse(strLine[n], out value);
-                        array[i, n] = value;
-                    }
-                }
-
-                int count = 0;
-                for (int i = 4; i < fileText.Length; i++)
-                {
-                    strLine2[count] = fileText[i];
-                    count += 1;
-                }
-
-
-                Motif(array, strLine2, 4);
-            }
-
-
-
-            //            strResult = MedianString(dnaArray, d);
-
-            //            int dis = DistanceBetweenPatternAndStrings(str2, dnaArray);
-
-            //            strResult = MotifEnumeration(dnaArray, k, d);
-
-
-            // strResult = ImmediateNeighbors("ATG");
-
-            // strResult = MinimumSkew(str1);
-
-            //  strResult = PatternToNumber2(str1);
-
-            //  ReverseComplement(str1);
-
-            //  dist = HammingDistance(str1, str2);
-
-            //nb = Neighbors(str1, nDistance);
-
-            //                FrequentWords(str1, nDistance);
-
-            //                result = NumberToPattern2(index, nDistance);
-
-            // result = ComputingFrequencies(str1, nDistance);
-
-            //                PatternToNumber("ATGCAA");
-
-            //              NumberToPattern(5437, 8);
-
-            //            PatternMatchIndexes(str1, str2);
-
+            return output;
         }
 
-        static public string StringSpelledByGenomePath(string[] kmers)
+        static public List<string> OverlapGraph2(List<string> kmers)
+        {
+            List<string> output = new List<string>();
+            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+            string prefix = "";
+            int k = kmers[0].Length;
+            string currentNode = "";
+            string connectedNode = "";
+            string suffix = "";
+            bool found = false;
+            bool nodeFound = false;
+
+            for (int i = 0; i < kmers.Count; i++)
+            {
+                currentNode = kmers[i];
+                suffix = currentNode.Substring(1, k - 1);
+                found = false;
+                List<string> Nodes = new List<string>();
+
+                 for (int x = 0; x < kmers.Count; x++)
+                {
+                    connectedNode = kmers[x];
+                    prefix = connectedNode.Substring(0, k - 1);
+
+                    if (suffix == prefix)
+                    {
+                        // check if already in list
+                        nodeFound = false;
+                        foreach (string s in Nodes)
+                        {
+                            if (s == suffix)
+                            {
+                                nodeFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!nodeFound)
+                        {
+                            Nodes.Add(suffix);
+                            found = true;
+                        }
+                    }
+                }
+
+                if (found)
+                {
+                    Nodes.Sort();
+                    string key = currentNode.Substring(0, k - 1);
+
+                    if (!dict.ContainsKey(currentNode.Substring(0, k - 1)))
+                    {
+                        dict.Add(currentNode.Substring(0, k - 1), Nodes);
+                    }
+                    else
+                    {
+                        List<string> tmpNodes = new List<string>();
+
+                        tmpNodes = dict[key];
+
+                        foreach (string s in Nodes)
+                            tmpNodes.Add(s);
+
+                        tmpNodes.Sort();
+
+                        dict[key] = tmpNodes;
+                    }
+                    
+                }
+            }
+
+            string outputNode = "";
+
+            foreach (string key in dict.Keys)
+            {
+                List<string> row = dict[key];
+
+                outputNode = key + " -> ";
+
+                foreach (string item in row)
+
+                    outputNode += item + ",";
+
+                outputNode = outputNode.Substring(0, outputNode.Length - 1);        // remove last comma
+
+                output.Add(outputNode);
+            }
+
+            WriteListToFile("C:\\Temp\\output.txt", output);
+
+
+            return output;
+        }
+
+        static public int NumberOfOccurances(string kmer, List<string> kmerList)
+        {
+            int count = 0;
+
+            foreach (string str in kmerList)
+            {
+                if (str == kmer)
+                    count += 1;
+            }
+            return count;
+
+        }
+        static public List<string> OverlapGraph(List<string> kmers)
+        {
+            List<string> output = new List<string>();
+            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+//            Dictionary<string, int> kmerLookup = new Dictionary<string, int>();
+            string prefix = "";
+            int k = kmers[0].Length;
+            string currentNode = "";
+            string connectedNode = "";
+            string suffix = "";
+            bool found = false;
+            bool nodeFound = false;
+//            string sequence = "";
+
+            for (int i = 0; i < kmers.Count; i++)
+            {
+                currentNode = kmers[i];
+                suffix = currentNode.Substring(1, k - 1);
+                found = false;
+                List<string> Nodes = new List<string>();
+
+                for (int x = 0; x < kmers.Count; x++)
+                {
+                    if (x != i)
+                    {
+                        connectedNode = kmers[x];
+                        prefix = connectedNode.Substring(0, k - 1);
+
+                        if (suffix == prefix)
+                        {
+                            // check if already in list
+                            nodeFound = false;
+                            foreach (string s in Nodes)
+                            {
+                                if (s == connectedNode)
+                                {
+                                    nodeFound = true;
+                                    break;
+                                }
+                            }
+
+                            if (!nodeFound)
+                            {
+                                Nodes.Add(connectedNode);
+                                found = true;
+                            }
+                        }
+                    }
+                }
+
+                if (found)
+                {
+                    Nodes.Sort();
+                    if (!dict.ContainsKey(currentNode))
+                        dict.Add(currentNode, Nodes);
+                    else
+                        Console.WriteLine("Key exists");
+                }
+            }
+
+            string outputNode = "";
+
+            foreach (string key in dict.Keys)
+            {
+                List<string> row = dict[key];
+
+                outputNode = key + " -> ";
+
+                foreach (string item in row)
+
+                    outputNode += item + ",";
+
+                outputNode = outputNode.Substring(0, outputNode.Length - 1);        // remove last comma
+
+                output.Add(outputNode);
+            }
+
+            WriteListToFile("C:\\Temp\\output.txt", output);
+
+
+            return output;
+        }
+
+
+        static public string StringSpelledByGenomePath(List<string> kmers)
         {
             string sequence = "";
             string prefix = "";
@@ -218,7 +225,7 @@ namespace BioInformaticsConsoleApp
 
             sequence = kmers[0];
 
-            for (int i = 1; i < kmers.Length; i++)
+            for (int i = 1; i < kmers.Count; i++)
             {
                 prefix = kmers[i].Substring(0, k - 1);
 
@@ -553,8 +560,8 @@ namespace BioInformaticsConsoleApp
 
             int[,] countArray = new int[NucleotideSize, motifLength];
             int[] scoreArray = new int[motifLength];
-            string str = "";
-            string c = "";
+//            string str = "";
+//            string c = "";
             string currentMotif = "";
             char currentChar = ' ';
 
@@ -603,7 +610,6 @@ namespace BioInformaticsConsoleApp
         {
             int motifLength = 1;
             int t = 0;
-            int pCount = 0;
             int denominator = 0;
 
             if (Motifs.Count > 0)
@@ -1551,7 +1557,225 @@ namespace BioInformaticsConsoleApp
             string newStr = sb.ToString();
             return newStr;
         }
+        private static void Main(string[] args)
+        {
+            string[] fileText = MyReadFile(inputFile);
 
+            //            string[] dnaArray = new string[fileText.Length - 2];
+            string Text = "";
+            int k = 0;
+//            int d = 0;
+            int t = 0;
+            int N = 1;
+            string strResult = "";
+
+            // Set Method to run
+
+
+            if ("StringSpelledByGenomePath" == method)
+            {
+                //                string[] strLine = new string[fileText.Length];
+                Int32.TryParse(fileText[0], out k);
+
+//                StringSpelledByGenomePath(fileText);
+
+
+
+            }
+
+
+            if ("Composition" == method)
+            {
+                //                string[] strLine = new string[fileText.Length];
+                Int32.TryParse(fileText[0], out k);
+                List<string> searchResult = new List<string>();
+
+                searchResult = Composition(fileText[1], k);
+
+                WriteListToFile("C:\\Temp\\output.txt", searchResult);
+
+            }
+
+
+            if ("Random" == method)
+            {
+                double[] array = { .1, .2, .3, .2 };
+                int index = Random(array);
+            }
+
+            if ("GreedyMotifSearch" == method)
+            {
+                string[] strLine = new string[fileText.Length - 2];
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out t);
+                List<string> searchResult = new List<string>();
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    strLine[i - 2] = fileText[i];
+                }
+
+                searchResult = GreedyMotifSearch(strLine, k, t);
+            }
+
+            if ("RandominzedMotifSearch" == method)
+            {
+                string[] strLine = new string[fileText.Length - 2];
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out t);
+                List<string> searchResult = new List<string>();
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    strLine[i - 2] = fileText[i];
+                }
+
+                searchResult = RandominzedMotifSearch(strLine, k, t);
+            }
+
+            if ("GibbsSampler" == method)
+            {
+                string[] strLine = new string[fileText.Length - 3];
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out t);
+                List<string> searchResult = new List<string>();
+                Int32.TryParse(fileText[2], out N);
+
+
+
+                for (int i = 3; i < fileText.Length; i++)
+                {
+                    strLine[i - 3] = fileText[i];
+                }
+
+                searchResult = GibbsSampler(strLine, k, t, N);
+            }
+
+            if ("MedianString" == method)
+            {
+                string[] strLine = new string[fileText.Length - 1];
+
+                Int32.TryParse(fileText[0], out k);
+                List<string> searchResult = new List<string>();
+
+                for (int i = 1; i < fileText.Length; i++)
+                {
+                    strLine[i - 1] = fileText[i];
+                }
+
+                MedianString(strLine, k);
+            }
+
+
+            if ("ProfileMostProbableKmer" == method)
+            {
+                string[] strLine;
+                Text = fileText[0];
+                Int32.TryParse(fileText[1], out k);
+                double[,] array = new double[NucleotideSize, k];
+                double value = 0;
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    strLine = fileText[i].Split(" ");
+                    for (int n = 0; n < k; n++)
+                    {
+                        Double.TryParse(strLine[n], out value);
+                        array[i - 2, n] = value;
+                    }
+                }
+
+                strResult = ProfileMostProbableKmer(Text, k, array);
+            }
+
+
+            if ("Motif" == method)
+            {
+                string[] strLine;
+                string[] strLine2 = new string[5];
+                double[,] array = new double[NucleotideSize, 4];
+                double value = 0;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    strLine = fileText[i].Split(" ");
+                    for (int n = 0; n < 4; n++)
+                    {
+                        Double.TryParse(strLine[n], out value);
+                        array[i, n] = value;
+                    }
+                }
+
+                int count = 0;
+                for (int i = 4; i < fileText.Length; i++)
+                {
+                    strLine2[count] = fileText[i];
+                    count += 1;
+                }
+
+
+                Motif(array, strLine2, 4);
+            }
+
+
+
+            //            strResult = MedianString(dnaArray, d);
+
+            //            int dis = DistanceBetweenPatternAndStrings(str2, dnaArray);
+
+            //            strResult = MotifEnumeration(dnaArray, k, d);
+
+
+            // strResult = ImmediateNeighbors("ATG");
+
+            // strResult = MinimumSkew(str1);
+
+            //  strResult = PatternToNumber2(str1);
+
+            //  ReverseComplement(str1);
+
+            //  dist = HammingDistance(str1, str2);
+
+            //nb = Neighbors(str1, nDistance);
+
+            //                FrequentWords(str1, nDistance);
+
+            //                result = NumberToPattern2(index, nDistance);
+
+            // result = ComputingFrequencies(str1, nDistance);
+
+            //                PatternToNumber("ATGCAA");
+
+            //              NumberToPattern(5437, 8);
+
+            //            PatternMatchIndexes(str1, str2);
+
+
+            if ("OverlapGraph" == method)
+            {
+                List<string> output = new List<string>();
+                List<string> input = new List<string>();
+
+                foreach (string s in fileText)
+                    input.Add(s);
+
+                output = OverlapGraph(input);
+            }
+
+            if ("DeBruijnGraph" == method)
+            {
+                string[] strLine = new string[fileText.Length];
+                List<string> searchResult = new List<string>();
+                Int32.TryParse(fileText[0], out k);
+
+                searchResult = DeBruijnGraph(k, fileText[1]);
+
+                WriteListToFile("C:\\Temp\\output.txt", searchResult);
+
+            }
+
+
+        }
     }
 
 }
