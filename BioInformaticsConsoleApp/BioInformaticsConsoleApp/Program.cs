@@ -9,8 +9,8 @@ namespace BioInformaticsConsoleApp
     class Program
     {
         private const int NucleotideSize = 4;
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_199_6.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_199_6.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "DeBruijnGraph";
 
 
@@ -21,12 +21,12 @@ namespace BioInformaticsConsoleApp
 
             kmers = Composition(Text, k);
 
-            output = OverlapGraph2(kmers);
+            output = OverlapGraph(kmers);
 
             return output;
         }
 
-        static public List<string> OverlapGraph2(List<string> kmers)
+        static public List<string> OverlapGraph(List<string> kmers)
         {
             List<string> output = new List<string>();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
@@ -37,6 +37,7 @@ namespace BioInformaticsConsoleApp
             string suffix = "";
             bool found = false;
             bool nodeFound = false;
+            bool lastNode = false;
 
             for (int i = 0; i < kmers.Count; i++)
             {
@@ -45,12 +46,17 @@ namespace BioInformaticsConsoleApp
                 found = false;
                 List<string> Nodes = new List<string>();
 
-                 for (int x = 0; x < kmers.Count; x++)
+                for (int x = 0; x < kmers.Count; x++)
                 {
                     connectedNode = kmers[x];
                     prefix = connectedNode.Substring(0, k - 1);
 
-                    if (suffix == prefix)
+                    if (i == kmers.Count - 1 && x == kmers.Count - 1)
+                    {
+                        lastNode = true;
+                    }
+
+                    if (suffix == prefix || lastNode)   // hack for last node
                     {
                         // check if already in list
                         nodeFound = false;
@@ -76,9 +82,9 @@ namespace BioInformaticsConsoleApp
                     Nodes.Sort();
                     string key = currentNode.Substring(0, k - 1);
 
-                    if (!dict.ContainsKey(currentNode.Substring(0, k - 1)))
+                    if (!dict.ContainsKey(key))
                     {
-                        dict.Add(currentNode.Substring(0, k - 1), Nodes);
+                        dict.Add(key, Nodes);
                     }
                     else
                     {
@@ -106,19 +112,20 @@ namespace BioInformaticsConsoleApp
                 outputNode = key + " -> ";
 
                 foreach (string item in row)
-
                     outputNode += item + ",";
 
                 outputNode = outputNode.Substring(0, outputNode.Length - 1);        // remove last comma
 
                 output.Add(outputNode);
             }
+            output.Sort();
 
             WriteListToFile("C:\\Temp\\output.txt", output);
 
 
             return output;
         }
+
 
         static public int NumberOfOccurances(string kmer, List<string> kmerList)
         {
@@ -132,7 +139,7 @@ namespace BioInformaticsConsoleApp
             return count;
 
         }
-        static public List<string> OverlapGraph(List<string> kmers)
+        static public List<string> OverlapGraphOld(List<string> kmers)
         {
             List<string> output = new List<string>();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
@@ -245,19 +252,16 @@ namespace BioInformaticsConsoleApp
             string sequence = "";
             string suffix = "";
             string prefix = "";
-            bool found = false;
 
             foreach (string kmer in kmerArray)
             {
                 suffix = kmer.Substring(0, kmer.Length - 1);
-                found = false;
 
                 for (int i = 0; i < kmerArray.Count; i++)
                 {
                     prefix = kmerArray[i];
                     if (prefix == suffix)
                     {
-                        found = true;
                         break;
                     }
                 }
@@ -270,9 +274,11 @@ namespace BioInformaticsConsoleApp
         static public List<string> Composition(string Text, int k)
         {
             List<string> kmerArray = new List<string>();
+            string str = "";
 
             for (int i = 0; i < Text.Length - k + 1; i++)
             {
+                str = Text.Substring(i, k);
                 kmerArray.Add(Text.Substring(i, k));
             }
 
@@ -1537,6 +1543,7 @@ namespace BioInformaticsConsoleApp
             {
                 try
                 {
+//                    myfile.WriteLine("Length:  {0}", strList.Count);
                     foreach (string s in strList)
 
                         myfile.WriteLine(s);
