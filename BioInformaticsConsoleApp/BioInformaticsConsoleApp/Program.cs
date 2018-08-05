@@ -14,7 +14,7 @@ namespace BioInformaticsConsoleApp
         private const string method = "DeBruijnGraph";
 
 
-        static public List<string> DeBruijnGraph(int k, string Text)
+        public static List<string> DeBruijnGraph(int k, string Text)
         {
             List<string> output = new List<string>();
             List<string> kmers = new List<string>();
