@@ -2,17 +2,68 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Collections;
 
 namespace BioInformaticsConsoleApp
 {
+     public class Node
+    {
+        public string node { get; set; }
+        public List<string> connectedNodes { get; set; }
+
+        public Node()
+        {
+            this.node = node;
+
+            connectedNodes = new List<string>();
+        }
+    }
+
     class Program
     {
         private const int NucleotideSize = 4;
         //private const string inputFile = "..\\..\\..\\Data Files\\dataset_200_8.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "OverlapGraph";
+        private const string method = "EulerianCycle";
 
+
+        static public string EulerianCycle(List<string> directedGraph)
+        {
+            string cycleOutput = "";
+            Dictionary<string, Node> dict = new Dictionary<string, Node>();
+
+            foreach (string str in directedGraph)
+            {
+                string[] nodes = str.Split(" -> ");
+
+                if (nodes.Length == 2)
+                {
+                    string[] connectedNodes = nodes[1].Split(",");
+                    Node child = new Node();
+
+                    foreach (string childNode in connectedNodes)
+                    {
+                        child.connectedNodes.Add(childNode);
+                    }
+                    dict.Add(nodes[0], child);
+                }
+            }
+
+            bool cycleComplete = false;
+            int cycleSize = 0;
+            string currentCylce = "";
+
+            // Now try to cycle thru the nodes
+            while (cycleComplete == false)
+            {
+//                foreach (var d in graphDict)
+                {
+                    
+                }
+            }
+
+            return cycleOutput;
+        }
 
         public static List<string> DeBruijnGraph(List<string> kmers)
         {
@@ -1792,6 +1843,19 @@ namespace BioInformaticsConsoleApp
                 searchResult = DeBruijnGraph(strLine);
 
                 WriteListToFile("C:\\Temp\\output.txt", searchResult);
+
+            }
+            if ("EulerianCycle" == method)
+            {
+                List<string> strLine = new List<string>();
+                string result = "";
+
+                foreach (string s in fileText)
+                    strLine.Add(s);
+
+                result = EulerianCycle(strLine);
+
+//                WriteListToFile("C:\\Temp\\output.txt", result);
 
             }
 
