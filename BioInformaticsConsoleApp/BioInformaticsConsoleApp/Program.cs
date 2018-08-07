@@ -9,9 +9,19 @@ namespace BioInformaticsConsoleApp
     class Program
     {
         private const int NucleotideSize = 4;
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_199_6.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_200_8.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "DeBruijnGraph";
+        private const string method = "DeBruijnGraph2";
+
+
+        public static List<string> DeBruijnGraph2(List<string> kmers)
+        {
+            List<string> output = new List<string>();
+
+            output = OverlapGraph(kmers);
+
+            return output;
+        }
 
 
         public static List<string> DeBruijnGraph(int k, string Text)
@@ -26,6 +36,20 @@ namespace BioInformaticsConsoleApp
             return output;
         }
 
+        static public int NumberOfOccurances(string kmer, List<string> kmerList)
+        {
+            int count = 0;
+
+            foreach (string str in kmerList)
+            {
+                if (str == kmer)
+                    count += 1;
+            }
+            return count;
+
+        }
+
+        
         static public List<string> OverlapGraph(List<string> kmers)
         {
             List<string> output = new List<string>();
@@ -37,7 +61,6 @@ namespace BioInformaticsConsoleApp
             string suffix = "";
             bool found = false;
             bool nodeFound = false;
-            bool lastNode = false;
 
             for (int i = 0; i < kmers.Count; i++)
             {
@@ -51,12 +74,7 @@ namespace BioInformaticsConsoleApp
                     connectedNode = kmers[x];
                     prefix = connectedNode.Substring(0, k - 1);
 
-                    if (i == kmers.Count - 1 && x == kmers.Count - 1)
-                    {
-                        lastNode = true;
-                    }
-
-                    if (suffix == prefix || lastNode)   // hack for last node
+                    if (suffix == prefix)
                     {
                         // check if already in list
                         nodeFound = false;
@@ -70,6 +88,14 @@ namespace BioInformaticsConsoleApp
                         }
 
                         if (!nodeFound)
+                        {
+                            Nodes.Add(suffix);
+                            found = true;
+                        }
+                    }
+                    else if (!nodeFound && x == kmers.Count - 1)    // scanned all nodes, check if not found, if so at the last node, so add
+                    {
+                        if (Nodes.Count == 0)
                         {
                             Nodes.Add(suffix);
                             found = true;
@@ -99,7 +125,7 @@ namespace BioInformaticsConsoleApp
 
                         dict[key] = tmpNodes;
                     }
-                    
+
                 }
             }
 
@@ -125,25 +151,12 @@ namespace BioInformaticsConsoleApp
 
             return output;
         }
+        
 
-
-        static public int NumberOfOccurances(string kmer, List<string> kmerList)
-        {
-            int count = 0;
-
-            foreach (string str in kmerList)
-            {
-                if (str == kmer)
-                    count += 1;
-            }
-            return count;
-
-        }
         static public List<string> OverlapGraphOld(List<string> kmers)
         {
             List<string> output = new List<string>();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
-//            Dictionary<string, int> kmerLookup = new Dictionary<string, int>();
             string prefix = "";
             int k = kmers[0].Length;
             string currentNode = "";
@@ -151,7 +164,6 @@ namespace BioInformaticsConsoleApp
             string suffix = "";
             bool found = false;
             bool nodeFound = false;
-//            string sequence = "";
 
             for (int i = 0; i < kmers.Count; i++)
             {
@@ -1766,7 +1778,7 @@ namespace BioInformaticsConsoleApp
                 foreach (string s in fileText)
                     input.Add(s);
 
-                output = OverlapGraph(input);
+//                output = OverlapGraph(input);
             }
 
             if ("DeBruijnGraph" == method)
@@ -1781,6 +1793,19 @@ namespace BioInformaticsConsoleApp
 
             }
 
+            if ("DeBruijnGraph2" == method)
+            {
+                List<string> strLine = new List<string>();
+                List<string> searchResult = new List<string>();
+
+                foreach (string s in fileText)
+                    strLine.Add(s);
+
+                searchResult = DeBruijnGraph2(strLine);
+
+                WriteListToFile("C:\\Temp\\output.txt", searchResult);
+
+            }
 
         }
     }
