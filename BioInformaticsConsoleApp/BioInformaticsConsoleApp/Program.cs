@@ -11,46 +11,10 @@ namespace BioInformaticsConsoleApp
         private const int NucleotideSize = 4;
         //private const string inputFile = "..\\..\\..\\Data Files\\dataset_200_8.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "DeBruijnGraph2";
+        private const string method = "OverlapGraph";
 
 
-        public static List<string> DeBruijnGraph2(List<string> kmers)
-        {
-            List<string> output = new List<string>();
-
-            output = OverlapGraph(kmers);
-
-            return output;
-        }
-
-
-        public static List<string> DeBruijnGraph(int k, string Text)
-        {
-            List<string> output = new List<string>();
-            List<string> kmers = new List<string>();
-
-            kmers = Composition(Text, k);
-
-            output = OverlapGraph(kmers);
-
-            return output;
-        }
-
-        static public int NumberOfOccurances(string kmer, List<string> kmerList)
-        {
-            int count = 0;
-
-            foreach (string str in kmerList)
-            {
-                if (str == kmer)
-                    count += 1;
-            }
-            return count;
-
-        }
-
-        
-        static public List<string> OverlapGraph(List<string> kmers)
+        public static List<string> DeBruijnGraph(List<string> kmers)
         {
             List<string> output = new List<string>();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
@@ -125,7 +89,6 @@ namespace BioInformaticsConsoleApp
 
                         dict[key] = tmpNodes;
                     }
-
                 }
             }
 
@@ -148,12 +111,37 @@ namespace BioInformaticsConsoleApp
 
             WriteListToFile("C:\\Temp\\output.txt", output);
 
+            return output;
+        }
+
+
+        public static List<string> DeBruijnGraph(int k, string Text)
+        {
+            List<string> output = new List<string>();
+            List<string> kmers = new List<string>();
+
+            kmers = Composition(Text, k);
+
+            output = DeBruijnGraph(kmers);
 
             return output;
         }
-        
 
-        static public List<string> OverlapGraphOld(List<string> kmers)
+        static public int NumberOfOccurances(string kmer, List<string> kmerList)
+        {
+            int count = 0;
+
+            foreach (string str in kmerList)
+            {
+                if (str == kmer)
+                    count += 1;
+            }
+            return count;
+
+        }
+
+ 
+        static public List<string> OverlapGraph(List<string> kmers)
         {
             List<string> output = new List<string>();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
@@ -1778,7 +1766,7 @@ namespace BioInformaticsConsoleApp
                 foreach (string s in fileText)
                     input.Add(s);
 
-//                output = OverlapGraph(input);
+                output = OverlapGraph(input);
             }
 
             if ("DeBruijnGraph" == method)
@@ -1801,7 +1789,7 @@ namespace BioInformaticsConsoleApp
                 foreach (string s in fileText)
                     strLine.Add(s);
 
-                searchResult = DeBruijnGraph2(strLine);
+                searchResult = DeBruijnGraph(strLine);
 
                 WriteListToFile("C:\\Temp\\output.txt", searchResult);
 
