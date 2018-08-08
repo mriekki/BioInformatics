@@ -141,11 +141,8 @@ namespace BioInformaticsConsoleApp
             return cycleOutput;
         }
 
-        public static int FindCircuit(Dictionary<string, Node> nodeDict, Node currentNode, Circuit circuit)
+        public static void FindCircuit(Dictionary<string, Node> nodeDict, Node currentNode, Circuit circuit)
         {
-            int result = 0;
-//            int i = 0;
-
             if (currentNode.connectedNodes.Count == 0)
             {
                 circuit.AddNode(currentNode);
@@ -154,21 +151,14 @@ namespace BioInformaticsConsoleApp
             {
                 while (currentNode.connectedNodes.Count > 0)
                 {
-//                    for (int i = 0; i < currentNode.connectedNodes.Count; i++)
-//                    {
-                        string nextNode = currentNode.connectedNodes[0];  // pick next one 
-                        Node neighbor = nodeDict[nextNode];
-                        currentNode.connectedNodes.RemoveAt(0);
+                    string nextNode = currentNode.connectedNodes[0];  // pick next one 
+                    Node neighbor = nodeDict[nextNode];
+                    currentNode.connectedNodes.RemoveAt(0);
 
-                        FindCircuit(nodeDict, neighbor, circuit);
-
-//                    }
-//                    i++;
+                    FindCircuit(nodeDict, neighbor, circuit);
                 }
                 circuit.AddNode(currentNode);
             }
-
-            return result;
         }
 
         public static List<string> DeBruijnGraph(List<string> kmers)
