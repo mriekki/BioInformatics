@@ -10,20 +10,49 @@ namespace BioInformaticsConsoleApp
     {
         public string node { get; set; }
         public List<string> connectedNodes { get; set; }
+        public int inDegrees { get; set; }
+        public int outDegrees { get; set; }
 
         public Node()
         {
             this.node = node;
 
             connectedNodes = new List<string>();
+            inDegrees = outDegrees = 0;
+        }
+
+        public Node(string node)
+        {
+            this.node = node;
+            connectedNodes = new List<string>();
+            inDegrees = outDegrees = 0;
+        }
+    }
+
+    public class Circuit
+    {
+        public List<string> circuit;
+        public int currentPos;
+
+        public Circuit()
+        {
+            circuit = new List<string>();
+            currentPos = 0;
+        }
+
+        public void AddNode(Node newNode)
+        {
+            //            circuit[currentPos] = newNode.node;
+            circuit.Add(newNode.node);
+            currentPos++;
         }
     }
 
     class Program
     {
         private const int NucleotideSize = 4;
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_200_8.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_2.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "EulerianCycle";
 
 
@@ -31,6 +60,11 @@ namespace BioInformaticsConsoleApp
         {
             string cycleOutput = "";
             Dictionary<string, Node> dict = new Dictionary<string, Node>();
+            Node startingNode = new Node();
+            string startKey = "";
+            Random random = new Random();
+            int ranIndex = random.Next(0, directedGraph.Count - 1);
+            int count = 0;
 
             foreach (string str in directedGraph)
             {
@@ -39,30 +73,102 @@ namespace BioInformaticsConsoleApp
                 if (nodes.Length == 2)
                 {
                     string[] connectedNodes = nodes[1].Split(",");
-                    Node child = new Node();
+                    string key = nodes[0];
+                    Node child = new Node(key);
 
                     foreach (string childNode in connectedNodes)
                     {
                         child.connectedNodes.Add(childNode);
                     }
-                    dict.Add(nodes[0], child);
+                    dict.Add(key, child);
+
+                    // hack to get random starting node
+                    if (ranIndex == count)
+                        startKey = key;
+
+                    count++;
                 }
             }
 
-            bool cycleComplete = false;
-            int cycleSize = 0;
-            string currentCylce = "";
+            bool differentOutDegree = false;
+            int prevOutDegree = 0;
+            count = 0;
 
-            // Now try to cycle thru the nodes
-            while (cycleComplete == false)
+            // now Determine in & out degrees of each node
+            foreach(Node nd in dict.Values)
             {
-//                foreach (var d in graphDict)
+                nd.outDegrees += nd.connectedNodes.Count;
+                if (count == 0)
+                    prevOutDegree = nd.outDegrees;
+                else if (prevOutDegree != nd.outDegrees)
+                    differentOutDegree = true;
+
+                foreach(string sn in nd.connectedNodes)
                 {
-                    
+                    dict[sn].inDegrees += 1;
+                }
+                count++;
+            }
+
+            startingNode = dict[startKey];
+
+            if (differentOutDegree)
+            {
+                foreach (Node nd in dict.Values)
+                {
+                    if (nd.outDegrees == nd.inDegrees + 1)
+                    {
+                        startingNode = nd;
+                        break;
+                    }
                 }
             }
+
+            
+
+            Circuit circuit = new Circuit();
+
+            FindCircuit(dict, startingNode, circuit);
+
+            for (int k = circuit.circuit.Count - 1; k >= 0; k--)
+            {
+                cycleOutput += circuit.circuit[k] + "->";
+            }
+            // remove last arrow
+            cycleOutput = cycleOutput.Substring(0, cycleOutput.Length - 2);
+                
 
             return cycleOutput;
+        }
+
+        public static int FindCircuit(Dictionary<string, Node> nodeDict, Node currentNode, Circuit circuit)
+        {
+            int result = 0;
+//            int i = 0;
+
+            if (currentNode.connectedNodes.Count == 0)
+            {
+                circuit.AddNode(currentNode);
+            }
+            else
+            {
+                while (currentNode.connectedNodes.Count > 0)
+                {
+//                    for (int i = 0; i < currentNode.connectedNodes.Count; i++)
+//                    {
+                        string nextNode = currentNode.connectedNodes[0];  // pick next one 
+                        Node neighbor = nodeDict[nextNode];
+                        currentNode.connectedNodes.RemoveAt(0);
+
+                        FindCircuit(nodeDict, neighbor, circuit);
+
+//                    }
+//                    i++;
+                }
+                circuit.AddNode(currentNode);
+            }
+
+            return result;
         }
 
         public static List<string> DeBruijnGraph(List<string> kmers)
