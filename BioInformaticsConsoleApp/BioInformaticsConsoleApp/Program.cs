@@ -9,10 +9,30 @@ namespace BioInformaticsConsoleApp
     class Program
     {
         private const int NucleotideSize = 4;
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_6.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "EulerianCycle";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_7.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "StringReconstruction";
 
+
+        static public string StringReconstruction(int k, List<string> kmers)
+        {
+            string sequence = "";
+            List<string> directedGraph = new List<string>();
+            List<string> orderedKmers = new List<string>();
+
+            directedGraph = DeBruijnGraph(kmers);
+
+            sequence = EulerianCycle(directedGraph);
+
+            string[] tmpKmers = sequence.Split("->");
+
+            foreach (string s in tmpKmers)
+                orderedKmers.Add(s);
+
+            sequence = StringSpelledByGenomePath(orderedKmers);
+
+            return sequence;
+        }
 
         static public string EulerianCycle(List<string> directedGraph)
         {
@@ -48,32 +68,40 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
-            bool differentOutDegree = false;
-            int prevOutDegree = 0;
-            count = 0;
-
-            // now Determine in & out degrees of each node
+             // now Determine in & out degrees of each node
             foreach(Node nd in dict.Values)
             {
                 nd.outDegrees += nd.connectedNodes.Count;
-                if (count == 0)
-                    prevOutDegree = nd.outDegrees;
-                else if (prevOutDegree != nd.outDegrees)
-                    differentOutDegree = true;
 
                 foreach(string sn in nd.connectedNodes)
                 {
                     if (dict.ContainsKey(sn))
                         dict[sn].inDegrees += 1;
                 }
-                count++;
             }
 
-            startingNode = dict[startKey];
+            bool differentOutDegree = false;
+            int prevDegree = 0;
+            count = 0;
 
-            if (differentOutDegree)
+            startingNode = dict[startKey];
+            foreach (Node nd in dict.Values)
             {
-                foreach (Node nd in dict.Values)
+                int degrees = nd.outDegrees + nd.inDegrees;
+                if (count == 0)
+                {
+                    prevDegree = degrees;
+                    if (nd.outDegrees == nd.inDegrees + 1)
+                    {
+                        startingNode = nd;
+                        break;
+                    }
+
+                }
+                else if (prevDegree != degrees)
+                    differentOutDegree = true;
+
+                if (differentOutDegree)
                 {
                     if (nd.outDegrees == nd.inDegrees + 1)
                     {
@@ -81,6 +109,7 @@ namespace BioInformaticsConsoleApp
                         break;
                     }
                 }
+                count++;
             }
 
             Circuit circuit = new Circuit();
@@ -152,10 +181,12 @@ namespace BioInformaticsConsoleApp
                     connectedNode = kmers[x];
                     prefix = connectedNode.Substring(0, k - 1);
 
+                    nodeFound = false;
+
                     if (suffix == prefix)
                     {
                         // check if already in list
-                        nodeFound = false;
+//                        nodeFound = false;
                         foreach (string s in Nodes)
                         {
                             if (s == suffix)
@@ -1921,6 +1952,21 @@ namespace BioInformaticsConsoleApp
 //                WriteListToFile("C:\\Temp\\output.txt", result);
 
             }
+            if ("StringReconstruction" == method)
+            {
+                List<string> strLine = new List<string>();
+                string result = "";
+                Int32.TryParse(fileText[0], out k);
+
+                for (int i = 1; i < fileText.Length; i++)
+                    strLine.Add(fileText[i]);
+
+                result = StringReconstruction(k, strLine);
+
+                //                WriteListToFile("C:\\Temp\\output.txt", result);
+
+            }
+
 
         }
     }
