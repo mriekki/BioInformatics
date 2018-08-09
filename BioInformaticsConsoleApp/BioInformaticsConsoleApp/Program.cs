@@ -6,52 +6,10 @@ using System.Collections;
 
 namespace BioInformaticsConsoleApp
 {
-     public class Node
-    {
-        public string node { get; set; }
-        public List<string> connectedNodes { get; set; }
-        public int inDegrees { get; set; }
-        public int outDegrees { get; set; }
-
-        public Node()
-        {
-            this.node = node;
-
-            connectedNodes = new List<string>();
-            inDegrees = outDegrees = 0;
-        }
-
-        public Node(string node)
-        {
-            this.node = node;
-            connectedNodes = new List<string>();
-            inDegrees = outDegrees = 0;
-        }
-    }
-
-    public class Circuit
-    {
-        public List<string> circuit;
-        public int currentPos;
-
-        public Circuit()
-        {
-            circuit = new List<string>();
-            currentPos = 0;
-        }
-
-        public void AddNode(Node newNode)
-        {
-            //            circuit[currentPos] = newNode.node;
-            circuit.Add(newNode.node);
-            currentPos++;
-        }
-    }
-
     class Program
     {
         private const int NucleotideSize = 4;
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_2.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_6.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "EulerianCycle";
 
@@ -105,7 +63,8 @@ namespace BioInformaticsConsoleApp
 
                 foreach(string sn in nd.connectedNodes)
                 {
-                    dict[sn].inDegrees += 1;
+                    if (dict.ContainsKey(sn))
+                        dict[sn].inDegrees += 1;
                 }
                 count++;
             }
@@ -123,8 +82,6 @@ namespace BioInformaticsConsoleApp
                     }
                 }
             }
-
-            
 
             Circuit circuit = new Circuit();
 
@@ -152,10 +109,20 @@ namespace BioInformaticsConsoleApp
                 while (currentNode.connectedNodes.Count > 0)
                 {
                     string nextNode = currentNode.connectedNodes[0];  // pick next one 
-                    Node neighbor = nodeDict[nextNode];
+
                     currentNode.connectedNodes.RemoveAt(0);
 
-                    FindCircuit(nodeDict, neighbor, circuit);
+                    if (nodeDict.ContainsKey(nextNode))
+                    {
+                        Node neighbor = nodeDict[nextNode];
+
+                        FindCircuit(nodeDict, neighbor, circuit);
+                    }
+                    else // end of Eulerian path
+                    {
+                        Node endNode = new Node(nextNode);
+                        circuit.AddNode(endNode);
+                    }
                 }
                 circuit.AddNode(currentNode);
             }
@@ -1957,5 +1924,47 @@ namespace BioInformaticsConsoleApp
 
         }
     }
+    public class Node
+    {
+        public string node { get; set; }
+        public List<string> connectedNodes { get; set; }
+        public int inDegrees { get; set; }
+        public int outDegrees { get; set; }
+
+        public Node()
+        {
+            this.node = node;
+
+            connectedNodes = new List<string>();
+            inDegrees = outDegrees = 0;
+        }
+
+        public Node(string node)
+        {
+            this.node = node;
+            connectedNodes = new List<string>();
+            inDegrees = outDegrees = 0;
+        }
+    }
+
+    public class Circuit
+    {
+        public List<string> circuit;
+        public int currentPos;
+
+        public Circuit()
+        {
+            circuit = new List<string>();
+            currentPos = 0;
+        }
+
+        public void AddNode(Node newNode)
+        {
+            //            circuit[currentPos] = newNode.node;
+            circuit.Add(newNode.node);
+            currentPos++;
+        }
+    }
+
 
 }
