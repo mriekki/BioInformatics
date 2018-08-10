@@ -3,15 +3,18 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Linq;
 
 namespace BioInformaticsConsoleApp
 {
     class Program
     {
         private const int NucleotideSize = 4;
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_7.txt";
+        private static char[] zero_ones = { '0', '1' };
+
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_11.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "StringReconstruction";
+        private const string method = "UniversalCircularString";
 
 
         static public string StringReconstruction(int k, List<string> kmers)
@@ -33,6 +36,69 @@ namespace BioInformaticsConsoleApp
 
             return sequence;
         }
+
+
+        static public string UniversalCircularString(int k)
+        {
+            string result = "";
+            List<string> kmers = new List<string>();
+
+            kmers = UniversalGenerator(k);
+
+            kmers.Sort();
+
+            result = StringReconstruction(k, kmers);
+
+            string prefix = result.Substring(0, k - 1);
+            string suffix = result.Substring(result.Length - k + 1, k - 1);
+
+            if (prefix == suffix)
+            {
+                result = result.Substring(0, result.Length - k + 1);
+            }
+
+            return result;
+        }
+
+        static public List<string> UniversalGenerator(int kmerSize)
+        {
+            List<string> outputList = new List<string>();
+
+            for (int i = 0; i < kmerSize; i++)
+            {
+                outputList = GenerateTreeNodes(zero_ones, outputList);
+            }
+
+            outputList.Sort();
+
+            return outputList;
+        }
+
+        static public List<string> GenerateTreeNodes(char[] pattern, List<string> inputList)
+        {
+            List<string> outputList = new List<string>();
+
+            if (inputList.Count > 0)
+            {
+                foreach (string str in inputList)
+                {
+                    foreach (char c in pattern)
+                    {
+                        outputList.Add(str + c.ToString());
+                    }
+                }
+            }
+            else
+            {
+                foreach (char c in pattern)
+                {
+                    outputList.Add(c.ToString());
+                }
+            }
+
+            return outputList;
+        }
+
 
         static public string EulerianCycle(List<string> directedGraph)
         {
@@ -186,7 +252,6 @@ namespace BioInformaticsConsoleApp
                     if (suffix == prefix)
                     {
                         // check if already in list
-//                        nodeFound = false;
                         foreach (string s in Nodes)
                         {
                             if (s == suffix)
@@ -282,10 +347,8 @@ namespace BioInformaticsConsoleApp
                     count += 1;
             }
             return count;
-
         }
-
- 
+         
         static public List<string> OverlapGraph(List<string> kmers)
         {
             List<string> output = new List<string>();
@@ -368,7 +431,7 @@ namespace BioInformaticsConsoleApp
         }
 
 
-        static public string StringSpelledByGenomePath(List<string> kmers)
+        static public string StringSpelledByGenomePathOld(List<string> kmers)
         {
             string sequence = "";
             string prefix = "";
@@ -392,6 +455,30 @@ namespace BioInformaticsConsoleApp
             return sequence;
         }
 
+        static public string StringSpelledByGenomePath(List<string> kmers)
+        {
+            string sequence = "";
+            string prefix = "";
+            string suffix = "";
+            int k = kmers[0].Length;
+
+            sequence = kmers[0];
+
+            for (int i = 1; i < kmers.Count; i++)
+            {
+                prefix = kmers[i].Substring(0, k - 1);
+                suffix = kmers[i - 1].Substring(1, k - 1);
+
+                if (prefix == suffix)
+                {
+                    sequence += kmers[i].Substring(kmers[i].Length-1, 1);       // add last character of current kmer
+                }
+            }
+
+            return sequence;
+        }
+
+
         static public string Reconstruction(int k, List<string> kmerArray)
         {
             string sequence = "";
@@ -400,17 +487,17 @@ namespace BioInformaticsConsoleApp
 
             foreach (string kmer in kmerArray)
             {
-                suffix = kmer.Substring(0, kmer.Length - 1);
+                suffix = kmer.Substring(1, kmer.Length - 1);
 
                 for (int i = 0; i < kmerArray.Count; i++)
                 {
-                    prefix = kmerArray[i];
+                    prefix = kmerArray[i].Substring(0, kmer.Length - 1);
                     if (prefix == suffix)
                     {
                         break;
                     }
                 }
-                sequence += "";
+                sequence += prefix;
             }
 
             return sequence;
@@ -1967,6 +2054,15 @@ namespace BioInformaticsConsoleApp
 
             }
 
+
+            if ("UniversalCircularString" == method)
+            {
+                List<string> strLine = new List<string>();
+                string result = "";
+                Int32.TryParse(fileText[0], out k);
+
+                result = UniversalCircularString(k);
+            }
 
         }
     }
