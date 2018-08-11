@@ -12,9 +12,168 @@ namespace BioInformaticsConsoleApp
         private const int NucleotideSize = 4;
         private static char[] zero_ones = { '0', '1' };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_203_11.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "UniversalCircularString";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_204_15.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "StringReconstructionFromReadPairs";
+
+        public static string StringSpelledByGappedPatterns(List<string> GappedPatterns, int k, int d)
+        {
+            string result = "";
+            List<string> pattern1 = new List<string>();
+            List<string> pattern2 = new List<string>();
+            string[] split;
+            string prefixPattern = "";
+            string suffixPattern = "";
+            bool perfectMatch = true;
+
+            foreach(string str in GappedPatterns)
+            {
+                split = str.Split("|");
+                pattern1.Add(split[0]);
+                pattern2.Add(split[1]);
+            }
+
+            prefixPattern = StringSpelledByGenomePath(pattern1);
+            suffixPattern = StringSpelledByGenomePath(pattern2);
+
+            for (int i = k + d; i < prefixPattern.Length; i++)
+            {
+                string p1 = prefixPattern[i].ToString();
+                string p2 = suffixPattern[i - k - d].ToString();
+                if (prefixPattern[i] != suffixPattern[i - k - d])
+                {
+                    perfectMatch = false;
+                    break;
+                }
+                
+            }
+
+            if (perfectMatch)
+            {
+                string p1 = suffixPattern.Substring(suffixPattern.Length - (k + d), k + d);
+                result = prefixPattern + suffixPattern.Substring(suffixPattern.Length - (k + d), k + d);
+            }
+            else
+                result = "there is no string spelled by the gapped patterns";
+
+            return result;
+        }
+
+        public static string StringSpelledByGappedPatterns3(string prefixPattern, string suffixPattern, int k, int d)
+        {
+            string result = "";
+//            List<string> pattern1 = new List<string>();
+//            List<string> pattern2 = new List<string>();
+//            string[] split;
+//            string prefixPattern = "";
+//            string suffixPattern = "";
+            bool perfectMatch = true;
+
+/*            foreach (string str in GappedPatterns)
+            {
+                split = str.Split("|");
+                pattern1.Add(split[0]);
+                pattern2.Add(split[1]);
+            }   */
+
+//            prefixPattern = StringSpelledByGenomePath(pattern1);
+//            suffixPattern = StringSpelledByGenomePath(pattern2);
+
+            for (int i = k + d; i < prefixPattern.Length; i++)
+            {
+                string p1 = prefixPattern[i].ToString();
+                string p2 = suffixPattern[i - k - d].ToString();
+                if (prefixPattern[i] != suffixPattern[i - k - d])
+                {
+                    perfectMatch = false;
+                    break;
+                }
+
+            }
+
+            if (perfectMatch)
+            {
+                string p1 = suffixPattern.Substring(suffixPattern.Length - (k + d), k + d);
+                result = prefixPattern + suffixPattern.Substring(suffixPattern.Length - (k + d), k + d);
+            }
+            else
+                result = "there is no string spelled by the gapped patterns";
+
+            return result;
+        }
+
+        static public string StringReconstructionFromReadPairs(int k, int d, List<string> GappedPatterns)
+        {
+            string sequence1 = "";
+            string sequence2 = "";
+            string result = "";
+            List<string> directedGraph1 = new List<string>();
+            List<string> directedGraph2 = new List<string>();
+            List<string> orderedKmers1 = new List<string>();
+            List<string> orderedKmers2 = new List<string>();
+
+            List<string> pattern1 = new List<string>();
+            List<string> pattern2 = new List<string>();
+            string[] split;
+//            string prefixPattern = "";
+//            string suffixPattern = "";
+//            bool perfectMatch = true;
+
+            foreach (string str in GappedPatterns)
+            {
+                split = str.Split("|");
+//                prefixPattern = split[0].Substring(0, k - 1) + split[1].Substring(0, k - 1);
+//                suffixPattern = split[0].Substring(1, k - 1) + split[1].Substring(1, k - 1);
+
+                pattern1.Add(split[0]);
+                pattern2.Add(split[1]);
+            }
+
+            directedGraph1 = DeBruijnGraph(pattern1);
+            directedGraph2 = DeBruijnGraph(pattern2);
+
+            sequence1 = EulerianCycle(directedGraph1);
+            sequence2 = EulerianCycle(directedGraph2);
+
+            string[] tmpKmers1 = sequence1.Split("->");
+            string[] tmpKmers2 = sequence2.Split("->");
+
+            foreach (string s in tmpKmers1)
+                orderedKmers1.Add(s);
+
+            foreach (string s in tmpKmers2)
+                orderedKmers2.Add(s);
+
+            sequence1 = StringSpelledByGenomePath(orderedKmers1);
+
+            sequence2 = StringSpelledByGenomePath(orderedKmers2);
+
+            result = StringSpelledByGappedPatterns3(sequence1, sequence2, k, d);
+
+            return result;
+        }
+
+        static public string StringReconstructionFromReadPairs2(int k, int d, List<string> kmers)
+        {
+            string sequence = "";
+            List<string> directedGraph = new List<string>();
+            List<string> orderedKmers = new List<string>();
+
+            sequence = StringSpelledByGappedPatterns(kmers, k, d);
+
+            directedGraph = DeBruijnGraph(k, sequence);
+
+            sequence = EulerianCycle(directedGraph);
+
+            string[] tmpKmers = sequence.Split("->");
+
+            foreach (string s in tmpKmers)
+                orderedKmers.Add(s);
+
+            sequence = StringSpelledByGenomePath(orderedKmers);
+
+            return sequence;
+        }
 
 
         static public string StringReconstruction(int k, List<string> kmers)
@@ -1803,7 +1962,7 @@ namespace BioInformaticsConsoleApp
             //            string[] dnaArray = new string[fileText.Length - 2];
             string Text = "";
             int k = 0;
-//            int d = 0;
+            int d = 0;
             int t = 0;
             int N = 1;
             string strResult = "";
@@ -2062,6 +2221,38 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(fileText[0], out k);
 
                 result = UniversalCircularString(k);
+            }
+
+            if ("StringSpelledByGappedPatterns" == method)
+            {
+                List<string> strLine = new List<string>();
+                string result = "";
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out d);
+
+                for (int i = 2; i < fileText.Length; i++)
+                    strLine.Add(fileText[i]);
+
+                result = StringSpelledByGappedPatterns(strLine, k, d);
+
+                //                WriteListToFile("C:\\Temp\\output.txt", result);
+
+            }
+
+            if ("StringReconstructionFromReadPairs" == method)
+            {
+                List<string> strLine = new List<string>();
+                string result = "";
+                Int32.TryParse(fileText[0], out k);
+                Int32.TryParse(fileText[1], out d);
+
+                for (int i = 2; i < fileText.Length; i++)
+                    strLine.Add(fileText[i]);
+
+                result = StringReconstructionFromReadPairs(k, d, strLine);
+
+                //                WriteListToFile("C:\\Temp\\output.txt", result);
+
             }
 
         }
