@@ -12,9 +12,54 @@ namespace BioInformaticsConsoleApp
         private const int NucleotideSize = 4;
         private static char[] zero_ones = { '0', '1' };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_204_15.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "StringReconstructionFromReadPairs";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_200_8.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "StringSpelledByGappedPatterns";
+
+
+
+        public static string StringSpelledByGappedPatterns2(List<string> GappedPatterns, int k, int d)
+        {
+            string result = "";
+            List<string> pattern1 = new List<string>();
+            List<string> pattern2 = new List<string>();
+            string[] split;
+            string prefixPattern = "";
+            string suffixPattern = "";
+            bool perfectMatch = true;
+            string combinedKmer = "";
+
+            foreach (string str in GappedPatterns)
+            {
+                split = str.Split("|");
+                pattern1.Add(split[0]);
+                pattern2.Add(split[1]);
+            }
+
+            prefixPattern = StringSpelledByGenomePath(pattern1);
+//            suffixPattern = StringSpelledByGenomePath(pattern2);
+
+            for (int i = k + d; i < prefixPattern.Length; i++)
+            {
+                string p1 = prefixPattern[i].ToString();
+                string p2 = suffixPattern[i - k - d].ToString();
+                if (prefixPattern[i] != suffixPattern[i - k - d])
+                {
+                    perfectMatch = false;
+                    break;
+                }
+            }
+
+            if (perfectMatch)
+            {
+                string p1 = suffixPattern.Substring(suffixPattern.Length - (k + d), k + d);
+                result = prefixPattern + suffixPattern.Substring(suffixPattern.Length - (k + d), k + d);
+            }
+            else
+                result = "there is no string spelled by the gapped patterns";
+
+            return result;
+        }
 
         public static string StringSpelledByGappedPatterns(List<string> GappedPatterns, int k, int d)
         {
@@ -33,6 +78,8 @@ namespace BioInformaticsConsoleApp
                 pattern2.Add(split[1]);
             }
 
+            PairedDeBruijnGraph(pattern1, pattern1);
+
             prefixPattern = StringSpelledByGenomePath(pattern1);
             suffixPattern = StringSpelledByGenomePath(pattern2);
 
@@ -45,7 +92,6 @@ namespace BioInformaticsConsoleApp
                     perfectMatch = false;
                     break;
                 }
-                
             }
 
             if (perfectMatch)
@@ -62,25 +108,14 @@ namespace BioInformaticsConsoleApp
         public static string StringSpelledByGappedPatterns3(string prefixPattern, string suffixPattern, int k, int d)
         {
             string result = "";
-//            List<string> pattern1 = new List<string>();
-//            List<string> pattern2 = new List<string>();
-//            string[] split;
-//            string prefixPattern = "";
-//            string suffixPattern = "";
             bool perfectMatch = true;
 
-/*            foreach (string str in GappedPatterns)
-            {
-                split = str.Split("|");
-                pattern1.Add(split[0]);
-                pattern2.Add(split[1]);
-            }   */
-
-//            prefixPattern = StringSpelledByGenomePath(pattern1);
-//            suffixPattern = StringSpelledByGenomePath(pattern2);
+            int pl = prefixPattern.Length;
 
             for (int i = k + d; i < prefixPattern.Length; i++)
             {
+                int offset = i - k - d;
+
                 string p1 = prefixPattern[i].ToString();
                 string p2 = suffixPattern[i - k - d].ToString();
                 if (prefixPattern[i] != suffixPattern[i - k - d])
@@ -88,7 +123,6 @@ namespace BioInformaticsConsoleApp
                     perfectMatch = false;
                     break;
                 }
-
             }
 
             if (perfectMatch)
@@ -115,16 +149,10 @@ namespace BioInformaticsConsoleApp
             List<string> pattern1 = new List<string>();
             List<string> pattern2 = new List<string>();
             string[] split;
-//            string prefixPattern = "";
-//            string suffixPattern = "";
-//            bool perfectMatch = true;
 
             foreach (string str in GappedPatterns)
             {
                 split = str.Split("|");
-//                prefixPattern = split[0].Substring(0, k - 1) + split[1].Substring(0, k - 1);
-//                suffixPattern = split[0].Substring(1, k - 1) + split[1].Substring(1, k - 1);
-
                 pattern1.Add(split[0]);
                 pattern2.Add(split[1]);
             }
@@ -153,30 +181,7 @@ namespace BioInformaticsConsoleApp
             return result;
         }
 
-        static public string StringReconstructionFromReadPairs2(int k, int d, List<string> kmers)
-        {
-            string sequence = "";
-            List<string> directedGraph = new List<string>();
-            List<string> orderedKmers = new List<string>();
-
-            sequence = StringSpelledByGappedPatterns(kmers, k, d);
-
-            directedGraph = DeBruijnGraph(k, sequence);
-
-            sequence = EulerianCycle(directedGraph);
-
-            string[] tmpKmers = sequence.Split("->");
-
-            foreach (string s in tmpKmers)
-                orderedKmers.Add(s);
-
-            sequence = StringSpelledByGenomePath(orderedKmers);
-
-            return sequence;
-        }
-
-
-        static public string StringReconstruction(int k, List<string> kmers)
+         static public string StringReconstruction(int k, List<string> kmers)
         {
             string sequence = "";
             List<string> directedGraph = new List<string>();
@@ -305,36 +310,19 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
-            bool differentOutDegree = false;
-            int prevDegree = 0;
-            count = 0;
-
             startingNode = dict[startKey];
             foreach (Node nd in dict.Values)
             {
-                int degrees = nd.outDegrees + nd.inDegrees;
-                if (count == 0)
-                {
-                    prevDegree = degrees;
-                    if (nd.outDegrees == nd.inDegrees + 1)
-                    {
-                        startingNode = nd;
-                        break;
-                    }
-
-                }
-                else if (prevDegree != degrees)
-                    differentOutDegree = true;
-
-                if (differentOutDegree)
+                if (nd.inDegrees != nd.outDegrees)
                 {
                     if (nd.outDegrees == nd.inDegrees + 1)
                     {
                         startingNode = nd;
                         break;
                     }
+
+                    int f = 0;
                 }
-                count++;
             }
 
             Circuit circuit = new Circuit();
@@ -483,6 +471,126 @@ namespace BioInformaticsConsoleApp
             return output;
         }
 
+        public static List<string> PairedDeBruijnGraph(List<string> kmers, List<string> pairedKmers)
+        {
+            List<string> output = new List<string>();
+            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+            string prefix = "";
+            int k = kmers[0].Length;
+            string currentNode = "";
+            string connectedNode = "";
+            string suffix = "";
+            bool found = false;
+            bool nodeFound = false;
+            string pairedPrefix = "";
+            string pairedSuffix = "";
+            string combinedSuffix = "";
+
+            for (int i = 0; i < kmers.Count; i++)
+            {
+                currentNode = kmers[i];
+                suffix = currentNode.Substring(1, k - 1);
+
+                pairedSuffix = pairedKmers[i].Substring(1, k - 1);
+
+                combinedSuffix = suffix + pairedSuffix;
+
+                found = false;
+                List<string> Edges = new List<string>();
+
+                for (int x = 0; x < kmers.Count; x++)
+                {
+                    connectedNode = kmers[x];
+                    prefix = connectedNode.Substring(0, k - 1);
+                    pairedPrefix = pairedKmers[x].Substring(0, k - 1);
+
+                    nodeFound = false;
+
+                    if (suffix == prefix)
+                    {
+                        // check if already in list
+                        foreach (string s in Edges)
+                        {
+                            if (s == combinedSuffix)
+                            //if (s == suffix)
+                            {
+                                nodeFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!nodeFound)
+                        {
+                            //Edges.Add(suffix);
+                            Edges.Add(combinedSuffix);
+                            found = true;
+                        }
+                    }
+                    else if (!nodeFound && x == kmers.Count - 1)    // scanned all nodes, check if not found, if so at the last node, so add
+                    {
+                        if (Edges.Count == 0)
+                        {
+                            //Edges.Add(suffix);
+                            Edges.Add(combinedSuffix);
+                            found = true;
+                        }
+                    }
+                }
+
+                if (found)
+                {
+                    Edges.Sort();
+                    string key = currentNode.Substring(0, k - 1);
+
+                    if (!dict.ContainsKey(key))
+                    {
+                        dict.Add(key, Edges);
+                    }
+                    else
+                    {
+                        List<string> tmpEdges = new List<string>();
+
+                        tmpEdges = dict[key];
+
+                        foreach (string s in Edges)
+                            tmpEdges.Add(s);
+
+                        tmpEdges.Sort();
+
+                        dict[key] = tmpEdges;
+                    }
+                }
+            }
+
+            string outputNode = "";
+
+            foreach (string key in dict.Keys)
+            {
+                List<string> row = dict[key];
+
+                outputNode = key + " -> ";
+
+                foreach (string item in row)
+                {
+                    // combined Suffix, strip paired suffice
+                    string pairedS = item.Substring(0, k - 1);
+
+                    outputNode += pairedS + ",";
+
+
+//                    outputNode += item + ",";
+                }
+
+                outputNode = outputNode.Substring(0, outputNode.Length - 1);        // remove last comma
+
+                output.Add(outputNode);
+            }
+            output.Sort();
+
+            WriteListToFile("C:\\Temp\\output.txt", output);
+
+            return output;
+        }
 
         public static List<string> DeBruijnGraph(int k, string Text)
         {
