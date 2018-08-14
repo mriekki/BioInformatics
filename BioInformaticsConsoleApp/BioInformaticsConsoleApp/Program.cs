@@ -88,18 +88,7 @@ namespace BioInformaticsConsoleApp
             List<string> directedGraph = new List<string>();
             List<string> orderedKmers = new List<string>();
 
-            List<string> pattern1 = new List<string>();
-            List<string> pattern2 = new List<string>();
-            string[] split;
-
-            foreach (string str in GappedPatterns)
-            {
-                split = str.Split("|");
-                pattern1.Add(split[0]);
-                pattern2.Add(split[1]);
-            }
-
-            directedGraph = PairedDeBruijnGraph(pattern1, pattern2);
+            directedGraph = PairedDeBruijnGraph(GappedPatterns);
 
             sequence = EulerianCycle(directedGraph);
 
@@ -193,7 +182,6 @@ namespace BioInformaticsConsoleApp
             return outputList;
         }
 
-
         static public string EulerianCycle(List<string> directedGraph)
         {
             string cycleOutput = "";
@@ -250,8 +238,6 @@ namespace BioInformaticsConsoleApp
                         startingNode = nd;
                         break;
                     }
-
-                    int f = 0;
                 }
             }
 
@@ -401,12 +387,13 @@ namespace BioInformaticsConsoleApp
             return output;
         }
 
-        public static List<string> PairedDeBruijnGraph(List<string> kmers, List<string> pairedKmers)
+        public static List<string> PairedDeBruijnGraph(List<string> GappedPatterns)
         {
             List<string> output = new List<string>();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+            List<string> kmers = new List<string>();
+            List<string> pairedKmers = new List<string>();
             string prefix = "";
-            int k = kmers[0].Length;
             string currentNode = "";
             string connectedNode = "";
             string suffix = "";
@@ -416,18 +403,27 @@ namespace BioInformaticsConsoleApp
             string pairedSuffix = "";
             string combinedSuffix = "";
             string combinedPrefix = "";
+            string[] split;
+
+            foreach (string str in GappedPatterns)
+            {
+                split = str.Split("|");
+                kmers.Add(split[0]);
+                pairedKmers.Add(split[1]);
+            }
+
+            int k = kmers[0].Length;
 
             for (int i = 0; i < kmers.Count; i++)
             {
                 currentNode = kmers[i];
                 suffix = currentNode.Substring(1, k - 1);
-
                 pairedSuffix = pairedKmers[i].Substring(1, k - 1);
 
                 combinedSuffix = suffix + pairedSuffix;
 
                 found = false;
-                List<string> Edges = new List<string>();
+                List<string> Nodes = new List<string>();
 
                 for (int x = 0; x < kmers.Count; x++)
                 {
@@ -442,7 +438,7 @@ namespace BioInformaticsConsoleApp
                     if (combinedSuffix == combinedPrefix)
                     {
                         // check if already in list
-                        foreach (string s in Edges)
+                        foreach (string s in Nodes)
                         {
                             if (s == combinedSuffix)
                             {
@@ -453,15 +449,15 @@ namespace BioInformaticsConsoleApp
 
                         if (!nodeFound)
                         {
-                            Edges.Add(combinedSuffix);
+                            Nodes.Add(combinedSuffix);
                             found = true;
                         }
                     }
                     else if (!nodeFound && x == kmers.Count - 1)    // scanned all nodes, check if not found, if so at the last node, so add
                     {
-                        if (Edges.Count == 0)
+                        if (Nodes.Count == 0)
                         {
-                            Edges.Add(combinedSuffix);
+                            Nodes.Add(combinedSuffix);
                             found = true;
                         }
                     }
@@ -469,13 +465,13 @@ namespace BioInformaticsConsoleApp
 
                 if (found)
                 {
-                    Edges.Sort();
+                    Nodes.Sort();
 
                     string key = kmers[i].Substring(0, k - 1) + pairedKmers[i].Substring(0, k - 1);
 
                     if (!dict.ContainsKey(key))
                     {
-                        dict.Add(key, Edges);
+                        dict.Add(key, Nodes);
                     }
                     else
                     {
@@ -483,7 +479,7 @@ namespace BioInformaticsConsoleApp
 
                         tmpEdges = dict[key];
 
-                        foreach (string s in Edges)
+                        foreach (string s in Nodes)
                             tmpEdges.Add(s);
 
                         tmpEdges.Sort();
