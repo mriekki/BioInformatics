@@ -11,11 +11,98 @@ namespace BioInformaticsConsoleApp
     {
         private const int NucleotideSize = 4;
         private static char[] zero_ones = { '0', '1' };
+        private static Dictionary<string, string> condonTable = new Dictionary<string, string> {
+        {"UUU","F"}, {"UUC","F"}, {"UUA","L"}, {"UUG","L"},
+        {"UCU","S"}, {"UCC","S" }, {"UCA","S" }, {"UCG","S" },
+        { "UAU","Y" }, {"UAC","Y" }, {"UAA","STOP" }, {"UAG","STOP" },
+        { "UGU","C" }, {"UGC","C" }, {"UGA","STOP" }, {"UGG","W" },
+        { "CUU","L" }, {"CUC","L" }, {"CUA","L" }, {"CUG","L" },
+        { "CCU","P" }, {"CCC","P" }, {"CCA","P" }, {"CCG","P" },
+        { "CAU","H" }, {"CAC","H" }, {"CAA","Q" }, {"CAG","Q" },
+        { "CGU","R" }, {"CGC","R" }, {"CGA","R" }, {"CGG","R" },
+        { "AUU","I" }, {"AUC","I" }, {"AUA","I" }, {"AUG","M" },
+        { "ACU","T" }, {"ACC","T" }, {"ACA","T" }, {"ACG","T" },
+        { "AAU","N" }, {"AAC","N" }, {"AAA","K" }, {"AAG","K" },
+        { "AGU","S" }, {"AGC","S" }, {"AGA","R" }, {"AGG","R" },
+        { "GUU","V" }, {"GUC","V" }, {"GUA","V" }, {"GUG","V" },
+        { "GCU","A" }, {"GCC","A" }, {"GCA","A" }, {"GCG","A" },
+        { "GAU","D" }, {"GAC","D" }, {"GAA","E" }, {"GAG","E" },
+        { "GGU","G" }, {"GGC","G" }, {"GGA","G" }, {"GGG","G"} };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_205_5.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "ContigGeneration";
 
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_96_7.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "PeptideEncoding";
+
+
+        public static List<string> PeptideEncoding(string DNA, string peptide)
+        {
+            List<string> output = new List<string>();
+            string complement = "";
+            string subString = "";
+            string complementRNA = "";
+            string subStringRNA = "";
+            int offset = peptide.Length;
+            string acid1 = "";
+            string acid2 = "";
+
+            for (int i = 0; i < DNA.Length; i++)
+            {
+                if ((i + (3*offset) - 1) < DNA.Length)
+                {
+                    subString = DNA.Substring(i, 3 * offset);
+                    complement = ReverseComplement(subString);
+
+                    if (subString == "AAGGAAGTATTCGAACCACATTACTAT" || complement == "AAGGAAGTATTCGAACCACATTACTAT")
+                    {
+                        int debug = 33;
+                    }
+
+                    subStringRNA = EncodeDNAtoRNA(subString);
+                    complementRNA = EncodeDNAtoRNA(complement);
+
+                    acid1 = "";
+                    acid2 = "";
+
+                    for (int x = 0; x < subString.Length; x += 3)
+                    {
+                        acid1 += ProteinTranslation(subStringRNA.Substring(x, 3));
+                        acid2 += ProteinTranslation(complementRNA.Substring(x, 3));
+                    }
+
+                    if (acid1 == peptide)
+                        output.Add(subString);
+                    else if (acid2 == peptide)
+                        output.Add(subString);
+                }
+            }
+
+            return output;
+        }
+
+        public static string EncodeDNAtoRNA(string DNA)
+        {
+            string RNA = DNA.Replace('T', 'U');
+
+            return RNA;
+        }
+
+        public static string ProteinTranslation(string RNA)
+        {
+            string output = "";
+            string aminoacid = "";
+            string key = "";
+
+            for (int i = 0; i < RNA.Length; i +=3 )
+            {
+                key = RNA.Substring(i, 3);
+                aminoacid = condonTable[key];
+
+                if (aminoacid != "STOP")
+                    output += aminoacid;
+            }
+            return output;
+        }
 
         public static List<string> ContigGeneration(List<string> kmers)
         {
@@ -1826,7 +1913,7 @@ namespace BioInformaticsConsoleApp
                     Console.WriteLine("ReverseComplement:  Invalid Value");
             }
 
-            Console.WriteLine("ReverseComplment:  {0}", output);
+//            Console.WriteLine("ReverseComplment:  {0}", output);
             return output;
         }
 
@@ -2483,6 +2570,24 @@ namespace BioInformaticsConsoleApp
                     strLine.Add(fileText[i]);
 
                 result = ContigGeneration(strLine);
+
+                WriteListToFile("C:\\Temp\\output.txt", result);
+            }
+
+            if ("ProteinTranslation" == method)
+            {
+                string result = "";
+
+                result = ProteinTranslation(fileText[0]);
+
+//                WriteListToFile("C:\\Temp\\output.txt", result);
+            }
+
+            if ("PeptideEncoding" == method)
+            {
+                List<string> result = new List<string>();
+
+                result = PeptideEncoding(fileText[0], fileText[1]);
 
                 WriteListToFile("C:\\Temp\\output.txt", result);
             }
