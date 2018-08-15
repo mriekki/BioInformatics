@@ -12,10 +12,35 @@ namespace BioInformaticsConsoleApp
         private const int NucleotideSize = 4;
         private static char[] zero_ones = { '0', '1' };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_6207_2.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_205_5.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "MaximalNonBranchingPaths";
+        private const string method = "ContigGeneration";
 
+
+        public static List<string> ContigGeneration(List<string> kmers)
+        {
+            List<string> result = new List<string>();
+            List<string> directedGraph = new List<string>();
+            List<string> contigList = new List<string>();
+
+            directedGraph = DeBruijnGraph(kmers);
+
+            contigList = MaximalNonBranchingPaths(directedGraph);
+
+            for (int i = 0; i < contigList.Count; i++)
+            {
+                string[] strJoin = contigList[i].Split(" -> ");
+                string contig = strJoin[0];
+
+                for (int x = 1; x < strJoin.Length; x++)
+                {
+                    contig += strJoin[x].Substring(strJoin[x].Length - 1, 1);
+                }
+                result.Add(contig);
+            }
+
+            return result;
+        }
 
         public static List<string> MaximalNonBranchingPaths(List<string> directedGraph)
         {
@@ -2447,6 +2472,19 @@ namespace BioInformaticsConsoleApp
 
                 WriteListToFile("C:\\Temp\\output.txt", result);
 
+            }
+
+            if ("ContigGeneration" == method)
+            {
+                List<string> result = new List<string>();
+                List<string> strLine = new List<string>();
+
+                for (int i = 0; i < fileText.Length; i++)
+                    strLine.Add(fileText[i]);
+
+                result = ContigGeneration(strLine);
+
+                WriteListToFile("C:\\Temp\\output.txt", result);
             }
 
         }
