@@ -12,10 +12,161 @@ namespace BioInformaticsConsoleApp
         private const int NucleotideSize = 4;
         private static char[] zero_ones = { '0', '1' };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_204_15.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "StringReconstructionFromReadPairs";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_6207_2.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "MaximalNonBranchingPaths";
 
+
+        public static List<string> MaximalNonBranchingPaths(List<string> directedGraph)
+        {
+            List<string> output = new List<string>();
+            Dictionary<string, Node> dict = new Dictionary<string, Node>();
+            Node startingNode = new Node();
+
+            foreach (string str in directedGraph)
+            {
+                string[] nodes = str.Split(" -> ");
+
+                if (nodes.Length == 2)
+                {
+                    string[] connectedNodes = nodes[1].Split(",");
+                    string key = nodes[0];
+                    Node child = new Node(key);
+
+                    foreach (string childNode in connectedNodes)
+                    {
+                        child.connectedNodes.Add(childNode);
+                    }
+                    dict.Add(key, child);
+                }
+            }
+
+            // now Determine in & out degrees of each node
+            foreach (Node nd in dict.Values)
+            {
+                nd.outDegrees += nd.connectedNodes.Count;
+
+                foreach (string sn in nd.connectedNodes)
+                {
+                    if (dict.ContainsKey(sn))
+                        dict[sn].inDegrees += 1;
+                }
+            }
+
+            foreach (Node nd in dict.Values)
+            {
+                if (nd.inDegrees == 1 && nd.outDegrees == 1)
+                {
+                    int dummy = 33;
+                }   
+                else    // non 1-in-1-out nodes
+                {
+                    if (nd.outDegrees > 0)
+                    {
+                        string key = nd.node;
+                        string nonBranchPath;
+                        nd.included = true;
+
+                        foreach (string edge in nd.connectedNodes)
+                        {
+                            nonBranchPath = key;
+
+                            if (dict.ContainsKey(edge))
+                            {
+                                Node neighbor = dict[edge];
+                                while (neighbor.inDegrees == 1 && neighbor.outDegrees == 1)
+                                {
+                                    nonBranchPath += " -> " + neighbor.node;
+                                    neighbor.included = true;
+
+                                    if (neighbor.connectedNodes.Count == 1)
+                                    {
+                                        if (dict.ContainsKey(neighbor.connectedNodes[0]))
+                                            neighbor = dict[neighbor.connectedNodes[0]];
+                                        else
+                                        {
+                                            nonBranchPath += " -> " + neighbor.connectedNodes[0];
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (neighbor.inDegrees + neighbor.outDegrees > 2)       // end node
+                                {
+                                    nonBranchPath += " -> " + neighbor.node;
+                                    neighbor.included = true;
+                                }
+                            }
+                            else
+                                nonBranchPath += " -> " + edge;
+
+                            output.Add(nonBranchPath);
+                        }
+                    }
+                }
+            }
+
+            // now loop to find isolated cycles
+            foreach (Node nd in dict.Values)
+            {
+                if (!nd.included)
+                {
+                    if (nd.inDegrees == 1 && nd.outDegrees == 1)
+                    {
+                        // check for isolated cycle where all nodes have in/out degrees of 1
+                        Dictionary<string, Node> isolatedCycle = new Dictionary<string, Node>();
+
+                        string key = nd.node;
+                        string cycle = "";
+                        bool allNodes1 = true;
+                        nd.included = true;
+
+                        foreach (string edge in nd.connectedNodes)
+                        {
+                            cycle = key;
+
+                            if (dict.ContainsKey(edge))
+                            {
+                                Node neighbor = dict[edge];
+
+                                if (neighbor.inDegrees != 1 || neighbor.outDegrees != 1)
+                                    allNodes1 = false;
+
+                                while (neighbor.inDegrees == 1 && neighbor.outDegrees == 1)
+                                {
+                                    cycle += " -> " + neighbor.node;
+                                    neighbor.included = true;
+
+                                    if (neighbor.node == key)   // complete cycle
+                                        break;
+
+                                    if (neighbor.connectedNodes.Count == 1)
+                                    {
+                                        if (dict.ContainsKey(neighbor.connectedNodes[0]))
+                                        {
+                                            neighbor = dict[neighbor.connectedNodes[0]];
+                                            if (neighbor.inDegrees != 1 || neighbor.outDegrees != 1)
+                                                allNodes1 = false;
+                                        }
+                                        else
+                                        {
+                                            cycle += " -> " + neighbor.connectedNodes[0];
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (allNodes1)
+                            {
+                                output.Add(cycle);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return output;
+        }
 
 
         public static string StringSpelledByGappedPatterns(List<string> GappedPatterns, int k, int d)
@@ -2284,6 +2435,20 @@ namespace BioInformaticsConsoleApp
 
             }
 
+            if ("MaximalNonBranchingPaths" == method)
+            {
+                List<string> strLine = new List<string>();
+                List<string> result = new List<string>();
+
+                for (int i = 0; i < fileText.Length; i++)
+                    strLine.Add(fileText[i]);
+
+                result = MaximalNonBranchingPaths(strLine);
+
+                WriteListToFile("C:\\Temp\\output.txt", result);
+
+            }
+
         }
     }
     public class Node
@@ -2292,6 +2457,7 @@ namespace BioInformaticsConsoleApp
         public List<string> connectedNodes { get; set; }
         public int inDegrees { get; set; }
         public int outDegrees { get; set; }
+        public bool included { get; set; }
 
         public Node()
         {
@@ -2299,6 +2465,7 @@ namespace BioInformaticsConsoleApp
 
             connectedNodes = new List<string>();
             inDegrees = outDegrees = 0;
+            included = false;
         }
 
         public Node(string node)
@@ -2306,6 +2473,7 @@ namespace BioInformaticsConsoleApp
             this.node = node;
             connectedNodes = new List<string>();
             inDegrees = outDegrees = 0;
+            included = false;
         }
     }
 
