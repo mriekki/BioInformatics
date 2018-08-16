@@ -37,9 +37,27 @@ namespace BioInformaticsConsoleApp
             {"Q", 128 }, {"E", 129 }, {"M", 131 }, {"H", 137 },
             {"F", 147 }, {"R", 156 }, {"Y", 163 }, {"W", 186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_4912_2.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "LinearSpectrum";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_4912_2.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "CreateSubpeptides";
+
+        public static List<string> CreateSubpeptides(string peptide)
+        {
+            List<string> subPeptides = new List<string>();
+            int k = peptide.Length;
+            string doublePeptid = peptide + peptide;    // help with wraparound
+            int length = 1;
+
+            for (int i = 1; i < k; i++)
+            {
+                for (int j = 0; j < k; j++)
+                {
+                    subPeptides.Add(doublePeptid.Substring(j, i));
+                }
+            }
+
+            return subPeptides;
+        }
 
         public static List<int> LinearSpectrum(string peptide)
         {
@@ -2653,6 +2671,24 @@ namespace BioInformaticsConsoleApp
                     output += result[i].ToString() + " ";
                 }
                 
+                WriteListToFile("C:\\Temp\\output.txt", result2);
+            }
+
+            if ("CreateSubpeptides" == method)
+            {
+                List<int> result = new List<int>();
+                List<string> result2 = new List<string>();
+                string output = "";
+                int index = 0;
+
+                CreateSubpeptides(fileText[0]);
+
+                for (int i = 0; i < result.Count; i++)
+                {
+                    result2.Insert(i, result[i].ToString());
+                    output += result[i].ToString() + " ";
+                }
+
                 WriteListToFile("C:\\Temp\\output.txt", result2);
             }
 
