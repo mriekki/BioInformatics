@@ -29,11 +29,57 @@ namespace BioInformaticsConsoleApp
         { "GAU","D" }, {"GAC","D" }, {"GAA","E" }, {"GAG","E" },
         { "GGU","G" }, {"GGC","G" }, {"GGA","G" }, {"GGG","G"} };
 
+        private static Dictionary<string, int> integerMass = new Dictionary<string, int>
+        {
+            { "G", 57 }, {"A", 71 }, {"S", 87 }, {"P", 97 },
+            { "V", 99 }, {"T", 101 }, {"C", 103 }, {"I", 113 },
+            {"L", 113 }, {"N", 114 }, {"D", 115 }, {"K", 128 },
+            {"Q", 128 }, {"E", 129 }, {"M", 131 }, {"H", 137 },
+            {"F", 147 }, {"R", 156 }, {"Y", 163 }, {"W", 186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_96_7.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_4912_2.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "PeptideEncoding";
+        private const string method = "LinearSpectrum";
 
+        public static List<int> LinearSpectrum(string peptide)
+        {
+            List<int> linearSpectrum = new List<int>();
+
+            List<int> prefixMassList = new List<int>();
+            int index = 0;
+            prefixMassList.Insert(index++, 0);
+
+            for (int i = 0; i < peptide.Length; i++)
+            {
+                char p = peptide[i];
+
+                foreach (string j in integerMass.Keys)
+                {
+                    if (j == peptide[i].ToString())
+                    {
+                        int mass = prefixMassList[i] + integerMass[j];
+                        prefixMassList.Insert(index++, mass);
+                        break;
+                    }
+                }
+            }
+
+            index = 0;
+            linearSpectrum.Insert(index++, 0);
+
+            for (int i = 0; i < prefixMassList.Count; i++)
+            {
+                for (int j = i + 1; j < prefixMassList.Count; j++)
+                {
+                    int newMass = prefixMassList[j] - prefixMassList[i];
+                    linearSpectrum.Insert(index++, newMass);
+                }
+            }
+
+            linearSpectrum.Sort();
+
+            return linearSpectrum;
+        }
 
         public static List<string> PeptideEncoding(string DNA, string peptide)
         {
@@ -2591,6 +2637,25 @@ namespace BioInformaticsConsoleApp
 
                 WriteListToFile("C:\\Temp\\output.txt", result);
             }
+
+            if ("LinearSpectrum" == method)
+            {
+                List<int> result = new List<int>();
+                List<string> result2 = new List<string>();
+                string output = "";
+                int index = 0;
+
+                result = LinearSpectrum(fileText[0]);
+
+                for (int i = 0; i < result.Count; i++)
+                {
+                    result2.Insert(i, result[i].ToString());
+                    output += result[i].ToString() + " ";
+                }
+                
+                WriteListToFile("C:\\Temp\\output.txt", result2);
+            }
+
 
         }
     }
