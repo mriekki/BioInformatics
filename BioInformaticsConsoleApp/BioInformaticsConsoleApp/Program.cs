@@ -37,9 +37,38 @@ namespace BioInformaticsConsoleApp
             {"Q", 128 }, {"E", 129 }, {"M", 131 }, {"H", 137 },
             {"F", 147 }, {"R", 156 }, {"Y", 163 }, {"W", 186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_4912_2.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "CreateSubpeptides";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_98_4.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "TheoreticalSpectrum";
+
+        public static List<int> TheoreticalSpectrum(string peptide)
+        {
+            List<int> result = new List<int>();
+            List<string> subPeptides = new List<string>();
+
+            result.Add(0);
+
+            subPeptides = CreateSubpeptides(peptide);
+
+            foreach (string p in subPeptides)
+            {
+                List<int> mass = new List<int>();
+
+                mass = LinearSpectrum(p);
+
+                result.Add(mass[mass.Count - 1]);
+            }
+
+            int total = 0;
+            foreach (char c in peptide)
+                total += integerMass[c.ToString()];
+
+            result.Add(total);
+
+            result.Sort();
+
+            return result;
+        }
 
         public static List<string> CreateSubpeptides(string peptide)
         {
@@ -112,7 +141,7 @@ namespace BioInformaticsConsoleApp
 
             for (int i = 0; i < DNA.Length; i++)
             {
-                if ((i + (3*offset) - 1) < DNA.Length)
+                if ((i + (3 * offset) - 1) < DNA.Length)
                 {
                     subString = DNA.Substring(i, 3 * offset);
                     complement = ReverseComplement(subString);
@@ -157,7 +186,7 @@ namespace BioInformaticsConsoleApp
             string aminoacid = "";
             string key = "";
 
-            for (int i = 0; i < RNA.Length; i +=3 )
+            for (int i = 0; i < RNA.Length; i += 3)
             {
                 key = RNA.Substring(i, 3);
                 aminoacid = condonTable[key];
@@ -234,7 +263,7 @@ namespace BioInformaticsConsoleApp
                 if (nd.inDegrees == 1 && nd.outDegrees == 1)
                 {
                     int dummy = 33;
-                }   
+                }
                 else    // non 1-in-1-out nodes
                 {
                     if (nd.outDegrees > 0)
@@ -427,7 +456,7 @@ namespace BioInformaticsConsoleApp
             return result;
         }
 
-         static public string StringReconstruction(int k, List<string> kmers)
+        static public string StringReconstruction(int k, List<string> kmers)
         {
             string sequence = "";
             List<string> directedGraph = new List<string>();
@@ -543,12 +572,12 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
-             // now Determine in & out degrees of each node
-            foreach(Node nd in dict.Values)
+            // now Determine in & out degrees of each node
+            foreach (Node nd in dict.Values)
             {
                 nd.outDegrees += nd.connectedNodes.Count;
 
-                foreach(string sn in nd.connectedNodes)
+                foreach (string sn in nd.connectedNodes)
                 {
                     if (dict.ContainsKey(sn))
                         dict[sn].inDegrees += 1;
@@ -578,7 +607,7 @@ namespace BioInformaticsConsoleApp
             }
             // remove last arrow
             cycleOutput = cycleOutput.Substring(0, cycleOutput.Length - 2);
-                
+
 
             return cycleOutput;
         }
@@ -863,7 +892,7 @@ namespace BioInformaticsConsoleApp
             }
             return count;
         }
-         
+
         static public List<string> OverlapGraph(List<string> kmers)
         {
             List<string> output = new List<string>();
@@ -960,7 +989,7 @@ namespace BioInformaticsConsoleApp
                 prefix = kmers[i].Substring(0, k - 1);
 
                 prevVal = sequence.Substring(sequence.Length - k + 1, k - 1);
-                    
+
                 if (prefix == prevVal)
                 {
                     sequence += kmers[i].Substring(k - 1, 1);
@@ -986,7 +1015,7 @@ namespace BioInformaticsConsoleApp
 
                 if (prefix == suffix)
                 {
-                    sequence += kmers[i].Substring(kmers[i].Length-1, 1);       // add last character of current kmer
+                    sequence += kmers[i].Substring(kmers[i].Length - 1, 1);       // add last character of current kmer
                 }
             }
 
@@ -1057,7 +1086,7 @@ namespace BioInformaticsConsoleApp
 
             for (int a = 0; a < N; a++)
             {
-               for (int i = 0; i < Dna.Length; i++)
+                for (int i = 0; i < Dna.Length; i++)
                 {
                     int length = Dna[i].Length;
                     int ran = random.Next(0, length - k);
@@ -1065,7 +1094,7 @@ namespace BioInformaticsConsoleApp
 
                     BestMotifs.Add(kmer);
                     tmpMotifs.Add(kmer);
-                }   
+                }
 
                 while (true)
                 {
@@ -1108,7 +1137,7 @@ namespace BioInformaticsConsoleApp
 
         static public int Random(double[] array)
         {
-            int index = array.Length-1;     // Set to last index by default
+            int index = array.Length - 1;     // Set to last index by default
             double total = 0;
             double[] distributionArray = new double[array.Length];
             Random random = new Random();
@@ -1121,7 +1150,7 @@ namespace BioInformaticsConsoleApp
                 if (i == 0)
                     distributionArray[i] = (array[i] / total);
                 else
-                    distributionArray[i] = ((array[i] / total) + distributionArray[i-1]);
+                    distributionArray[i] = ((array[i] / total) + distributionArray[i - 1]);
             }
 
             double dRan = random.NextDouble();
@@ -1268,7 +1297,7 @@ namespace BioInformaticsConsoleApp
                 tmpMotifs.Clear();
                 kmer = baseStrand.Substring(m, k);
                 tmpMotifs.Add(kmer);
-            
+
                 for (int n = 1; n < t; n++)
                 {
                     double[,] profileMatrix = Profile(tmpMotifs, true);
@@ -1313,8 +1342,8 @@ namespace BioInformaticsConsoleApp
 
             int[,] countArray = new int[NucleotideSize, motifLength];
             int[] scoreArray = new int[motifLength];
-//            string str = "";
-//            string c = "";
+            //            string str = "";
+            //            string c = "";
             string currentMotif = "";
             char currentChar = ' ';
 
@@ -1349,7 +1378,7 @@ namespace BioInformaticsConsoleApp
                 consensusMotif += currentChar.ToString();
             }
 
-//            Console.WriteLine("Score - Consensu Mofit = {0}", consensusMotif);
+            //            Console.WriteLine("Score - Consensu Mofit = {0}", consensusMotif);
 
             totalScore = 0;
 
@@ -1410,22 +1439,22 @@ namespace BioInformaticsConsoleApp
                     else if (c == "T")
                     {
                         countArray[3, m] += 1;
-                    }   
+                    }
                 }
             }
 
             for (int x = 0; x < NucleotideSize; x++)
                 for (int y = 0; y < motifLength; y++)
                     profileArray[x, y] = countArray[x, y] / denominator;
-                    
+
             return profileArray;
-        }   
+        }
 
         static public List<string> Motif(double[,] profile, string[] Dna, int k, bool bRandom = false)
         {
             List<string> motifs = new List<string>();
             string mostCommon = "";
- 
+
             foreach (string str in Dna)
             {
                 mostCommon = ProfileMostProbableKmer(str, k, profile, bRandom);
@@ -1435,7 +1464,7 @@ namespace BioInformaticsConsoleApp
             return motifs;
         }
 
-         static public string ProfileMostProbableKmer(string Text, int k, double[,] matrix, bool bUseRandom = false)
+        static public string ProfileMostProbableKmer(string Text, int k, double[,] matrix, bool bUseRandom = false)
         {
             string result = "";
             string pattern = "";
@@ -1477,7 +1506,7 @@ namespace BioInformaticsConsoleApp
                 result = Text.Substring(ranIndex, k);
             }
 
-//            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
+            //            Console.WriteLine("ProfileMostProbableKmer:  {0}", result);
             return result;
         }
 
@@ -1570,7 +1599,7 @@ namespace BioInformaticsConsoleApp
         //                  distance ← distance + HammingDistance
         //              return distance
         //===================================================================================================
-        static public int DistanceBetweenPatternAndStrings(string Pattern, string [] Dna)
+        static public int DistanceBetweenPatternAndStrings(string Pattern, string[] Dna)
         {
             int distance = 0;
             int k = Pattern.Length;
@@ -1581,7 +1610,7 @@ namespace BioInformaticsConsoleApp
             {
                 int HamDistance = int.MaxValue;
 
-                for (int m = 0; m < Text.Length - Pattern.Length +1; m++)
+                for (int m = 0; m < Text.Length - Pattern.Length + 1; m++)
                 {
                     str = Text.Substring(m, k);
                     tmpDistance = HammingDistance(Pattern, str);
@@ -1591,7 +1620,7 @@ namespace BioInformaticsConsoleApp
                 distance += HamDistance;
             }
 
-//            Console.WriteLine("DistanceBetweenPatternAndStrings:  {0}", distance);
+            //            Console.WriteLine("DistanceBetweenPatternAndStrings:  {0}", distance);
             return distance;
         }
 
@@ -1612,7 +1641,7 @@ namespace BioInformaticsConsoleApp
 
             foreach (string kmer in Dna)
             {
-                for (int m = 0; m < kmer.Length - k +1; m++)        // All kmers in DNA
+                for (int m = 0; m < kmer.Length - k + 1; m++)        // All kmers in DNA
                 {
                     string str = kmer.Substring(m, k);
                     List<string> neighbors = new List<string>();    // All kmers with d mismatches
@@ -1624,7 +1653,7 @@ namespace BioInformaticsConsoleApp
                         string strMatch = "";
                         bool bInDNA = true;
 
-                        foreach (string inner in Dna)       
+                        foreach (string inner in Dna)
                         {
                             strMatch = ApproximatePatternMatching(n, inner, d);  // Check each DNA for pattern with d mismatch
                             if (strMatch.Length == 0)
@@ -1669,7 +1698,7 @@ namespace BioInformaticsConsoleApp
                 Neighborhood.Add("C");
                 Neighborhood.Add("G");
                 Neighborhood.Add("T");
-                
+
                 return Neighborhood;
             }
 
@@ -1696,7 +1725,7 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
-//            Console.WriteLine("Neighbors:  {0}", Neighborhood);
+            //            Console.WriteLine("Neighbors:  {0}", Neighborhood);
             return Neighborhood;
         }
 
@@ -1717,7 +1746,7 @@ namespace BioInformaticsConsoleApp
                     {
                         kmer = ReplaceStringAt(Pattern, c, i);
                         Neighborhood += " " + kmer;
-                 
+
                     }
                 }
             }
@@ -1811,7 +1840,7 @@ namespace BioInformaticsConsoleApp
             //            for (Int64 i = 0; i < arraySize; i++)
             //                result += frequncyArray[i].ToString() + " ";
 
-//            Console.WriteLine("ComnputingFrequencieswithMatchs:  {0}", result);
+            //            Console.WriteLine("ComnputingFrequencieswithMatchs:  {0}", result);
             return frequncyArray;
         }
 
@@ -1922,7 +1951,7 @@ namespace BioInformaticsConsoleApp
         static public List<string> FrequentWordsWithMismatches(string Text, int k, int d, bool IncludeReverse = false)
         {
             List<string> FrequentPatterns = new List<string>();
-            int [] localCount;
+            int[] localCount;
             int MaxCount = 0;
             string pattern = "";
             string str = "";
@@ -1957,7 +1986,7 @@ namespace BioInformaticsConsoleApp
             return FrequentPatterns;
         }
 
-    
+
 
         static public string ReverseComplement(string input)
         {
@@ -1977,7 +2006,7 @@ namespace BioInformaticsConsoleApp
                     Console.WriteLine("ReverseComplement:  Invalid Value");
             }
 
-//            Console.WriteLine("ReverseComplment:  {0}", output);
+            //            Console.WriteLine("ReverseComplment:  {0}", output);
             return output;
         }
 
@@ -2044,7 +2073,7 @@ namespace BioInformaticsConsoleApp
                 count++;
 
                 arrayOffset[count] = skewValue;
-                }
+            }
 
             for (int i = 0; i < arrayOffset.Length; i++)
             {
@@ -2139,7 +2168,7 @@ namespace BioInformaticsConsoleApp
 
             result = prefixPattern + symbol;
 
-//            Console.WriteLine("NumberToPattern2:  {0}", result);
+            //            Console.WriteLine("NumberToPattern2:  {0}", result);
             return result;
         }
 
@@ -2290,7 +2319,7 @@ namespace BioInformaticsConsoleApp
             {
                 try
                 {
-//                    myfile.WriteLine("Length:  {0}", strList.Count);
+                    //                    myfile.WriteLine("Length:  {0}", strList.Count);
                     foreach (string s in strList)
 
                         myfile.WriteLine(s);
@@ -2331,7 +2360,7 @@ namespace BioInformaticsConsoleApp
                 //                string[] strLine = new string[fileText.Length];
                 Int32.TryParse(fileText[0], out k);
 
-//                StringSpelledByGenomePath(fileText);
+                //                StringSpelledByGenomePath(fileText);
 
 
 
@@ -2551,7 +2580,7 @@ namespace BioInformaticsConsoleApp
 
                 result = EulerianCycle(strLine);
 
-//                WriteListToFile("C:\\Temp\\output.txt", result);
+                //                WriteListToFile("C:\\Temp\\output.txt", result);
 
             }
             if ("StringReconstruction" == method)
@@ -2644,7 +2673,7 @@ namespace BioInformaticsConsoleApp
 
                 result = ProteinTranslation(fileText[0]);
 
-//                WriteListToFile("C:\\Temp\\output.txt", result);
+                //                WriteListToFile("C:\\Temp\\output.txt", result);
             }
 
             if ("PeptideEncoding" == method)
@@ -2670,7 +2699,7 @@ namespace BioInformaticsConsoleApp
                     result2.Insert(i, result[i].ToString());
                     output += result[i].ToString() + " ";
                 }
-                
+
                 WriteListToFile("C:\\Temp\\output.txt", result2);
             }
 
@@ -2692,53 +2721,69 @@ namespace BioInformaticsConsoleApp
                 WriteListToFile("C:\\Temp\\output.txt", result2);
             }
 
+            if ("TheoreticalSpectrum" == method)
+            {
+                List<int> result = new List<int>();
+                List<string> result2 = new List<string>();
+                string output = "";
+                int index = 0;
 
+                result = TheoreticalSpectrum(fileText[0]);
+
+                for (int i = 0; i < result.Count; i++)
+                {
+                    result2.Insert(i, result[i].ToString());
+                    output += result[i].ToString() + " ";
+                }
+
+                WriteListToFile("C:\\Temp\\output.txt", result2);
+
+            }
         }
+        public class Node
+        {
+            public string node { get; set; }
+            public List<string> connectedNodes { get; set; }
+            public int inDegrees { get; set; }
+            public int outDegrees { get; set; }
+            public bool included { get; set; }
+
+            public Node()
+            {
+                this.node = node;
+
+                connectedNodes = new List<string>();
+                inDegrees = outDegrees = 0;
+                included = false;
+            }
+
+            public Node(string node)
+            {
+                this.node = node;
+                connectedNodes = new List<string>();
+                inDegrees = outDegrees = 0;
+                included = false;
+            }
+        }
+
+        public class Circuit
+        {
+            public List<string> circuit;
+            public int currentPos;
+
+            public Circuit()
+            {
+                circuit = new List<string>();
+                currentPos = 0;
+            }
+
+            public void AddNode(Node newNode)
+            {
+                //            circuit[currentPos] = newNode.node;
+                circuit.Add(newNode.node);
+                currentPos++;
+            }
+        }
+
     }
-    public class Node
-    {
-        public string node { get; set; }
-        public List<string> connectedNodes { get; set; }
-        public int inDegrees { get; set; }
-        public int outDegrees { get; set; }
-        public bool included { get; set; }
-
-        public Node()
-        {
-            this.node = node;
-
-            connectedNodes = new List<string>();
-            inDegrees = outDegrees = 0;
-            included = false;
-        }
-
-        public Node(string node)
-        {
-            this.node = node;
-            connectedNodes = new List<string>();
-            inDegrees = outDegrees = 0;
-            included = false;
-        }
-    }
-
-    public class Circuit
-    {
-        public List<string> circuit;
-        public int currentPos;
-
-        public Circuit()
-        {
-            circuit = new List<string>();
-            currentPos = 0;
-        }
-
-        public void AddNode(Node newNode)
-        {
-            //            circuit[currentPos] = newNode.node;
-            circuit.Add(newNode.node);
-            currentPos++;
-        }
-    }
-
-
 }
