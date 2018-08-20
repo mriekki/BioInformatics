@@ -37,10 +37,75 @@ namespace BioInformaticsConsoleApp
             {"Q", 128 }, {"E", 129 }, {"M", 131 }, {"H", 137 },
             {"F", 147 }, {"R", 156 }, {"Y", 163 }, {"W", 186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_98_4.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "TheoreticalSpectrum";
+        private static List<int> peptideMass = new List<int>
+        {
+            { 57 }, { 71 }, {87 }, { 97 },
+            { 99 }, {101 }, {103 }, {113 },
+            {114 }, {115 }, {128 },
+            {129 }, {131 }, {137 },
+            {147 }, {156 }, {163 }, {186 } };
 
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_98_4.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "BFCyclopeptideSequencing";
+
+
+        public static Int64 BFCyclopeptideSequencing(int spectrum)
+        {
+            Int64 result = 0;
+            int i, j;
+            List<int> arr = new List<int> { 1, 2, 3 };
+            //            int m = arr.Length;
+
+            result = count(arr, arr.Count, 4);
+
+//            int m = sizeof(arr) / sizeof(arr[0]);
+
+//            result = count(peptideMass, peptideMass.Count, 128);
+
+            return result;
+        }
+
+        
+        // Returns the count of ways we can 
+        // sum S[0...m-1] coins to get sum n
+        public static int count(List<int> S, int m, int mass)
+        {
+            Console.WriteLine("count:  m = {0} mass = {1}", m, mass);
+            // If n is 0 then there is 1 solution 
+            // (do not include any coin)
+            if (mass == 0)
+                return 1;
+
+            // If n is less than 0 then no 
+            // solution exists
+            if (mass < 0)
+                return 0;
+
+            // If there are no coins and n 
+            // is greater than 0, then no
+            // solution exist
+            if (m <= 0 && mass >= 1)
+                return 0;
+
+            // count is sum of solutions (i) 
+            // including S[m-1] (ii) excluding S[m-1]
+            int step1 = count(S, m - 1, mass);
+            Console.WriteLine("step 1 = {0}", step1);
+
+            int step2 = count(S, m, mass - S[m - 1]);
+
+            Console.WriteLine("step 2 = {0}", step2);
+
+            Console.WriteLine("count return value {0}", step1 + step2);
+
+            return step1 + step2;
+
+//            return count(S, m - 1, mass) + count(S, m, mass - S[m - 1]);
+//            return count(S, m - 1, n) + count(S, m, n - S[m - 1]);
+        }
+
+        
         public static List<int> TheoreticalSpectrum(string peptide)
         {
             List<int> result = new List<int>();
@@ -59,15 +124,26 @@ namespace BioInformaticsConsoleApp
                 result.Add(mass[mass.Count - 1]);
             }
 
-            int total = 0;
-            foreach (char c in peptide)
-                total += integerMass[c.ToString()];
+            Int64 total = MassPeptide(peptide);
 
-            result.Add(total);
+//            foreach (char c in peptide)
+//                total += integerMass[c.ToString()];
+
+            result.Add((int)total);
 
             result.Sort();
 
             return result;
+        }
+
+        public static Int64 MassPeptide(string peptide)
+        {
+            Int64 mass = 0;
+
+            foreach (char c in peptide)
+                mass += integerMass[c.ToString()];
+
+            return mass;
         }
 
         public static List<string> CreateSubpeptides(string peptide)
@@ -2739,6 +2815,15 @@ namespace BioInformaticsConsoleApp
                 WriteListToFile("C:\\Temp\\output.txt", result2);
 
             }
+
+            if ("BFCyclopeptideSequencing" == method)
+            {
+                Int64 result = 0;
+                Int32.TryParse(fileText[0], out k);
+
+                result = BFCyclopeptideSequencing(k);
+            }
+
         }
         public class Node
         {
