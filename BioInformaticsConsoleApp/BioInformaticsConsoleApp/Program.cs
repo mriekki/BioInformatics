@@ -37,7 +37,7 @@ namespace BioInformaticsConsoleApp
             {"Q", 128 }, {"E", 129 }, {"M", 131 }, {"H", 137 },
             {"F", 147 }, {"R", 156 }, {"Y", 163 }, {"W", 186 } };
 
-        private static List<int> peptideMass = new List<int>
+        private static List<Int64> peptideMass = new List<Int64>
         {
             { 57 }, { 71 }, {87 }, { 97 },
             { 99 }, {101 }, {103 }, {113 },
@@ -55,54 +55,28 @@ namespace BioInformaticsConsoleApp
             Int64 result = 0;
             int i, j;
             List<int> arr = new List<int> { 1, 2, 3 };
-            //            int m = arr.Length;
 
-            result = count(arr, arr.Count, 4);
-
-//            int m = sizeof(arr) / sizeof(arr[0]);
-
-//            result = count(peptideMass, peptideMass.Count, 128);
+            result = count7(1318, peptideMass);
 
             return result;
         }
 
-        
-        // Returns the count of ways we can 
-        // sum S[0...m-1] coins to get sum n
-        public static int count(List<int> S, int m, int mass)
+        public static Int64 count7(Int64 x, List<Int64> c)
         {
-            Console.WriteLine("count:  m = {0} mass = {1}", m, mass);
-            // If n is 0 then there is 1 solution 
-            // (do not include any coin)
-            if (mass == 0)
-                return 1;
+            Int64[] d = new Int64[x + 1];
+            d[0] = 1;
+            Int64 k = c.Count();
 
-            // If n is less than 0 then no 
-            // solution exists
-            if (mass < 0)
-                return 0;
-
-            // If there are no coins and n 
-            // is greater than 0, then no
-            // solution exist
-            if (m <= 0 && mass >= 1)
-                return 0;
-
-            // count is sum of solutions (i) 
-            // including S[m-1] (ii) excluding S[m-1]
-            int step1 = count(S, m - 1, mass);
-            Console.WriteLine("step 1 = {0}", step1);
-
-            int step2 = count(S, m, mass - S[m - 1]);
-
-            Console.WriteLine("step 2 = {0}", step2);
-
-            Console.WriteLine("count return value {0}", step1 + step2);
-
-            return step1 + step2;
-
-//            return count(S, m - 1, mass) + count(S, m, mass - S[m - 1]);
-//            return count(S, m - 1, n) + count(S, m, n - S[m - 1]);
+            for (int i = 1; i <= x; i++)
+            {
+                for (int j = 0; j < k; j++)
+                {
+                    if (i - c[j] < 0)
+                        continue;
+                    d[i] += d[i - c[j]];
+                }
+            }
+            return d[x];
         }
 
         
