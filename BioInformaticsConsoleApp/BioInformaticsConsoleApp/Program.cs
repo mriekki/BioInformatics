@@ -50,6 +50,11 @@ namespace BioInformaticsConsoleApp
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "BFCyclopeptideSequencing";
 
+        public static string CyclopeptideSequencing(int spectrum)
+        {
+            string result = "";
+            return result;
+        }
 
         public static Int64 BFCyclopeptideSequencing(int spectrum)
         { 
@@ -2797,6 +2802,14 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(fileText[0], out k);
 
                 result = BFCyclopeptideSequencing(k);
+            }
+
+            if ("CyclopeptideSequencing" == method)
+            {
+                string result = "";
+                Int32.TryParse(fileText[0], out k);
+
+                result = CyclopeptideSequencing(k);
             }
 
         }
