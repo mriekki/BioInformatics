@@ -37,9 +37,49 @@ namespace BioInformaticsConsoleApp
             {"Q", 128 }, {"E", 129 }, {"M", 131 }, {"H", 137 },
             {"F", 147 }, {"R", 156 }, {"Y", 163 }, {"W", 186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_98_4.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "TheoreticalSpectrum";
+
+        private static List<Int64> peptideMass = new List<Int64>
+        { 
+              { 57 }, { 71 }, {87 }, { 97 }, 
+              { 99 }, {101 }, {103 }, {113 }, 
+              {114 }, {115 }, {128 }, 
+              {129 }, {131 }, {137 }, 
+              {147 }, {156 }, {163 }, {186 } }; 
+
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_98_4.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "BFCyclopeptideSequencing";
+
+
+        public static Int64 BFCyclopeptideSequencing(int spectrum)
+        { 
+              Int64 result = 0; 
+//              List<int> arr = new List<int> { 1, 2, 3 }; 
+  
+              result = MassCounting(spectrum, peptideMass); 
+  
+              return result; 
+          } 
+  
+ 
+          public static Int64 MassCounting(Int64 x, List<Int64> c)
+          { 
+              Int64[] d = new Int64[x + 1]; 
+              d[0] = 1; 
+              Int64 k = c.Count(); 
+  
+ 
+              for (int i = 1; i <= x; i++) 
+              { 
+                  for (int j = 0; j<k; j++) 
+                  { 
+                      if (i - c[j] < 0) 
+                          continue; 
+                      d[i] += d[i - c[j]]; 
+                  } 
+              } 
+              return d[x]; 
+          } 
 
         public static List<int> TheoreticalSpectrum(string peptide)
         {
