@@ -75,6 +75,7 @@ namespace BioInformaticsConsoleApp
                 {
                     string peptide = peptideArray[i];
 
+//                    Int64 peptideMass = MassPeptide(peptide);
                     Int32 peptideMass = PeptideMass(peptide);
 
                     if (peptideMass == parentMass)
@@ -83,7 +84,7 @@ namespace BioInformaticsConsoleApp
 
                         if (CompareSpectrum(cycloList, spectrumList))
                         {
-                            result += peptide;
+                            result += peptide + " ";
                         }
 
                         peptideArray.RemoveAt(i);
@@ -111,7 +112,13 @@ namespace BioInformaticsConsoleApp
                 Int32 val = 0;
                 Int32.TryParse(s, out val);
                 peptideList.Add(val);
-            }
+            }   
+
+/*            foreach (char c in peptide)
+            {
+                if (integerMass.ContainsKey(c.ToString()))
+                    peptideList.Add(integerMass[c.ToString()]);
+            }   */
 
 
 //            theoriticalList = TheoreticalSpectrum(peptide);
@@ -204,7 +211,19 @@ namespace BioInformaticsConsoleApp
             bool equal = false;
 
             if (spectrum1.Count() == spectrum2.Count())
-                equal = true;
+            {
+                for (int i = 0; i < spectrum1.Count(); i++)
+                {
+                    if (spectrum1[i] != spectrum2[i])
+                    {
+                        equal = false;
+                        break;
+                    }
+                    else
+                        equal = true;
+                }
+//                equal = true;
+            }
 
             return equal;
         }
@@ -242,6 +261,28 @@ namespace BioInformaticsConsoleApp
             }
 
             return peptideMass;
+        }
+
+        public static List<string> ExpandPeptidesX(List<string> peptideArray)
+        {
+            List<string> expandedArray = new List<string>();
+
+            foreach (string p in peptideArray)
+            {
+                foreach (var m in integerMass)
+                {
+                    string newVal = "";
+                    if (p.Length > 0)
+                        newVal = p + m.Key;
+                    //                        newVal = p + " " + m.Key;
+                    else
+                        newVal = m.Key;
+
+                    expandedArray.Add(newVal);
+                }
+            }
+
+            return expandedArray;
         }
 
         public static List<string> ExpandPeptides(List<string> peptideArray)
@@ -353,6 +394,12 @@ namespace BioInformaticsConsoleApp
             return subPeptides;
         }
 
+        public static string ConvertNumbericPeptide(string peptide)
+        {
+            string newPeptide = "";
+
+            return newPeptide;
+        }
 
         public static List<int> CyclicSpectrum(string peptide)
         {
@@ -364,20 +411,31 @@ namespace BioInformaticsConsoleApp
             int index = 0;
             prefixMassList.Insert(index++, 0);
 
-            for (int i = 0; i < peptide.Length; i++)
-            {
-                char p = peptide[i];
+            /*            for (int i = 0; i < peptide.Length; i++)
+                        {
+                            char p = peptide[i];
 
-                foreach (string j in integerMass.Keys)
-                {
-                    if (j == peptide[i].ToString())
-                    {
-                        int mass = prefixMassList[i] + integerMass[j];
-                        prefixMassList.Insert(index++, mass);
-                        break;
-                    }
-                }
+                            foreach (string j in integerMass.Keys)
+                            {
+                                if (j == peptide[i].ToString())
+                                {
+                                    int mass = prefixMassList[i] + integerMass[j];
+                                    prefixMassList.Insert(index++, mass);
+                                    break;
+                                }
+                            }
+                        }   */
+
+            string[] peptideArray = peptide.Split(" ");
+            for (int i = 0; i < peptideArray.Length - 1; i++)
+            {
+                int tmp = 0;
+                Int32.TryParse(peptideArray[i], out tmp);
+
+                int mass = prefixMassList[i] + tmp;
+                prefixMassList.Insert(index++, mass);
             }
+
             peptideMass = prefixMassList[prefixMassList.Count - 1];
 
             index = 0;
