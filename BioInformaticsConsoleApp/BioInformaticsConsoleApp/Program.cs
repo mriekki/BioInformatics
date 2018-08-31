@@ -44,11 +44,104 @@ namespace BioInformaticsConsoleApp
               { 99 }, {101 }, {103 }, {113 }, 
               {114 }, {115 }, {128 }, 
               {129 }, {131 }, {137 }, 
-              {147 }, {156 }, {163 }, {186 } }; 
+              {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_100_6.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_102_3.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "CyclopeptideSequencing";
+        private const string method = "LeaderboardCyclopeptideSequencing";
+
+        public static int LinearScore(string peptide, string spectrum, bool cyclic = true)
+        {
+            int result = 0;
+            List<int> peptideList = new List<int>();
+
+            string[] spectrumArray = spectrum.Split(" ");
+            List<int> spectrumList = new List<int>();
+
+            if (cyclic)
+                peptideList = CyclicSpectrum(peptide);
+            else
+                peptideList = LinearSpectrum(peptide);
+
+            foreach (string s in spectrumArray)
+            {
+                int val = 0;
+                Int32.TryParse(s, out val);
+
+                spectrumList.Add(val);
+            }
+
+            for (int i = 0; i < peptideList.Count(); i++)
+            {
+                for (int j = 0; j < spectrumList.Count(); j++)
+                {
+                    if (peptideList[i] == spectrumList[j])
+                    {
+                        result += 1;
+                        spectrumList.RemoveAt(j);
+                        break;
+                    }
+                }
+            }
+        
+            return result;
+        }
+
+        public static string LeaderboardCyclopeptideSequencing(string spectrum, int N)
+        {
+            string result = "";
+            List<string> leaderboard = new List<string>();
+            List<int> spectrumList = new List<int>();
+            string LeaderPeptide = "";
+
+            string[] spectrumArray = spectrum.Split(" ");
+            foreach (string s in spectrumArray)
+            {
+                Int32 val = 0;
+                Int32.TryParse(s, out val);
+                spectrumList.Add(val);
+            }
+
+            int parentMass = ParentMass(spectrum);
+
+            leaderboard.Add("");
+
+            while (leaderboard.Count > 0)
+            {
+                leaderboard = PurgePeptideArray(leaderboard);
+
+                leaderboard = ExpandPeptides(leaderboard);
+                for (int i = 0; i < leaderboard.Count; i++)
+                {
+                    string peptide = leaderboard[i];
+
+                    Int32 peptideMass = PeptideMass(peptide);
+
+                    if (peptideMass == parentMass)
+                    {
+                        if (LinearScore(peptide, spectrum) > LinearScore(LeaderPeptide, spectrum))
+                        {
+                            LeaderPeptide = peptide;
+                        }
+/*                        List<int> cycloList = CyclicSpectrum(peptide);
+
+                        if (CompareSpectrum(cycloList, spectrumList))
+                        {
+                            result += peptide + " ";
+                        }   */
+
+                        leaderboard[i] = "-1";
+                    }
+                    else if (peptideMass > parentMass)
+                    {
+                        leaderboard[i] = "-1";
+
+                    }
+                }
+            }
+
+            return result;
+        }
 
         public static string CyclopeptideSequencing(string spectrum)
         {
@@ -3100,6 +3193,23 @@ namespace BioInformaticsConsoleApp
 
                 result = CyclopeptideSequencing(fileText[0]);
             }
+
+            if ("CyclopeptideScore" == method)
+            {
+                int result = 0;
+
+                result = LinearScore(fileText[0], fileText[1], false);
+            }
+
+            if ("LeaderboardCyclopeptideSequencing" == method)
+            {
+                string result = "";
+                Int32.TryParse(fileText[0], out d);
+
+
+                result = LeaderboardCyclopeptideSequencing(fileText[1], d);
+            }
+
 
         }
         public class Node
