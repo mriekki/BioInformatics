@@ -46,11 +46,11 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_102_3.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_102_8.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "LeaderboardCyclopeptideSequencing";
 
-        public static int LinearScore(string peptide, string spectrum, bool cyclic = true)
+        public static int LinearScore(string peptide, string spectrum, bool cyclic = false)
         {
             int result = 0;
             List<int> peptideList = new List<int>();
@@ -86,6 +86,50 @@ namespace BioInformaticsConsoleApp
         
             return result;
         }
+        
+        public static List<string> TrimLeaderboard(List <string> leaderboard, string spectrum, int N)
+        {
+            List<string> newLeaderboard = new List<string>();
+            List<Peptide> tmpBoard = new List<Peptide>();
+            string[] spectrumArray = spectrum.Split(" ");
+            Dictionary<string, int> scoreLookup = new Dictionary<string, int>();
+
+            int currentScore = 0;
+            string currentPeptide = "";
+
+            for (int i = 0; i < leaderboard.Count(); i++)
+            {
+                currentPeptide = leaderboard[i];
+
+                if (scoreLookup.ContainsKey(currentPeptide))
+                    currentScore = scoreLookup[currentPeptide];
+                else
+                    currentScore = LinearScore(currentPeptide, spectrum, false);
+
+                Peptide tmpPeptide = new Peptide(currentPeptide, currentScore);
+                tmpBoard.Add(tmpPeptide);
+            }
+
+            MySortingClass sort1 = new MySortingClass();
+            tmpBoard.Sort(sort1);
+            tmpBoard.Reverse();
+
+            for (int j = 0; j < N && j < tmpBoard.Count(); j++)
+            {
+                currentScore = tmpBoard[j].score;
+                newLeaderboard.Add(tmpBoard[j].code);
+            }
+
+            for (int k = N; k < tmpBoard.Count; k++)
+            {
+                if (tmpBoard[k].score == currentScore)
+                    newLeaderboard.Add(tmpBoard[k].code);
+                else if (k > N)
+                    break;      // no need to check further
+            }
+            
+            return newLeaderboard;
+        }
 
         public static string LeaderboardCyclopeptideSequencing(string spectrum, int N)
         {
@@ -93,6 +137,7 @@ namespace BioInformaticsConsoleApp
             List<string> leaderboard = new List<string>();
             List<int> spectrumList = new List<int>();
             string LeaderPeptide = "";
+            Dictionary<string, int> scoreLookup = new Dictionary<string, int>();
 
             string[] spectrumArray = spectrum.Split(" ");
             foreach (string s in spectrumArray)
@@ -114,21 +159,33 @@ namespace BioInformaticsConsoleApp
                 for (int i = 0; i < leaderboard.Count; i++)
                 {
                     string peptide = leaderboard[i];
+                    int currentScore = 0;
+                    int leaderScore = 0;
 
                     Int32 peptideMass = PeptideMass(peptide);
 
                     if (peptideMass == parentMass)
                     {
-                        if (LinearScore(peptide, spectrum) > LinearScore(LeaderPeptide, spectrum))
+                        if (scoreLookup.ContainsKey(peptide))
+                            currentScore = scoreLookup[peptide];
+                        else
+                        {
+                            currentScore = LinearScore(peptide, spectrum);
+                            scoreLookup.Add(peptide, currentScore);
+                        }
+
+                        if (scoreLookup.ContainsKey(LeaderPeptide))
+                            leaderScore = scoreLookup[peptide];
+                        else
+                        {
+                            leaderScore = LinearScore(LeaderPeptide, spectrum);
+                            scoreLookup.Add(LeaderPeptide, leaderScore);
+                        }
+
+                        if (currentScore > leaderScore)
                         {
                             LeaderPeptide = peptide;
                         }
-/*                        List<int> cycloList = CyclicSpectrum(peptide);
-
-                        if (CompareSpectrum(cycloList, spectrumList))
-                        {
-                            result += peptide + " ";
-                        }   */
 
                         leaderboard[i] = "-1";
                     }
@@ -138,9 +195,14 @@ namespace BioInformaticsConsoleApp
 
                     }
                 }
+
+                leaderboard = PurgePeptideArray(leaderboard);       // remove -1 entrees
+
+                leaderboard = TrimLeaderboard(leaderboard, spectrum, N);
+
             }
 
-            return result;
+            return LeaderPeptide;
         }
 
         public static string CyclopeptideSequencing(string spectrum)
@@ -3194,7 +3256,7 @@ namespace BioInformaticsConsoleApp
                 result = CyclopeptideSequencing(fileText[0]);
             }
 
-            if ("CyclopeptideScore" == method)
+            if ("LinearScore" == method)
             {
                 int result = 0;
 
@@ -3210,8 +3272,60 @@ namespace BioInformaticsConsoleApp
                 result = LeaderboardCyclopeptideSequencing(fileText[1], d);
             }
 
+            if ("TrimLeaderboard" == method)
+            {
+                Int32.TryParse(fileText[2], out d);
+                List<string> result = new List<string>();
+                List<string> leaderboard = new List<string>();
+                string[] array = fileText[0].Split(" ");
+                foreach (string s in array)
+                    leaderboard.Add(s);
+
+                result = TrimLeaderboard(leaderboard, fileText[1], d);
+
+                WriteListToFile("C:\\Temp\\output.txt", result);
+
+            }
 
         }
+
+        public class MySortingClass : IComparer<Peptide>
+        {
+            public int Compare(Peptide x, Peptide y)
+            {
+                int compareScore = x.score.CompareTo(y.score);
+                if (compareScore == 0)
+                {
+                    return x.code.CompareTo(y.code);
+                }
+                return compareScore;
+            }
+        }
+        public class Peptide
+        {
+            public string code { get; set; }
+            public int mass { get; set; }
+            public int score { get; set; }
+
+            public bool cyclic { get; set; }
+
+            Peptide()
+            {
+                this.code = "";
+                this.mass = 0;
+                this.score = 0;
+                this.cyclic = false;
+            }
+
+            public Peptide(string code, int score)
+            {
+                this.code = code;
+                this.score = score;
+                this.mass = 0;
+                this.cyclic = false;
+            }
+        }
+
         public class Node
         {
             public string node { get; set; }
@@ -3251,7 +3365,6 @@ namespace BioInformaticsConsoleApp
 
             public void AddNode(Node newNode)
             {
-                //            circuit[currentPos] = newNode.node;
                 circuit.Add(newNode.node);
                 currentPos++;
             }
