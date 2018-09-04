@@ -46,9 +46,44 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_102_8.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "LeaderboardCyclopeptideSequencing";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_104_7.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "ConvolutionCyclopeptideSequencing";
+
+
+        public static string SpectralConvolution(string spectrum)
+        {
+            string result = "";
+            string[] array = spectrum.Split(" ");
+            List<int> spectrumList = new List<int>();
+            int val = 0;
+            int totalMass = 0;
+            int convolution = 0;
+
+            foreach (string s in array)
+            {
+                Int32.TryParse(s, out val);
+                totalMass += val;
+                spectrumList.Add(val);
+            }
+            spectrumList.Add(totalMass);
+
+            spectrumList.Sort();
+
+            for (int i = 0; i < spectrumList.Count() - 1; i++)
+            {
+                for (int j = 0; j < spectrumList.Count - 1; j++)
+                {
+                    convolution = spectrumList[i] - spectrumList[j];
+                    if (convolution > 0)
+                        result += convolution.ToString() + " ";
+                }
+            }
+
+            result = result.Trim();
+
+            return result;
+        }
 
         public static int LinearScore(string peptide, string spectrum, bool cyclic = false)
         {
@@ -131,7 +166,7 @@ namespace BioInformaticsConsoleApp
             return newLeaderboard;
         }
 
-        public static string LeaderboardCyclopeptideSequencing(string spectrum, int N)
+        public static string LeaderboardCyclopeptideSequencing(string spectrum, int N, int M = 0)
         {
             string result = "";
             List<string> leaderboard = new List<string>();
@@ -140,6 +175,7 @@ namespace BioInformaticsConsoleApp
             Dictionary<string, int> scoreLookup = new Dictionary<string, int>();
             int currentScore = 0;
             int leaderScore = 0;
+            List<Int64> massArray = new List<Int64>();
 
             string[] spectrumArray = spectrum.Split(" ");
             foreach (string s in spectrumArray)
@@ -148,6 +184,61 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(s, out val);
                 spectrumList.Add(val);
             }
+            spectrumList.Add(0);
+
+            if (M > 0)  // Use Convolution
+            {
+                string convolution = SpectralConvolution(spectrum);
+                string[] array = convolution.Split(" ");
+                int val = 0;
+                List<Peptide> convolutionList = new List<Peptide>();
+                Dictionary<string, int> dict = new Dictionary<string, int>();
+
+                foreach (string s in array)
+                {
+                    Int32.TryParse(s, out val);
+
+                    if (val >= 57 && val < 200)
+                    {
+                        if (dict.ContainsKey(s))
+                            dict[s] += 1;
+                        else
+                            dict.Add(s, 1);
+                    }
+                }
+
+                foreach (var s in dict)
+                {
+                    Peptide pep1 = new Peptide(s.Key, s.Value);
+                    convolutionList.Add(pep1);
+                }
+
+                MySortingClass sort1 = new MySortingClass();
+                convolutionList.Sort(sort1);
+                convolutionList.Reverse();
+
+                for (int j = 0; j < M && j < convolutionList.Count(); j++)
+                {
+                    currentScore = convolutionList[j].score;
+                    Int32.TryParse(convolutionList[j].code, out val);
+
+                    massArray.Add(val);
+                }
+
+                for (int k = M; k < convolutionList.Count; k++)
+                {
+                    if (convolutionList[k].score == currentScore)
+                    {
+                        Int32.TryParse(convolutionList[k].code, out val);
+                        massArray.Add(val);
+                    }
+                    else if (k > M)
+                        break;      // no need to check further
+                }
+            }
+            else
+                massArray = peptideMass;
+
 
             int parentMass = ParentMass(spectrum);
 
@@ -157,7 +248,7 @@ namespace BioInformaticsConsoleApp
             {
                 leaderboard = PurgePeptideArray(leaderboard);
 
-                leaderboard = ExpandPeptides(leaderboard);
+                leaderboard = ExpandPeptides(leaderboard, massArray);
                 for (int i = 0; i < leaderboard.Count; i++)
                 {
                     string peptide = leaderboard[i];
@@ -225,7 +316,7 @@ namespace BioInformaticsConsoleApp
             {
                 peptideArray = PurgePeptideArray(peptideArray);
 
-                peptideArray = ExpandPeptides(peptideArray);
+                peptideArray = ExpandPeptides(peptideArray, peptideMass);
                 for (int i = 0; i < peptideArray.Count; i++)
                 {
                     string peptide = peptideArray[i];
@@ -377,13 +468,13 @@ namespace BioInformaticsConsoleApp
         }
 
 
-        public static List<string> ExpandPeptides(List<string> peptideArray)
+        public static List<string> ExpandPeptides(List<string> peptideArray, List<Int64> massArray)
         {
             List<string> expandedArray = new List<string>();
 
             foreach (string p in peptideArray)
             {
-                foreach (int m in peptideMass)
+                foreach (int m in massArray)
                 {
                     string newVal = "";
                     if (p.Length > 0)
@@ -3265,10 +3356,19 @@ namespace BioInformaticsConsoleApp
             if ("LeaderboardCyclopeptideSequencing" == method)
             {
                 string result = "";
-                Int32.TryParse(fileText[0], out d);
-
+                Int32.TryParse(fileText[1], out d);
 
                 result = LeaderboardCyclopeptideSequencing(fileText[1], d);
+            }
+
+            if ("ConvolutionCyclopeptideSequencing" == method)
+            {
+                string result = "";
+                Int32.TryParse(fileText[1], out d);
+                int M = 0;
+                Int32.TryParse(fileText[0], out M);
+
+                result = LeaderboardCyclopeptideSequencing(fileText[2], d, M);
             }
 
             if ("TrimLeaderboard" == method)
@@ -3285,6 +3385,17 @@ namespace BioInformaticsConsoleApp
                 WriteListToFile("C:\\Temp\\output.txt", result);
 
             }
+
+            if ("SpectralConvolution" == method)
+            {
+                string result = "";
+
+                result = SpectralConvolution(fileText[0]);
+
+//                WriteListToFile("C:\\Temp\\output.txt", result);
+
+            }
+
 
         }
 
@@ -3308,12 +3419,15 @@ namespace BioInformaticsConsoleApp
 
             public bool cyclic { get; set; }
 
+            public int count { get; set; }
+
             Peptide()
             {
                 this.code = "";
                 this.mass = 0;
                 this.score = 0;
                 this.cyclic = false;
+                this.count = 0;
             }
 
             public Peptide(string code, int score)
@@ -3322,6 +3436,7 @@ namespace BioInformaticsConsoleApp
                 this.score = score;
                 this.mass = 0;
                 this.cyclic = false;
+                this.count = 0;
             }
         }
 
