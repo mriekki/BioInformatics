@@ -138,6 +138,8 @@ namespace BioInformaticsConsoleApp
             List<int> spectrumList = new List<int>();
             string LeaderPeptide = "";
             Dictionary<string, int> scoreLookup = new Dictionary<string, int>();
+            int currentScore = 0;
+            int leaderScore = 0;
 
             string[] spectrumArray = spectrum.Split(" ");
             foreach (string s in spectrumArray)
@@ -159,8 +161,6 @@ namespace BioInformaticsConsoleApp
                 for (int i = 0; i < leaderboard.Count; i++)
                 {
                     string peptide = leaderboard[i];
-                    int currentScore = 0;
-                    int leaderScore = 0;
 
                     Int32 peptideMass = PeptideMass(peptide);
 
@@ -170,7 +170,7 @@ namespace BioInformaticsConsoleApp
                             currentScore = scoreLookup[peptide];
                         else
                         {
-                            currentScore = LinearScore(peptide, spectrum);
+                            currentScore = LinearScore(peptide, spectrum, true);
                             scoreLookup.Add(peptide, currentScore);
                         }
 
@@ -178,16 +178,15 @@ namespace BioInformaticsConsoleApp
                             leaderScore = scoreLookup[peptide];
                         else
                         {
-                            leaderScore = LinearScore(LeaderPeptide, spectrum);
+                            leaderScore = LinearScore(LeaderPeptide, spectrum, true);
                             scoreLookup.Add(LeaderPeptide, leaderScore);
                         }
 
-                        if (currentScore > leaderScore)
+                        if (currentScore >= leaderScore)
                         {
                             LeaderPeptide = peptide;
                         }
 
-                        leaderboard[i] = "-1";
                     }
                     else if (peptideMass > parentMass)
                     {
