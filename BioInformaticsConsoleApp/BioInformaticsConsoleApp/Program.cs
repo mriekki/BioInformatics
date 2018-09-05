@@ -46,8 +46,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_104_7.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_104_7.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "ConvolutionCyclopeptideSequencing";
 
 
@@ -139,7 +139,7 @@ namespace BioInformaticsConsoleApp
                 if (scoreLookup.ContainsKey(currentPeptide))
                     currentScore = scoreLookup[currentPeptide];
                 else
-                    currentScore = LinearScore(currentPeptide, spectrum, false);
+                    currentScore = LinearScore(currentPeptide, spectrum, true);
 
                 Peptide tmpPeptide = new Peptide(currentPeptide, currentScore);
                 tmpBoard.Add(tmpPeptide);
@@ -169,10 +169,11 @@ namespace BioInformaticsConsoleApp
         public static string LeaderboardCyclopeptideSequencing(string spectrum, int N, int M = 0)
         {
             string result = "";
+            string LeaderPeptide = "";
             List<string> leaderboard = new List<string>();
             List<int> spectrumList = new List<int>();
-            string LeaderPeptide = "";
             Dictionary<string, int> scoreLookup = new Dictionary<string, int>();
+
             int currentScore = 0;
             int leaderScore = 0;
             List<Int64> massArray = new List<Int64>();
@@ -184,7 +185,6 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(s, out val);
                 spectrumList.Add(val);
             }
-            spectrumList.Add(0);
 
             if (M > 0)  // Use Convolution
             {
@@ -198,7 +198,7 @@ namespace BioInformaticsConsoleApp
                 {
                     Int32.TryParse(s, out val);
 
-                    if (val >= 57 && val < 200)
+                    if (val >= 57 && val <= 200)
                     {
                         if (dict.ContainsKey(s))
                             dict[s] += 1;
@@ -235,6 +235,8 @@ namespace BioInformaticsConsoleApp
                     else if (k > M)
                         break;      // no need to check further
                 }
+
+                massArray.Sort();
             }
             else
                 massArray = peptideMass;
@@ -266,14 +268,14 @@ namespace BioInformaticsConsoleApp
                         }
 
                         if (scoreLookup.ContainsKey(LeaderPeptide))
-                            leaderScore = scoreLookup[peptide];
+                            leaderScore = scoreLookup[LeaderPeptide];
                         else
                         {
                             leaderScore = LinearScore(LeaderPeptide, spectrum, true);
                             scoreLookup.Add(LeaderPeptide, leaderScore);
                         }
 
-                        if (currentScore >= leaderScore)
+                        if (currentScore > leaderScore)
                         {
                             LeaderPeptide = peptide;
                         }
@@ -289,7 +291,6 @@ namespace BioInformaticsConsoleApp
                 leaderboard = PurgePeptideArray(leaderboard);       // remove -1 entrees
 
                 leaderboard = TrimLeaderboard(leaderboard, spectrum, N);
-
             }
 
             return LeaderPeptide;
