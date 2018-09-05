@@ -46,9 +46,9 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_104_7.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "ConvolutionCyclopeptideSequencing";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_104_7.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "SpectralConvolution";
 
 
         public static string SpectralConvolution(string spectrum)
