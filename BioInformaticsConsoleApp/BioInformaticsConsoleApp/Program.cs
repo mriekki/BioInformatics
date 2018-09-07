@@ -46,10 +46,35 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_104_7.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "SpectralConvolution";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_243_10.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "DPChange";
 
+        public static int DPChange(int money, List<int> Coins)
+        {
+            int numCoins = 0;
+            int[] MinNumCoins = new int[money + 1];
+
+            MinNumCoins[0] = 0;
+
+            for (int m = 1; m <= money; m++)
+            {
+                MinNumCoins[m] = int.MaxValue;
+                for (int i = 0; i < Coins.Count(); i++)
+                {
+                    int coin = Coins[i];
+                    if (m >= coin)
+                    {
+                        if (MinNumCoins[m - coin] + 1 < MinNumCoins[m])
+                            MinNumCoins[m] = MinNumCoins[m - coin] + 1;
+                    }
+                }
+            }
+
+            numCoins = MinNumCoins[money];
+
+            return numCoins;
+        }
 
         public static string SpectralConvolution(string spectrum)
         {
@@ -3395,6 +3420,26 @@ namespace BioInformaticsConsoleApp
 
 //                WriteListToFile("C:\\Temp\\output.txt", result);
 
+            }
+
+            if ("DPChange" == method)
+            {
+                int result = 0;
+                int money = 0;
+                int val = 0;
+                List<int> Coins = new List<int>();
+                string[] tmpCoins = fileText[1].Split(",");
+
+                foreach (string s in tmpCoins)
+                {
+                    Int32.TryParse(s, out val);
+                    Coins.Add(val);
+
+                }
+
+                Int32.TryParse(fileText[0], out money);
+
+                result = DPChange(money, Coins);
             }
 
 
