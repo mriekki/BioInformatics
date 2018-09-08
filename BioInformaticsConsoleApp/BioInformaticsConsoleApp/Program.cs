@@ -46,9 +46,45 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_243_10.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_261_10.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "DPChange";
+        private const string method = "ManhattanTourist";
+
+        public static int ManhattanTourist(int n, int m, int[,] DownList, int[,] RightList)
+        {
+            int result = 0;
+            int[,] pathArray = new int[n + 1, m + 1];
+
+            pathArray[0, 0] = 0;
+            
+
+            for (int i = 1; i <= n; i++)
+                pathArray[i, 0] = pathArray[i - 1, 0] + DownList[i-1, 0];
+
+            for (int j = 1; j <= m; j++)
+                pathArray[0, j] = pathArray[0, j - 1] + RightList[0, j-1];
+
+            for (int i = 1; i <= n; i++)
+            {
+                for (int j = 1; j <= m; j++)
+                {
+                    int downVal = 0;
+                    int rightVal = 0;
+
+                    downVal = pathArray[i - 1, j] + DownList[i-1, j];
+                    rightVal = pathArray[i, j - 1] + RightList[i, j-1];
+
+                    if (downVal >= rightVal)
+                        pathArray[i, j] = downVal;
+                    else
+                        pathArray[i, j] = rightVal;
+                }
+            }
+
+            result = pathArray[n, m];
+
+            return result;
+        }
 
         public static int DPChange(int money, List<int> Coins)
         {
@@ -3440,6 +3476,48 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(fileText[0], out money);
 
                 result = DPChange(money, Coins);
+            }
+
+
+            if ("ManhattanTourist" == method)
+            {
+                int result = 0;
+                string[] array = fileText[0].Split(" ");
+                int n = 0;
+                int m = 0;
+                Int32.TryParse(array[0], out n);
+                Int32.TryParse(array[0], out m);
+                int[,] rightArray = new int[n + 1, m];
+                int[,] downArray = new int[n, m + 1];
+
+                bool fillRight = false;
+                int row = 0;
+
+                for (int i = 1; i < fileText.Length; i++)
+                {
+                    if (fileText[i] == "-")
+                    {
+                        fillRight = true;
+                        row = 0;
+                    }
+                    else
+                    {
+                        int val = 0;
+                        string[] intValues = fileText[i].Split(" ");
+
+                        for (int s = 0; s < intValues.Length; s++)
+                        {
+                            Int32.TryParse(intValues[s], out val);
+                            if (fillRight)
+                                rightArray[row, s] = val;
+                            else
+                                downArray[row, s] = val;
+                        }
+                        row++;
+                    }
+                }
+
+                result = ManhattanTourist(n, m, downArray, rightArray);
             }
 
 
