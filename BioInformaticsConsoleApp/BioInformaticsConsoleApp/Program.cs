@@ -11,6 +11,11 @@ namespace BioInformaticsConsoleApp
     {
         private const int NucleotideSize = 4;
         private static char[] zero_ones = { '0', '1' };
+        private static string right_arrow = "\u2192";
+        private static string down_arrow = "\u2193";
+        private static string diag_arrow = "\u2198";
+        private static string blank = ".";
+
         private static Dictionary<string, string> condonTable = new Dictionary<string, string> {
         {"UUU","F"}, {"UUC","F"}, {"UUA","L"}, {"UUG","L"},
         {"UCU","S"}, {"UCC","S" }, {"UCA","S" }, {"UCG","S" },
@@ -46,9 +51,71 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_261_10.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "ManhattanTourist";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_261_10.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "OutputLCS";
+
+        public static string OutputLCS(string [,] backtrack, string v, int i, int j)
+        {
+            string LCS = "";
+
+            if (i == 0 || j == 0)
+                return LCS;
+
+            if (backtrack[i, j] == down_arrow)
+                LCS = OutputLCS(backtrack, v, i - 1, j);
+            else if (backtrack[i, j] == right_arrow)
+                LCS = OutputLCS(backtrack, v, i, j - 1);
+            else
+            {
+                LCS = OutputLCS(backtrack, v, i - 1, j - 1);
+                LCS = v[i].ToString();
+            }
+
+            return LCS;
+        }
+
+        public static string[,] LCSBackTrack(string v, string w)
+        {
+            int downLength = v.Length + 1;
+            int rightLength = w.Length + 1;
+            int[,] pathArray = new int[downLength, rightLength];
+
+            string[,] Backtrack = new string[downLength, rightLength];
+
+            for (int i = 0; i < downLength; i++)
+            {
+                for (int k = 0; k < rightLength; k++)
+                {
+                    Backtrack[i, k] = blank;
+                    pathArray[i, k] = 0;
+                }
+            }
+            
+            for (int i = 1; i < downLength; i++)
+            {
+                for (int j = 1; j < rightLength; j++)
+                {
+                    int dwn = pathArray[i - 1, j];
+                    int rt = pathArray[i, j - 1];
+                    int eq = pathArray[i - 1, j - 1];
+                    if (v[i-1] == w[j-1])
+                    {
+                        eq += 1;
+                    }
+                    pathArray[i,j] = Max(dwn, rt, eq);
+
+                    if (pathArray[i, j] == pathArray[i - 1, j])
+                        Backtrack[i, j] = down_arrow;
+                    else if (pathArray[i, j] == pathArray[i, j - 1])
+                        Backtrack[i, j] = right_arrow;
+                    else if (pathArray[i, j] == (pathArray[i - 1, j - 1] + 1) && v[i-1] == w[j-1])
+                        Backtrack[i, j] = diag_arrow;
+                }
+            }
+
+            return Backtrack;
+        }
 
         public static int ManhattanTourist(int n, int m, int[,] DownList, int[,] RightList)
         {
@@ -56,7 +123,7 @@ namespace BioInformaticsConsoleApp
             int[,] pathArray = new int[n + 1, m + 1];
 
             pathArray[0, 0] = 0;
-            
+
 
             for (int i = 1; i <= n; i++)
                 pathArray[i, 0] = pathArray[i - 1, 0] + DownList[i-1, 0];
@@ -3520,7 +3587,33 @@ namespace BioInformaticsConsoleApp
                 result = ManhattanTourist(n, m, downArray, rightArray);
             }
 
+            if ("LCSBackTrack" == method)
+            {
+                string[,] result;
 
+                result = LCSBackTrack(fileText[0], fileText[1]);
+
+                int test = 0;
+            }
+
+            if ("OutputLCS" == method)
+            {
+                string result;
+                string v = fileText[0];
+                string w = fileText[1];
+
+                string[,] backtrack = LCSBackTrack(v, w);
+
+                result = OutputLCS(backtrack, v, v.Length, w.Length);
+
+                int test = 0;
+            }
+
+        }
+
+        static int Max(params int[] numbers)
+        {
+            return numbers.Max();
         }
 
         public class MySortingClass : IComparer<Peptide>
