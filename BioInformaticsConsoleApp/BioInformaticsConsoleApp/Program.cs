@@ -51,8 +51,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_261_10.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_245_5.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "OutputLCS";
 
         public static string OutputLCS(string [,] backtrack, string v, int i, int j)
@@ -63,13 +63,13 @@ namespace BioInformaticsConsoleApp
                 return LCS;
 
             if (backtrack[i, j] == down_arrow)
-                LCS = OutputLCS(backtrack, v, i - 1, j);
+                LCS += OutputLCS(backtrack, v, i - 1, j);
             else if (backtrack[i, j] == right_arrow)
-                LCS = OutputLCS(backtrack, v, i, j - 1);
+                LCS += OutputLCS(backtrack, v, i, j - 1);
             else
             {
-                LCS = OutputLCS(backtrack, v, i - 1, j - 1);
-                LCS = v[i].ToString();
+                LCS += OutputLCS(backtrack, v, i - 1, j - 1);
+                LCS += v[i-1].ToString();
             }
 
             return LCS;
