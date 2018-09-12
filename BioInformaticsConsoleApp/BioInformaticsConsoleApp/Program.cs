@@ -10,6 +10,7 @@ namespace BioInformaticsConsoleApp
     class Program
     {
         private const int NucleotideSize = 4;
+        private const int INF = -9999;
         private static char[] zero_ones = { '0', '1' };
         private static string right_arrow = "\u2192";
         private static string down_arrow = "\u2193";
@@ -53,7 +54,239 @@ namespace BioInformaticsConsoleApp
 
         //private const string inputFile = "..\\..\\..\\Data Files\\dataset_245_5.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "TopologicalSort";
+        private const string method = "LongestPathInDAG";
+
+        public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
+        {
+            List<string> result = new List<string>();
+            HashSet<int> nodeSet = new HashSet<int>();
+            HashSet<Tuple<int, int, int>> edgeSet = new HashSet<Tuple<int, int, int>>();
+            int maxNodeValue = 0;
+            Dictionary<int, List<Tuple<int, int>>> edgeDict = new Dictionary<int, List<Tuple<int, int>>>();
+
+            // Parse and create Nodes and Edges HashSets
+            foreach (string edge in edgeList)
+            {
+                string[] split1 = edge.Split("->");
+                string[] split2 = split1[1].Split(":");
+                int nodeVal = 0;
+                int edgeVal = 0;
+                int weight = 0;
+                Int32.TryParse(split1[0], out nodeVal);
+                Int32.TryParse(split2[0], out edgeVal);
+                Int32.TryParse(split2[1], out weight);
+
+                if (edgeDict.ContainsKey(edgeVal))
+                {
+                    List<Tuple<int, int>> newItem = new List<Tuple<int, int>>();
+                    newItem = edgeDict[edgeVal];
+                    newItem.Add(Tuple.Create(nodeVal, weight));
+                    edgeDict[edgeVal] = newItem;
+
+                }
+                else
+                {
+                    List<Tuple<int, int>> newItem = new List<Tuple<int, int>>();
+                    newItem.Add(Tuple.Create(nodeVal, weight));
+                    edgeDict.Add(edgeVal, newItem);
+                }
+
+                bool ret = false;
+
+                if (edgeVal > maxNodeValue)
+                    maxNodeValue = edgeVal;
+
+                ret = nodeSet.Add(nodeVal);
+                ret = edgeSet.Add(Tuple.Create(nodeVal, edgeVal, weight));
+//                ret = edgeSetOrig.Add(Tuple.Create(nodeVal, edgeVal, weight));
+            }
+
+            //var ret2 = TopologicalSort(nodeSet, edgeSet);
+
+            int nodeSize = maxNodeValue + 1;
+
+            int[,] DAGGraph = new int[nodeSize, nodeSize];
+
+            for (int i = 0; i < nodeSize; i++)
+                for (int j = 0; j < nodeSize; j++)
+                    DAGGraph[i, j] = INF;
+
+            foreach(var s in edgeSet)
+            {
+                DAGGraph[s.Item1, s.Item2] = s.Item3;
+            }   
+                
+            int longestPath = LongestPathLength(startingNode, endingNode, DAGGraph);
+
+            List<string> pathList = new List<string>();
+            int currentNode = endingNode;
+            var Edge = edgeDict[currentNode];
+            bool edgesLeft = true;
+            Dictionary<string, bool> vistedDict = new Dictionary<string, bool>();
+            
+            while (Edge.Count > 0)
+            {
+                List<Tuple<int, int>> connectedEdges = new List<Tuple<int, int>>();
+                connectedEdges = Edge;
+                int highestEdge = 0;
+                int prevEdge = 0;
+
+                foreach (var s in connectedEdges)
+                {
+                    string path = currentNode.ToString() + "->" + s.Item1.ToString();
+
+                    if (!vistedDict.ContainsKey(path))  // haven't visited this path yet
+                    {
+                        if (s.Item2 > highestEdge)
+                        {
+                            highestEdge = s.Item2;
+                            prevEdge = s.Item1;
+                            currentNode = prevEdge;
+                            vistedDict.Add(path, true);
+                        }
+                    }
+                    else
+                    {
+                        int rr = 0;
+                    }
+                }
+                pathList.Add(prevEdge.ToString());
+
+                if (edgeDict.ContainsKey(prevEdge))
+                    Edge = edgeDict[prevEdge];
+                else
+                {
+                    if (prevEdge == startingNode)
+                        break;
+                    else
+                    {
+                        Edge = edgeDict[endingNode];    // start again and skip paths used
+                        pathList.Clear();
+                    }
+                 }
+            }
+
+
+
+            return result;
+        }
+
+
+        public static void TopoSort(int u, bool[] visited, Stack<int> stk, int[,] DAGGraph)
+        {
+            visited[u] = true;
+            int nodeLength = DAGGraph.GetUpperBound(0);
+
+            for (int v = 0; v < nodeLength; v++)
+            {
+                if (DAGGraph[u,v] != INF)
+                {
+                    if (!visited[v])
+                        TopoSort(v, visited, stk, DAGGraph);
+                }
+            }
+
+            stk.Push(u);
+        }
+
+        public static int LongestPathLength(int start, int end, int[,] DAGGraph)
+        {
+            Stack<int> stk = new Stack<int>();
+            int nodeSize = DAGGraph.GetUpperBound(0) + 1;
+            int[] dist = new int[nodeSize];
+            bool[] vis = new bool[nodeSize];
+            int result = 0;
+
+            for (int i = 0; i < nodeSize; i++)
+                vis[i] = false;
+
+            for (int i = 0; i < nodeSize; i++)
+            {
+                if (!vis[i])
+                    TopoSort(i, vis, stk, DAGGraph);
+            }
+
+            for (int i = 0; i < nodeSize; i++)
+            {
+                dist[i] = INF;
+            }
+
+            dist[start] = 0;
+
+            while (stk.Count() > 0)
+            {
+                int nextVert = stk.Pop();
+
+                if (dist[nextVert] != INF)
+                {
+                    for (int v = 0; v < nodeSize; v++)
+                    {
+                        if (DAGGraph[nextVert,v] != INF)
+                        {
+                            if (dist[v] < dist[nextVert] + DAGGraph[nextVert, v])
+                            {
+                                dist[v] = dist[nextVert] + DAGGraph[nextVert, v];
+                            }
+                        }
+                    }
+                }
+            }
+
+            result = dist[end];
+
+            return result;
+        }
+
+        public static int MinimumDistance(int[] distance, bool[] shortestPathTreeSet, int verticesCount)
+        {
+            int min = int.MaxValue;
+            int minIndex = 0;
+
+            for (int v = 0; v < verticesCount; ++v)
+            {
+                if (shortestPathTreeSet[v] == false && distance[v] <= min)
+                {
+                    min = distance[v];
+                    minIndex = v;
+                }
+            }
+
+            return minIndex;
+        }
+
+        public static void Print(int[] distance, int verticesCount)
+        {
+            Console.WriteLine("Vertex    Distance from source");
+
+            for (int i = 0; i < verticesCount; ++i)
+                Console.WriteLine("{0}\t  {1}", i, distance[i]);
+        }
+
+        public static void Dijkstra(int[,] graph, int source, int verticesCount)
+        {
+            int[] distance = new int[verticesCount];
+            bool[] shortestPathTreeSet = new bool[verticesCount];
+
+            for (int i = 0; i < verticesCount; ++i)
+            {
+                distance[i] = int.MaxValue;
+                shortestPathTreeSet[i] = false;
+            }
+
+            distance[source] = 0;
+
+            for (int count = 0; count < verticesCount - 1; ++count)
+            {
+                int u = MinimumDistance(distance, shortestPathTreeSet, verticesCount);
+                shortestPathTreeSet[u] = true;
+
+                for (int v = 0; v < verticesCount; ++v)
+                    if (!shortestPathTreeSet[v] && Convert.ToBoolean(graph[u, v]) && distance[u] != int.MaxValue && distance[u] + graph[u, v] < distance[v])
+                        distance[v] = distance[u] + graph[u, v];
+            }
+
+            Print(distance, verticesCount);
+        }
 
         /// <summary>
         /// Topological Sorting (Kahn's algorithm) 
@@ -63,7 +296,7 @@ namespace BioInformaticsConsoleApp
         /// <param name="nodes">All nodes of directed acyclic graph.</param>
         /// <param name="edges">All edges of directed acyclic graph.</param>
         /// <returns>Sorted node in topological order.</returns>
-        static List<T> TopologicalSort<T>(HashSet<T> nodes, HashSet<Tuple<T, T>> edges) where T : IEquatable<T>
+        public static List<T> TopologicalSort<T>(HashSet<T> nodes, HashSet<Tuple<T, T, T>> edges) where T : IEquatable<T>
         {
             // Empty list that will contain the sorted elements
             var L = new List<T>();
@@ -3666,20 +3899,9 @@ namespace BioInformaticsConsoleApp
                 int test = 0;
             }
 
+
             if ("TopologicalSort" == method)
             {
-
-                // digraph G {
-                //   "7"  -> "11"
-                //   "7"  -> "8"
-                //   "5"  -> "11"
-                //   "3"  -> "8"
-                //   "3"  -> "10"
-                //   "11" -> "2"
-                //   "11" -> "9"
-                //   "11" -> "10"
-                //   "8"  -> "9"
-
                 //        List<T> TopologicalSort<T>(HashSet<T> nodes, HashSet<Tuple<T, T>> edges) where T : IEquatable<T>
 
                 HashSet<int> nodes = new HashSet<int>{ 7, 5, 3, 8, 11, 2, 9, 10 };
@@ -3693,28 +3915,47 @@ namespace BioInformaticsConsoleApp
                         Tuple.Create(11, 10),
                         Tuple.Create(8, 9)};
 
-/*                var ret = TopologicalSort(
-            new HashSet<int>(new[] { 7, 5, 3, 8, 11, 2, 9, 10 }),
-            new HashSet<Tuple<int, int>>(
-                new[] {
-                        Tuple.Create(7, 11),
-                        Tuple.Create(7, 8),
-                        Tuple.Create(5, 11),
-                        Tuple.Create(3, 8),
-                        Tuple.Create(3, 10),
-                        Tuple.Create(11, 2),
-                        Tuple.Create(11, 9),
-                        Tuple.Create(11, 10),
-                        Tuple.Create(8, 9)
-                }
-            )   */
 
+//                var ret = TopologicalSort(nodes, edges);
 
-                var ret = TopologicalSort(nodes, edges);
-
-                System.Diagnostics.Debug.Assert(ret.SequenceEqual(new[] { 7, 5, 11, 2, 3, 8, 9, 10 }));
+//                System.Diagnostics.Debug.Assert(ret.SequenceEqual(new[] { 7, 5, 11, 2, 3, 8, 9, 10 }));
             }
 
+            if ("LongestPathInDAG" == method)
+            {
+                List<string> result = new List<string>();
+                int startingNode = 0;
+                int endingNode = 0;
+                List<string> edges = new List<string>();
+
+                Int32.TryParse(fileText[0], out startingNode);
+                Int32.TryParse(fileText[1], out endingNode);
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    edges.Add(fileText[i]);
+                }
+
+                result = LongestPathInDAG(startingNode, endingNode, edges);
+
+                int test = 0;
+            }
+
+            if (("Dijkstra" == method))
+            {
+                            int[,] graph = {
+                { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
+                { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
+                { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
+                { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
+                { 0, 0, 0, 9, 0, 10, 0, 0, 0 },
+                { 0, 0, 4, 0, 10, 0, 2, 0, 0 },
+                { 0, 0, 0, 14, 0, 2, 0, 1, 6 },
+                { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
+                { 0, 0, 2, 0, 0, 0, 6, 7, 0 }};
+
+                Dijkstra(graph, 0, 9);
+            }
 
         }
 
