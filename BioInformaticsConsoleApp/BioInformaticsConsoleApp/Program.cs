@@ -59,7 +59,7 @@ namespace BioInformaticsConsoleApp
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
             List<string> result = new List<string>();
-            HashSet<int> nodeSet = new HashSet<int>();
+//            HashSet<int> nodeSet = new HashSet<int>();
             HashSet<Tuple<int, int, int>> edgeSet = new HashSet<Tuple<int, int, int>>();
             int maxNodeValue = 0;
             Dictionary<int, List<Tuple<int, int>>> edgeDict = new Dictionary<int, List<Tuple<int, int>>>();
@@ -99,15 +99,13 @@ namespace BioInformaticsConsoleApp
                 if (edgeVal > maxNodeValue)
                     maxNodeValue = edgeVal;
 
-                ret = nodeSet.Add(nodeVal);
+//                ret = nodeSet.Add(nodeVal);
                 ret = edgeSet.Add(Tuple.Create(nodeVal, edgeVal, weight));
             }
 
-//            var ret2 = TopologicalSort(nodeSet, edgeSet);
-
             int nodeSize = maxNodeValue + 1;
-
             int[,] DAGGraph = new int[nodeSize, nodeSize];
+            int[] dist = new int[DAGGraph.GetUpperBound(0) + 1];
 
             for (int i = 0; i < nodeSize; i++)
                 for (int j = 0; j < nodeSize; j++)
@@ -116,66 +114,48 @@ namespace BioInformaticsConsoleApp
             foreach(var s in edgeSet)
             {
                 DAGGraph[s.Item1, s.Item2] = s.Item3;
-            }   
-                
-            int longestPath = LongestPathLength(startingNode, endingNode, DAGGraph);
+            }
+
+            int longestPath = LongestPathLength(startingNode, endingNode, DAGGraph, dist);
+
+            result.Add(longestPath.ToString());
+
 
             List<string> pathList = new List<string>();
             int currentNode = endingNode;
             var Edge = edgeDict[currentNode];
-            bool edgesLeft = true;
-            Dictionary<string, bool> vistedDict = new Dictionary<string, bool>();
 
             pathList.Add(currentNode.ToString());
 
             while (Edge.Count > 0)
             {
                 List<Tuple<int, int>> connectedEdges = new List<Tuple<int, int>>();
-                connectedEdges = Edge;
-                int highestEdge = 0;
-                int prevEdge = 0;
-//                bool equalEdges = false;
+                int prevNode = 0;
                 int prevVal = -1;
-                int prevCount = 0;
-                bool duplicateWeights = false;
 
-
-                foreach ( var s in connectedEdges)
-                {
-                    if (s.Item2 == prevVal)
-                        duplicateWeights = true;
-
-                    prevVal = s.Item2;
-
-                }   
+                connectedEdges = Edge;
 
                 foreach (var s in connectedEdges)
                 {
                     string path = currentNode.ToString() + "->" + s.Item1.ToString();
 
-                    if (!vistedDict.ContainsKey(path))  // haven't visited this path yet
-                   {
-                        if (s.Item2 > highestEdge && s.Item1 >= startingNode && s.Item1 <= endingNode)
-                        {
-                            highestEdge = s.Item2;
-                            prevEdge = s.Item1;
-
-                            if (duplicateWeights)
-                                vistedDict.Add(path, true);
-                        }
+                    if (dist[s.Item1] > prevVal && s.Item1 >= startingNode && s.Item1 <= endingNode)
+                    {
+                        prevVal = dist[s.Item1];
+                        prevNode = s.Item1;
 
                     }
                 }
-                pathList.Add(prevEdge.ToString());
-                currentNode = prevEdge;
+                pathList.Add(prevNode.ToString());
+                currentNode = prevNode;
 
-                if (prevEdge == startingNode)
+                if (prevNode == startingNode)
                     break;
-                else if (edgeDict.ContainsKey(prevEdge))
-                    Edge = edgeDict[prevEdge];
+                else if (edgeDict.ContainsKey(prevNode))
+                    Edge = edgeDict[prevNode];
                 else
                 {
-                    if (prevEdge == startingNode)
+                    if (prevNode == startingNode)
                         break;
                     else
                     {
@@ -191,6 +171,9 @@ namespace BioInformaticsConsoleApp
             for (int i = 0; i < pathList.Count(); i++)
                 ReversePath += pathList[i] + "->";
 
+            ReversePath = ReversePath.Substring(0, ReversePath.Length - 2);  // remove last ->
+
+            result.Add(ReversePath);
 
             return result;
         }
@@ -213,11 +196,10 @@ namespace BioInformaticsConsoleApp
             stk.Push(u);
         }
 
-        public static int LongestPathLength(int start, int end, int[,] DAGGraph)
+        public static int LongestPathLength(int start, int end, int[,] DAGGraph, int[] dist)
         {
             Stack<int> stk = new Stack<int>();
             int nodeSize = DAGGraph.GetUpperBound(0) + 1;
-            int[] dist = new int[nodeSize];
             bool[] vis = new bool[nodeSize];
             int result = 0;
 
@@ -261,56 +243,6 @@ namespace BioInformaticsConsoleApp
             return result;
         }
 
-        public static int MinimumDistance(int[] distance, bool[] shortestPathTreeSet, int verticesCount)
-        {
-            int min = int.MaxValue;
-            int minIndex = 0;
-
-            for (int v = 0; v < verticesCount; ++v)
-            {
-                if (shortestPathTreeSet[v] == false && distance[v] <= min)
-                {
-                    min = distance[v];
-                    minIndex = v;
-                }
-            }
-
-            return minIndex;
-        }
-
-        public static void Print(int[] distance, int verticesCount)
-        {
-            Console.WriteLine("Vertex    Distance from source");
-
-            for (int i = 0; i < verticesCount; ++i)
-                Console.WriteLine("{0}\t  {1}", i, distance[i]);
-        }
-
-        public static void Dijkstra(int[,] graph, int source, int verticesCount)
-        {
-            int[] distance = new int[verticesCount];
-            bool[] shortestPathTreeSet = new bool[verticesCount];
-
-            for (int i = 0; i < verticesCount; ++i)
-            {
-                distance[i] = int.MaxValue;
-                shortestPathTreeSet[i] = false;
-            }
-
-            distance[source] = 0;
-
-            for (int count = 0; count < verticesCount - 1; ++count)
-            {
-                int u = MinimumDistance(distance, shortestPathTreeSet, verticesCount);
-                shortestPathTreeSet[u] = true;
-
-                for (int v = 0; v < verticesCount; ++v)
-                    if (!shortestPathTreeSet[v] && Convert.ToBoolean(graph[u, v]) && distance[u] != int.MaxValue && distance[u] + graph[u, v] < distance[v])
-                        distance[v] = distance[u] + graph[u, v];
-            }
-
-            Print(distance, verticesCount);
-        }
 
         /// <summary>
         /// Topological Sorting (Kahn's algorithm) 
@@ -3963,22 +3895,6 @@ namespace BioInformaticsConsoleApp
                 result = LongestPathInDAG(startingNode, endingNode, edges);
 
                 int test = 0;
-            }
-
-            if (("Dijkstra" == method))
-            {
-                            int[,] graph = {
-                { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
-                { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
-                { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
-                { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
-                { 0, 0, 0, 9, 0, 10, 0, 0, 0 },
-                { 0, 0, 4, 0, 10, 0, 2, 0, 0 },
-                { 0, 0, 0, 14, 0, 2, 0, 1, 6 },
-                { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
-                { 0, 0, 2, 0, 0, 0, 6, 7, 0 }};
-
-                Dijkstra(graph, 0, 9);
             }
 
         }
