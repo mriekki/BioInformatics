@@ -52,8 +52,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_245_5.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_245_7.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "LongestPathInDAG";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
@@ -76,19 +76,22 @@ namespace BioInformaticsConsoleApp
                 Int32.TryParse(split2[0], out edgeVal);
                 Int32.TryParse(split2[1], out weight);
 
-                if (edgeDict.ContainsKey(edgeVal))
-                {
-                    List<Tuple<int, int>> newItem = new List<Tuple<int, int>>();
-                    newItem = edgeDict[edgeVal];
-                    newItem.Add(Tuple.Create(nodeVal, weight));
-                    edgeDict[edgeVal] = newItem;
+                if (edgeVal >= startingNode && edgeVal <= endingNode)
+                { 
+                    if (edgeDict.ContainsKey(edgeVal))
+                    {
+                        List<Tuple<int, int>> newItem = new List<Tuple<int, int>>();
+                        newItem = edgeDict[edgeVal];
+                        newItem.Add(Tuple.Create(nodeVal, weight));
+                        edgeDict[edgeVal] = newItem;
 
-                }
-                else
-                {
-                    List<Tuple<int, int>> newItem = new List<Tuple<int, int>>();
-                    newItem.Add(Tuple.Create(nodeVal, weight));
-                    edgeDict.Add(edgeVal, newItem);
+                    }
+                    else
+                    {
+                        List<Tuple<int, int>> newItem = new List<Tuple<int, int>>();
+                        newItem.Add(Tuple.Create(nodeVal, weight));
+                        edgeDict.Add(edgeVal, newItem);
+                    }
                 }
 
                 bool ret = false;
@@ -98,10 +101,9 @@ namespace BioInformaticsConsoleApp
 
                 ret = nodeSet.Add(nodeVal);
                 ret = edgeSet.Add(Tuple.Create(nodeVal, edgeVal, weight));
-//                ret = edgeSetOrig.Add(Tuple.Create(nodeVal, edgeVal, weight));
             }
 
-            //var ret2 = TopologicalSort(nodeSet, edgeSet);
+//            var ret2 = TopologicalSort(nodeSet, edgeSet);
 
             int nodeSize = maxNodeValue + 1;
 
@@ -123,36 +125,53 @@ namespace BioInformaticsConsoleApp
             var Edge = edgeDict[currentNode];
             bool edgesLeft = true;
             Dictionary<string, bool> vistedDict = new Dictionary<string, bool>();
-            
+
+            pathList.Add(currentNode.ToString());
+
             while (Edge.Count > 0)
             {
                 List<Tuple<int, int>> connectedEdges = new List<Tuple<int, int>>();
                 connectedEdges = Edge;
                 int highestEdge = 0;
                 int prevEdge = 0;
+//                bool equalEdges = false;
+                int prevVal = -1;
+                int prevCount = 0;
+                bool duplicateWeights = false;
+
+
+                foreach ( var s in connectedEdges)
+                {
+                    if (s.Item2 == prevVal)
+                        duplicateWeights = true;
+
+                    prevVal = s.Item2;
+
+                }   
 
                 foreach (var s in connectedEdges)
                 {
                     string path = currentNode.ToString() + "->" + s.Item1.ToString();
 
                     if (!vistedDict.ContainsKey(path))  // haven't visited this path yet
-                    {
-                        if (s.Item2 > highestEdge)
+                   {
+                        if (s.Item2 > highestEdge && s.Item1 >= startingNode && s.Item1 <= endingNode)
                         {
                             highestEdge = s.Item2;
                             prevEdge = s.Item1;
-                            currentNode = prevEdge;
-                            vistedDict.Add(path, true);
+
+                            if (duplicateWeights)
+                                vistedDict.Add(path, true);
                         }
-                    }
-                    else
-                    {
-                        int rr = 0;
+
                     }
                 }
                 pathList.Add(prevEdge.ToString());
+                currentNode = prevEdge;
 
-                if (edgeDict.ContainsKey(prevEdge))
+                if (prevEdge == startingNode)
+                    break;
+                else if (edgeDict.ContainsKey(prevEdge))
                     Edge = edgeDict[prevEdge];
                 else
                 {
@@ -160,12 +179,17 @@ namespace BioInformaticsConsoleApp
                         break;
                     else
                     {
+                        currentNode = endingNode;
                         Edge = edgeDict[endingNode];    // start again and skip paths used
                         pathList.Clear();
                     }
                  }
             }
+            pathList.Reverse();
 
+            string ReversePath = "";
+            for (int i = 0; i < pathList.Count(); i++)
+                ReversePath += pathList[i] + "->";
 
 
             return result;
