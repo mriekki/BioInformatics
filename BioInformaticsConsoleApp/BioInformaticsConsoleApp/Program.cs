@@ -52,9 +52,9 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_245_7.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_247_3.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "LongestPathInDAG";
+        private const string method = "SequenceAlignment";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
@@ -3935,6 +3935,14 @@ namespace BioInformaticsConsoleApp
                 int test = 0;
             }
 
+            if ("SequenceAlignment" == method)
+            {
+                new SequenceAlignment().Run(fileText[0], fileText[1]);
+
+                PL("Press a key to exit.");
+                Console.ReadKey();
+            }
+
         }
 
         static int Max(params int[] numbers)
@@ -4026,6 +4034,10 @@ namespace BioInformaticsConsoleApp
                 currentPos++;
             }
         }
+
+        public static void PL(object o) { Console.WriteLine(o); } //alias
+        public static void PL() { Console.WriteLine(); } //alias
+        public static void P(object o) { Console.Write(o); } //alias
 
     }
 }
