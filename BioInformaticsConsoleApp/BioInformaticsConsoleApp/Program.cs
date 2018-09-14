@@ -59,7 +59,7 @@ namespace BioInformaticsConsoleApp
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
             List<string> result = new List<string>();
-//            HashSet<int> nodeSet = new HashSet<int>();
+            HashSet<int> nodeSet = new HashSet<int>();
             HashSet<Tuple<int, int, int>> edgeSet = new HashSet<Tuple<int, int, int>>();
             int maxNodeValue = 0;
             Dictionary<int, List<Tuple<int, int>>> edgeDict = new Dictionary<int, List<Tuple<int, int>>>();
@@ -99,7 +99,7 @@ namespace BioInformaticsConsoleApp
                 if (edgeVal > maxNodeValue)
                     maxNodeValue = edgeVal;
 
-//                ret = nodeSet.Add(nodeVal);
+                ret = nodeSet.Add(nodeVal);
                 ret = edgeSet.Add(Tuple.Create(nodeVal, edgeVal, weight));
             }
 
@@ -3855,29 +3855,45 @@ namespace BioInformaticsConsoleApp
                 int test = 0;
             }
 
-
-            if ("TopologicalSort" == method)
+            if ("MassCounting" == method)
             {
-                //        List<T> TopologicalSort<T>(HashSet<T> nodes, HashSet<Tuple<T, T>> edges) where T : IEquatable<T>
+                Int64 result;
+                string v = fileText[0];
+                string w = fileText[1];
 
-                HashSet<int> nodes = new HashSet<int>{ 7, 5, 3, 8, 11, 2, 9, 10 };
-                HashSet<Tuple<int, int>> edges = new HashSet<Tuple<int, int>> { Tuple.Create(7, 11),
-                        Tuple.Create(7, 8),
-                        Tuple.Create(5, 11),
-                        Tuple.Create(3, 8),
-                        Tuple.Create(3, 10),
-                        Tuple.Create(11, 2),
-                        Tuple.Create(11, 9),
-                        Tuple.Create(11, 10),
-                        Tuple.Create(8, 9)};
+                string[,] backtrack = LCSBackTrack(v, w);
+                Int64 weight = 22;
+                List<Int64> masses = new List<Int64>();
+                masses.Add(2);
+                masses.Add(3);
 
+                result = MassCounting(weight, masses);
 
-//                var ret = TopologicalSort(nodes, edges);
-
-//                System.Diagnostics.Debug.Assert(ret.SequenceEqual(new[] { 7, 5, 11, 2, 3, 8, 9, 10 }));
+                int test = 0;
             }
 
-            if ("LongestPathInDAG" == method)
+            /*            if ("TopologicalSort" == method)
+                        {
+                            //        List<T> TopologicalSort<T>(HashSet<T> nodes, HashSet<Tuple<T, T>> edges) where T : IEquatable<T>
+
+                            HashSet<int> nodes = new HashSet<int>{ 7, 5, 3, 8, 11, 2, 9, 10 };
+                            HashSet<Tuple<int, int>> edges = new HashSet<Tuple<int, int>> { Tuple.Create(7, 11),
+                                    Tuple.Create(7, 8),
+                                    Tuple.Create(5, 11),
+                                    Tuple.Create(3, 8),
+                                    Tuple.Create(3, 10),
+                                    Tuple.Create(11, 2),
+                                    Tuple.Create(11, 9),
+                                    Tuple.Create(11, 10),
+                                    Tuple.Create(8, 9)};
+
+
+            //                var ret = TopologicalSort(nodes, edges);
+
+            //                System.Diagnostics.Debug.Assert(ret.SequenceEqual(new[] { 7, 5, 11, 2, 3, 8, 9, 10 }));
+                        }   */
+
+            if ("TopologicalSort" == method)
             {
                 List<string> result = new List<string>();
                 int startingNode = 0;
@@ -3891,6 +3907,28 @@ namespace BioInformaticsConsoleApp
                 {
                     edges.Add(fileText[i]);
                 }
+
+                result = LongestPathInDAG(startingNode, endingNode, edges);
+
+                int test = 0;
+            }
+
+            if ("LongestPathInDAG" == method)
+            {
+                List<string> result = new List<string>();
+                int startingNode = 0;
+                List<string> result2 = new List<string>();
+
+                int endingNode = 0;
+                List<string> edges = new List<string>();
+
+                for (int i = 2; i < fileText.Length; i++)
+                {
+                    edges.Add(fileText[i]);
+                }
+
+                Int32.TryParse(fileText[0], out startingNode);
+                Int32.TryParse(fileText[1], out endingNode);
 
                 result = LongestPathInDAG(startingNode, endingNode, edges);
 
