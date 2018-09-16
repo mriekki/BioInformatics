@@ -19,9 +19,10 @@ namespace BioInformaticsConsoleApp
 
         // trace back
         const string DONE = @"¤";
-        const string DIAG = @"\";
-        const string UP = @"|";
-        const string LEFT = @"-";
+//        const string DIAG = "\\";
+        const string DIAG = "\u2196";
+        const string UP = "\u2191";
+        const string LEFT = "\u2190";
 
         // print alignment
         const string GAP = @"-";
@@ -106,23 +107,6 @@ namespace BioInformaticsConsoleApp
         }
 
 
-        /*  
-             p = gap penalty      
-             a = diff char penalty
-          
-             Sequence-Alignment(m, n, xs, ys, p, a) {
-             for i = 0 to m
-                 M[i, 0] = i*p
-             for j = 0 to n
-                 M[0, j] = j*p
-             for i = 1 to m
-                 for j = 1 to n
-                     M[i, j] = max(  a(xi, yj) + M[i-1, j-1],
-                         p + M[i-1, j],
-                         p + M[i, j-1])
-             return M[m, n]            
-         */
-
         Sequence SequenceAlign(string xs, string ys)
         {
             const int p = -5; //gap penalty, knowledge by looking at matrix file
@@ -149,19 +133,34 @@ namespace BioInformaticsConsoleApp
             {
                 for (int j = 1; j < n + 1; j++)
                 {
+                    char vi = xs.ElementAt(i-1);
+                    char wj = ys.ElementAt(j-1);
+
                     var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
+
                     var diag = alpha + M[i - 1, j - 1];
                     var up = p + M[i - 1, j];
                     var left = p + M[i, j - 1];
+
+//                    if (vi == wj)
+//                        diag += 1;
+
                     var max = Max(diag, up, left);
                     M[i, j] = max;
 
-                    if (max == diag)
-                        T[i, j] = DIAG;
+                    if (max == up)
+                        T[i, j] = UP;
+                    else if (max == left)
+                        T[i, j] = LEFT;
+                    else
+                        T[i, j] = DIAG; 
+
+/*                    if (max == diag)
+                            T[i, j] = DIAG;
                     else if (max == up)
                         T[i, j] = UP;
                     else
-                        T[i, j] = LEFT;
+                        T[i, j] = LEFT;     */
                 }
             }
 
@@ -184,7 +183,6 @@ namespace BioInformaticsConsoleApp
                     first = ys;
                 }
 
-
                 int i = 0;
                 foreach (var trace in traceBack)
                 {
@@ -202,6 +200,7 @@ namespace BioInformaticsConsoleApp
                 second = ys;
             }
 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 //            PL("\nScore table");
 //            PrintMatrix(M, m + 1, n + 1);
 //            PL("\nTraceBack");
@@ -222,7 +221,7 @@ namespace BioInformaticsConsoleApp
             while (path != DONE)
             {
                 sb.Append(path);
-                if (path == DIAG)
+/*                if (path == DIAG)
                 {
                     i--;
                     j--;
@@ -231,21 +230,34 @@ namespace BioInformaticsConsoleApp
                     i--;
                 else if (path == LEFT)
                     j--;
+                else
+                {
+                    int kk = 0;
+                }   */
+
+                if (path == UP)
+                    i--;
+                else if (path == LEFT)
+                {
+                    j--;
+                }
+                else
+                {
+                    i--;
+                    j--;
+                }
 
                 path = T[i, j];
             }
+
             return ReverseString(sb.ToString());
         }
 
-
-        static int Max(int a, int b, int c)
+        static int Max(params int[] numbers)
         {
-            if (a >= b && a >= c)
-                return a;
-            if (b >= a && b >= c)
-                return b;
-            return c;
+            return numbers.Max();
         }
+
 
         int Alpha(string x, string y)
         {
