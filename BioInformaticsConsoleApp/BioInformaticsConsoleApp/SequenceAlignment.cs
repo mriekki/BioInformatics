@@ -19,9 +19,11 @@ namespace BioInformaticsConsoleApp
 
         // trace back
         const string DONE = @"¤";
-//        const string DIAG = "\\";
+        //const string DIAG = @"\";
         const string DIAG = "\u2196";
+        //const string UP = @"^";
         const string UP = "\u2191";
+        //const string LEFT = @"<";
         const string LEFT = "\u2190";
 
         // print alignment
@@ -88,22 +90,21 @@ namespace BioInformaticsConsoleApp
 
             var sequenceAlign = SequenceAlign(DNA1, DNA2);
 
-            
 
-/*            for (int i = 0; i < lifeForms.Count; i++)
-            {
-                for (int j = 0; j < i; j++)
-                {
-                    if (i == j)
-                        continue;
+            /*            for (int i = 0; i < lifeForms.Count; i++)
+                        {
+                            for (int j = 0; j < i; j++)
+                            {
+                                if (i == j)
+                                    continue;
 
-                    var l1 = lifeForms.ElementAt(i);
-                    var l2 = lifeForms.ElementAt(j);
-                    var sequenceAlign = SequenceAlign(l1.DNA, l2.DNA).ToString();
-                    Console.WriteLine(string.Format("Matching species: {0} and {1}, DNA: {2} and {3}\n{4}"
-                        , l1.Name, l2.Name, l1.DNA, l2.DNA, sequenceAlign));
-                }
-            }   */
+                                var l1 = lifeForms.ElementAt(i);
+                                var l2 = lifeForms.ElementAt(j);
+                                var sequenceAlign = SequenceAlign(l1.DNA, l2.DNA).ToString();
+                                Console.WriteLine(string.Format("Matching species: {0} and {1}, DNA: {2} and {3}\n{4}"
+                                    , l1.Name, l2.Name, l1.DNA, l2.DNA, sequenceAlign));
+                            }
+                        }   */
         }
 
 
@@ -136,14 +137,16 @@ namespace BioInformaticsConsoleApp
                     char vi = xs.ElementAt(i-1);
                     char wj = ys.ElementAt(j-1);
 
+                    if (j == 15 || j == 16)
+                    {
+                        int dd = 9;
+                    }
+
                     var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
 
                     var diag = alpha + M[i - 1, j - 1];
                     var up = p + M[i - 1, j];
                     var left = p + M[i, j - 1];
-
-//                    if (vi == wj)
-//                        diag += 1;
 
                     var max = Max(diag, up, left);
                     M[i, j] = max;
@@ -165,6 +168,8 @@ namespace BioInformaticsConsoleApp
             }
 
             var traceBack = ParseTraceBack(T, m + 1, n + 1);
+
+            string[] vals = BuildAlignment(traceBack, xs, ys);
 
             var sb = new StringBuilder();
             string first, second;
@@ -211,6 +216,44 @@ namespace BioInformaticsConsoleApp
             return sequence;
         }
 
+        static string[] BuildAlignment(string traceback, string v, string w)
+        {
+            string[] result = new string[2];
+            string str1 = "";
+            string str2 = "";
+
+            int i1 = 0;
+            int i2 = 0;
+
+            foreach (char c in traceback)
+            {
+                if (c.ToString() == DIAG)
+                {
+                    str1 += v.ElementAt(i1++).ToString();
+                    str2 += w.ElementAt(i2++).ToString();
+                }
+                else if (c.ToString() == LEFT)
+                {
+                    str1 += GAP.ToString();
+                    str2 += w.ElementAt(i2++).ToString();
+                }
+                else if (c.ToString() == UP)
+                {
+                    str1 += v.ElementAt(i1++);
+                    str2 += GAP.ToString();
+                }
+                else
+                {
+                    int ddd = 9;
+                }
+            }
+
+            result[0] = str1;
+            result[1] = str2;
+
+            return result;
+
+        }
 
         static string ParseTraceBack(string[,] T, int I, int J)
         {
