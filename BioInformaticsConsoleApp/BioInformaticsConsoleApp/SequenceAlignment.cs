@@ -31,7 +31,8 @@ namespace BioInformaticsConsoleApp
 
         public SequenceAlignment()
         {
-            linesMatrix = ReadFileToList("..\\..\\..\\Data Files\\BLOSUM62.txt");
+//            linesMatrix = ReadFileToList("..\\..\\..\\Data Files\\BLOSUM62.txt");
+            linesMatrix = ReadFileToList("..\\..\\..\\Data Files\\PAM250.txt");
         }
 
 
@@ -88,7 +89,8 @@ namespace BioInformaticsConsoleApp
 
             ParseMatrixFile();
 
-            var sequenceAlign = SequenceAlign(DNA1, DNA2);
+//            var sequenceAlign = SequenceAlign(DNA1, DNA2);
+            var sequenceAlign = LocalAlignment(DNA1, DNA2);
 
 
             /*            for (int i = 0; i < lifeForms.Count; i++)
@@ -107,6 +109,108 @@ namespace BioInformaticsConsoleApp
                         }   */
         }
 
+        Sequence LocalAlignment(string xs, string ys)
+        {
+            const int p = -5; //gap penalty, knowledge by looking at matrix file
+            int m = xs.Length;
+            int n = ys.Length;
+
+            // init the matrix
+            var M = new int[m + 1, n + 1];      // dynamic programming buttom up memory table
+            var T = new string[m + 1, n + 1];   // trace back
+
+            for (int i = 0; i < m + 1; i++)
+                M[i, 0] = i * p;
+            for (int j = 0; j < n + 1; j++)
+                M[0, j] = j * p;
+
+            T[0, 0] = DONE;
+            for (int i = 1; i < m + 1; i++)
+                T[i, 0] = UP;
+            for (int j = 1; j < n + 1; j++)
+                T[0, j] = LEFT;
+
+            // calc
+            for (int i = 1; i < m + 1; i++)
+            {
+                for (int j = 1; j < n + 1; j++)
+                {
+                    char vi = xs.ElementAt(i - 1);
+                    char wj = ys.ElementAt(j - 1);
+
+                    var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
+
+                    var diag = alpha + M[i - 1, j - 1];
+                    var up = p + M[i - 1, j];
+                    var left = p + M[i, j - 1];
+
+                    var max = Max(diag, up, left);
+                    M[i, j] = max;
+
+                    if (max == up)
+                        T[i, j] = UP;
+                    else if (max == left)
+                        T[i, j] = LEFT;
+                    else
+                        T[i, j] = DIAG;
+
+                    /*                    if (max == diag)
+                                                T[i, j] = DIAG;
+                                        else if (max == up)
+                                            T[i, j] = UP;
+                                        else
+                                            T[i, j] = LEFT;     */
+                }
+            }
+
+            var traceBack = ParseTraceBack(T, m + 1, n + 1);
+
+            string[] vals = BuildAlignment(traceBack, xs, ys);
+
+            var sb = new StringBuilder();
+            string first, second;
+
+            if (xs.Length != ys.Length)
+            {
+                string s;
+                if (xs.Length > ys.Length)
+                {
+                    s = ys;
+                    first = xs;
+                }
+                else
+                {
+                    s = xs;
+                    first = ys;
+                }
+
+                int i = 0;
+                foreach (var trace in traceBack)
+                {
+                    if (trace.ToString() == DIAG)
+                        sb.Append(s.ElementAt(i++).ToString());
+                    else
+                        sb.Append(GAP);
+                }
+
+                second = sb.ToString();
+            }
+            else
+            {
+                first = xs;
+                second = ys;
+            }
+
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            //            PL("\nScore table");
+            //            PrintMatrix(M, m + 1, n + 1);
+            //            PL("\nTraceBack");
+            //            PrintMatrix(T, m + 1, n + 1);
+            //            PL();
+
+            var sequence = new Sequence() { Score = M[m, n], Path = traceBack, One = first, Two = second };
+            return sequence;
+        }
 
         Sequence SequenceAlign(string xs, string ys)
         {
@@ -136,11 +240,6 @@ namespace BioInformaticsConsoleApp
                 {
                     char vi = xs.ElementAt(i-1);
                     char wj = ys.ElementAt(j-1);
-
-                    if (j == 15 || j == 16)
-                    {
-                        int dd = 9;
-                    }
 
                     var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
 
