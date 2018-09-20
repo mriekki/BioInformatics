@@ -25,13 +25,15 @@ namespace BioInformaticsConsoleApp
         const string UP = "\u2191";
         //const string LEFT = @"<";
         const string LEFT = "\u2190";
+        const string SKIP = @"S";
+        const int ZERO = 0;
 
         // print alignment
         const string GAP = @"-";
 
         public SequenceAlignment()
         {
-//            linesMatrix = ReadFileToList("..\\..\\..\\Data Files\\BLOSUM62.txt");
+            //linesMatrix = ReadFileToList("..\\..\\..\\Data Files\\BLOSUM62.txt");
             linesMatrix = ReadFileToList("..\\..\\..\\Data Files\\PAM250.txt");
         }
 
@@ -89,7 +91,8 @@ namespace BioInformaticsConsoleApp
 
             ParseMatrixFile();
 
-//            var sequenceAlign = SequenceAlign(DNA1, DNA2);
+            //var sequenceAlign = SequenceAlign(DNA1, DNA2);
+
             var sequenceAlign = LocalAlignment(DNA1, DNA2);
 
 
@@ -114,6 +117,9 @@ namespace BioInformaticsConsoleApp
             const int p = -5; //gap penalty, knowledge by looking at matrix file
             int m = xs.Length;
             int n = ys.Length;
+            int overallMaxScore = -9999;
+            int maxI = m;
+            int maxJ = n;
 
             // init the matrix
             var M = new int[m + 1, n + 1];      // dynamic programming buttom up memory table
@@ -143,63 +149,33 @@ namespace BioInformaticsConsoleApp
                     var diag = alpha + M[i - 1, j - 1];
                     var up = p + M[i - 1, j];
                     var left = p + M[i, j - 1];
+                    var skip = ZERO;
 
-                    var max = Max(diag, up, left);
+                    var max = Max(diag, up, left, skip);
                     M[i, j] = max;
 
-                    if (max == up)
+                    if (max > overallMaxScore)
+                    {
+                        overallMaxScore = max;
+                        maxI = i;
+                        maxJ = j;
+                    }
+
+                    if (max == ZERO)
+                        T[i, j] = SKIP;
+                    else if (max == up)
                         T[i, j] = UP;
                     else if (max == left)
                         T[i, j] = LEFT;
                     else
                         T[i, j] = DIAG;
-
-                    /*                    if (max == diag)
-                                                T[i, j] = DIAG;
-                                        else if (max == up)
-                                            T[i, j] = UP;
-                                        else
-                                            T[i, j] = LEFT;     */
                 }
             }
 
-            var traceBack = ParseTraceBack(T, m + 1, n + 1);
+            var traceBack = ParseTraceBack2(T, maxI + 1, maxJ + 1, true);
 
-            string[] vals = BuildAlignment(traceBack, xs, ys);
+            string[] vals = BuildAlignment2(traceBack, xs, ys, maxI, maxJ);
 
-            var sb = new StringBuilder();
-            string first, second;
-
-            if (xs.Length != ys.Length)
-            {
-                string s;
-                if (xs.Length > ys.Length)
-                {
-                    s = ys;
-                    first = xs;
-                }
-                else
-                {
-                    s = xs;
-                    first = ys;
-                }
-
-                int i = 0;
-                foreach (var trace in traceBack)
-                {
-                    if (trace.ToString() == DIAG)
-                        sb.Append(s.ElementAt(i++).ToString());
-                    else
-                        sb.Append(GAP);
-                }
-
-                second = sb.ToString();
-            }
-            else
-            {
-                first = xs;
-                second = ys;
-            }
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             //            PL("\nScore table");
@@ -208,7 +184,7 @@ namespace BioInformaticsConsoleApp
             //            PrintMatrix(T, m + 1, n + 1);
             //            PL();
 
-            var sequence = new Sequence() { Score = M[m, n], Path = traceBack, One = first, Two = second };
+            var sequence = new Sequence() { Score = overallMaxScore, Path = traceBack, One = vals[0], Two = vals[1] };
             return sequence;
         }
 
@@ -256,13 +232,6 @@ namespace BioInformaticsConsoleApp
                         T[i, j] = LEFT;
                     else
                         T[i, j] = DIAG; 
-
-/*                    if (max == diag)
-                            T[i, j] = DIAG;
-                    else if (max == up)
-                        T[i, j] = UP;
-                    else
-                        T[i, j] = LEFT;     */
                 }
             }
 
@@ -270,7 +239,7 @@ namespace BioInformaticsConsoleApp
 
             string[] vals = BuildAlignment(traceBack, xs, ys);
 
-            var sb = new StringBuilder();
+/*            var sb = new StringBuilder();
             string first, second;
 
             if (xs.Length != ys.Length)
@@ -302,7 +271,7 @@ namespace BioInformaticsConsoleApp
             {
                 first = xs;
                 second = ys;
-            }
+            }       */
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 //            PL("\nScore table");
@@ -311,7 +280,7 @@ namespace BioInformaticsConsoleApp
 //            PrintMatrix(T, m + 1, n + 1);
 //            PL();
 
-            var sequence = new Sequence() { Score = M[m, n], Path = traceBack, One = first, Two = second };
+            var sequence = new Sequence() { Score = M[m, n], Path = traceBack, One = vals[0], Two = vals[1] };
             return sequence;
         }
 
@@ -341,14 +310,52 @@ namespace BioInformaticsConsoleApp
                     str1 += v.ElementAt(i1++);
                     str2 += GAP.ToString();
                 }
-                else
-                {
-                    int ddd = 9;
-                }
             }
 
             result[0] = str1;
             result[1] = str2;
+
+            return result;
+
+        }
+
+        static string[] BuildAlignment2(string traceback, string v, string w, int i, int j)
+        {
+            string[] result = new string[2];
+            string str1 = "";
+            string str2 = "";
+
+            int i1 = i-1;
+            int i2 = j-1;
+
+            for (int s = traceback.Length - 1; s >= 0; s--)
+            {
+                char c = traceback[s];
+
+                if (c.ToString() == SKIP)
+                {
+                    i1--;
+                    i2--;
+                }
+                else if (c.ToString() == DIAG)
+                {
+                    str1 += v.ElementAt(i1--).ToString();
+                    str2 += w.ElementAt(i2--).ToString();
+                }
+                else if (c.ToString() == LEFT)
+                {
+                    str1 += GAP.ToString();
+                    str2 += w.ElementAt(i2--).ToString();
+                }
+                else if (c.ToString() == UP)
+                {
+                    str1 += v.ElementAt(i1--);
+                    str2 += GAP.ToString();
+                }
+            }
+
+            result[0] = ReverseString(str1);
+            result[1] = ReverseString(str2);
 
             return result;
 
@@ -360,10 +367,12 @@ namespace BioInformaticsConsoleApp
             int i = I - 1;
             int j = J - 1;
             string path = T[i, j];
+
             while (path != DONE)
             {
                 sb.Append(path);
-/*                if (path == DIAG)
+
+                if (path == DIAG)
                 {
                     i--;
                     j--;
@@ -375,18 +384,6 @@ namespace BioInformaticsConsoleApp
                 else
                 {
                     int kk = 0;
-                }   */
-
-                if (path == UP)
-                    i--;
-                else if (path == LEFT)
-                {
-                    j--;
-                }
-                else
-                {
-                    i--;
-                    j--;
                 }
 
                 path = T[i, j];
@@ -394,6 +391,59 @@ namespace BioInformaticsConsoleApp
 
             return ReverseString(sb.ToString());
         }
+
+        static string ParseTraceBack2(string[,] T, int I, int J, bool localAlign=false)
+        {
+            var sb = new StringBuilder();
+            int i = I - 1;
+            int j = J - 1;
+            string path = T[i, j];
+
+            while (path != DONE)
+            {
+                sb.Append(path);
+
+                if (!localAlign)
+                {
+                    if (path == DIAG)
+                    {
+                        i--;
+                        j--;
+                    }
+                    else if (path == UP)
+                        i--;
+                    else if (path == LEFT)
+                        j--;
+                    else
+                    {
+                        int kk = 0;
+                    }
+                }
+                else
+                {
+                    if (path == SKIP)   // finished, exit loop
+                    {
+                        break;
+                    }
+                    else if (path == UP)
+                        i--;
+                    else if (path == LEFT)
+                    {
+                        j--;
+                    }
+                    else
+                    {
+                        i--;
+                        j--;
+                    }
+                }
+
+                path = T[i, j];
+            }
+
+            return ReverseString(sb.ToString());
+        }
+
 
         static int Max(params int[] numbers)
         {
