@@ -188,6 +188,43 @@ namespace BioInformaticsConsoleApp
             return sequence;
         }
 
+        public int EditDistance(string s, string t)
+        {
+            int distance = 0;
+            int m = s.Length + 1;
+            int n = t.Length + 1;
+            int[,] d = new int[m, n];
+            int substituationCost = 0;
+
+            for (int i = 0; i < m; i++)
+                for (int j = 0; j < n; j++)
+                    d[i, j] = 0;
+
+            for (int i = 0; i < m; i++)
+                d[i, 0] = i;
+
+            for (int j = 0; j < n; j++)
+                d[0, j] = j;
+
+            for (int j = 1; j < n; j++)
+            {
+                for (int i = 1; i < m; i++)
+                {
+                    if (s[i-1] == t[j-1])
+                        substituationCost = 0;
+                    else
+                        substituationCost = 1;
+
+                    d[i, j] = Min(d[i - 1, j] + 1,
+                                  d[i, j - 1] + 1,
+                                  d[i - 1, j - 1] + substituationCost);
+                }
+            }
+
+            distance = d[m-1, n-1];
+
+            return distance;
+        }
         Sequence SequenceAlign(string xs, string ys)
         {
             const int p = -5; //gap penalty, knowledge by looking at matrix file
@@ -450,6 +487,10 @@ namespace BioInformaticsConsoleApp
             return numbers.Max();
         }
 
+        static int Min(params int[] numbers)
+        {
+            return numbers.Min();
+        }
 
         int Alpha(string x, string y)
         {
