@@ -28,6 +28,10 @@ namespace BioInformaticsConsoleApp
         const string SKIP = @"S";
         const int ZERO = 0;
 
+        const int UPi = 1;
+        const int LEFTi = 2;
+        const int DIAGi = 3;
+
         // print alignment
         const string GAP = @"-";
 
@@ -319,6 +323,104 @@ namespace BioInformaticsConsoleApp
 
             var sequence = new Sequence() { Score = M[m, n], Path = traceBack, One = vals[0], Two = vals[1] };
             return sequence;
+        }
+
+        public List<string> FittingAlignment(string s1, string s2)
+        {
+            List<string> result = new List<string>();
+            string s = "";
+            string t = "";
+            
+
+            if (s1.Length > s2.Length)
+            {
+                s = s1;
+                t = s2;
+            }
+            else
+            {
+                s = s2;
+                t = s1;
+            }
+            int m = s.Length + 1;
+            int n = t.Length + 1;
+
+            int[,] SS = new int[m, n];
+            int[,] backtrack = new int[m, n];
+
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    int opt1 = SS[i - 1, j] - 1;    // up
+                    int opt2 = SS[i, j - 1] - 1;    // left
+                    int opt3 = SS[i - 1, j - 1];    // diag
+                    if (s[i - 1] == t[j - 1])
+                    {
+                        opt3++;
+                    }
+                    else
+                    {
+                        opt3--;
+                    }
+
+                    SS[i, j] = opt1;
+                    backtrack[i, j] = UPi;
+
+                    if (opt2 > SS[i, j])
+                    {
+                        SS[i, j] = opt2;
+                        backtrack[i, j] = LEFTi;
+                    }
+                    if (opt3 > SS[i, j])
+                    {
+                        SS[i, j] = opt3;
+                        backtrack[i, j] = DIAGi;
+                    }
+                }
+            }
+
+            int jj = t.Length;
+            int max = -9999;
+            int index = -1;
+
+            for (int x = t.Length; x < n; ++x)
+            {
+                if (SS[x,jj] > max)
+                {
+                    max = SS[x, jj];
+                    index = x;
+                }
+            }
+
+            string[] output = new string[3];
+
+            output[0] = "" + max;
+            output[1] = "";
+            output[2] = "";
+
+            while(jj > 0) 
+            {
+                if(backtrack[index, jj] == UPi) 
+                {
+                    output[1] = s[index-- - 1] + output[1];
+                    output[2] = '-' + output[2];
+                }
+                else if(backtrack[index, jj] == LEFTi) 
+                {
+                    output[1] = '-' + output[1];
+                    output[2] = t[jj-- - 1] + output[2];
+                }
+                else if(backtrack[index, jj] == DIAGi) 
+                {
+                    output[1] = s[index-- - 1] + output[1];
+                    output[2] = t[jj-- - 1] + output[2];
+                }
+            }
+
+
+            return result;
         }
 
         static string[] BuildAlignment(string traceback, string v, string w)

@@ -52,9 +52,9 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_3.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "EditDistance";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_3.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "FittingAlignment";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
@@ -3950,6 +3950,15 @@ namespace BioInformaticsConsoleApp
 
                 distance = seq.EditDistance(fileText[0], fileText[1]);
             }
+
+            if ("FittingAlignment" == method)
+            {
+                SequenceAlignment seq = new SequenceAlignment();
+                List<string> result = new List<string>();
+
+                result = seq.FittingAlignment(fileText[0], fileText[1]);
+            }
+
 
         }
 
