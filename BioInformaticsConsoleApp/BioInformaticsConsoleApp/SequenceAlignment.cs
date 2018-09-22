@@ -325,13 +325,82 @@ namespace BioInformaticsConsoleApp
             return sequence;
         }
 
+        public List<string> OverlapAlignment(string s1, string s2)
+        {
+            List<string> result = new List<string>();
+/*
+            int[][] S = new int[s.length() + 1][t.length() + 1];
+            int[][] opt = new int[s.length() + 1][t.length() + 1]; // 1 = right, 2 = down, 3 = diag, 4 = STOP
+            int bi = -1;
+            int bj = -1;
+            int max = Integer.MIN_VALUE;
+            for (int i = 1; i <= s.length(); ++i)
+            {
+                for (int j = 1; j <= t.length(); ++j)
+                {
+                    int opt1 = S[i][j - 1] - indel; // right
+                    int opt2 = S[i - 1][j] - indel; // down
+                    int opt3 = S[i - 1][j - 1]; // diag
+                    if (s.charAt(i - 1) == t.charAt(j - 1))
+                    {
+                        ++opt3;
+                    }
+                    else
+                    {
+                        opt3 -= 2;
+                    }
+                    S[i][j] = opt1;
+                    opt[i][j] = 1;
+                    if (opt2 > S[i][j])
+                    {
+                        S[i][j] = opt2;
+                        opt[i][j] = 2;
+                    }
+                    if (opt3 > S[i][j])
+                    {
+                        S[i][j] = opt3;
+                        opt[i][j] = 3;
+                    }
+
+                    if (i == s.length() || j == t.length())
+                    {
+                        if (S[i][j] > max)
+                        {
+                            max = S[i][j];
+                            bi = i;
+                            bj = j;
+                        }
+                    }
+                }
+            }
+            String[] out = new String[3];
+        out[1] = "";
+        out[2] = "";
+        out[0] = "" + max;
+        while(bi > 0 && bj > 0) {
+            if(opt[bi][bj] == 1) { // right
+                out[1] = '-' + out[1];
+                out[2] = t.charAt(bj-- - 1) + out[2];
+            }
+            else if(opt[bi][bj] == 2) { // down
+                out[1] = s.charAt(bi-- - 1) + out[1];
+                out[2] = '-' + out[2];
+            }
+            else if(opt[bi][bj] == 3) { // diag
+                out[1] = s.charAt(bi-- - 1) + out[1];
+                out[2] = t.charAt(bj-- - 1) + out[2];
+            }
+        }   */
+
+            return result;
+        }
+
         public List<string> FittingAlignment(string s1, string s2)
         {
             List<string> result = new List<string>();
             string s = "";
             string t = "";
             
-
             if (s1.Length > s2.Length)
             {
                 s = s1;
@@ -349,21 +418,18 @@ namespace BioInformaticsConsoleApp
             int[,] backtrack = new int[m, n];
 
 
-            for (int i = 0; i < m; i++)
+            for (int i = 1; i < m; i++)
             {
-                for (int j = 0; j < n; j++)
+                for (int j = 1; j < n; j++)
                 {
                     int opt1 = SS[i - 1, j] - 1;    // up
                     int opt2 = SS[i, j - 1] - 1;    // left
                     int opt3 = SS[i - 1, j - 1];    // diag
+
                     if (s[i - 1] == t[j - 1])
-                    {
                         opt3++;
-                    }
                     else
-                    {
                         opt3--;
-                    }
 
                     SS[i, j] = opt1;
                     backtrack[i, j] = UPi;
@@ -373,6 +439,7 @@ namespace BioInformaticsConsoleApp
                         SS[i, j] = opt2;
                         backtrack[i, j] = LEFTi;
                     }
+
                     if (opt3 > SS[i, j])
                     {
                         SS[i, j] = opt3;
@@ -385,7 +452,7 @@ namespace BioInformaticsConsoleApp
             int max = -9999;
             int index = -1;
 
-            for (int x = t.Length; x < n; ++x)
+            for (int x = t.Length; x < m; x++)
             {
                 if (SS[x,jj] > max)
                 {
@@ -419,6 +486,8 @@ namespace BioInformaticsConsoleApp
                 }
             }
 
+            foreach (string str in output)
+                result.Add(str);
 
             return result;
         }

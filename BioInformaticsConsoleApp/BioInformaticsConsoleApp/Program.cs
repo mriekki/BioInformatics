@@ -52,9 +52,9 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_3.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_5.txt";
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "FittingAlignment";
+        private const string method = "OverlapAlignment";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
@@ -3957,6 +3957,14 @@ namespace BioInformaticsConsoleApp
                 List<string> result = new List<string>();
 
                 result = seq.FittingAlignment(fileText[0], fileText[1]);
+            }
+
+            if ("OverlapAlignment" == method)
+            {
+                SequenceAlignment seq = new SequenceAlignment();
+                List<string> result = new List<string>();
+
+                result = seq.OverlapAlignment(fileText[0], fileText[1]);
             }
 
 
