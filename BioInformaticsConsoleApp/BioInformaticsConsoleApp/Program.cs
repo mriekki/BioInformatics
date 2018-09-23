@@ -52,8 +52,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_5.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_7.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "OverlapAlignment";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
@@ -542,7 +542,7 @@ namespace BioInformaticsConsoleApp
 
         public static string LeaderboardCyclopeptideSequencing(string spectrum, int N, int M = 0)
         {
-            string result = "";
+//            string result = "";
             string LeaderPeptide = "";
             List<string> leaderboard = new List<string>();
             List<int> spectrumList = new List<int>();
@@ -939,7 +939,7 @@ namespace BioInformaticsConsoleApp
             List<string> subPeptides = new List<string>();
             int k = peptide.Length;
             string doublePeptid = peptide + peptide;    // help with wraparound
-            int length = 1;
+//            int length = 1;
 
             for (int i = 1; i < k; i++)
             {
@@ -1099,11 +1099,6 @@ namespace BioInformaticsConsoleApp
                 {
                     subString = DNA.Substring(i, 3 * offset);
                     complement = ReverseComplement(subString);
-
-                    if (subString == "AAGGAAGTATTCGAACCACATTACTAT" || complement == "AAGGAAGTATTCGAACCACATTACTAT")
-                    {
-                        int debug = 33;
-                    }
 
                     subStringRNA = EncodeDNAtoRNA(subString);
                     complementRNA = EncodeDNAtoRNA(complement);

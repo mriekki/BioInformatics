@@ -126,19 +126,19 @@ namespace BioInformaticsConsoleApp
             int maxJ = n;
 
             // init the matrix
-            var M = new int[m + 1, n + 1];      // dynamic programming buttom up memory table
-            var T = new string[m + 1, n + 1];   // trace back
+            var DpTable = new int[m + 1, n + 1];      // dynamic programming buttom up memory tabl
+            var backtrack = new string[m + 1, n + 1];   // trace back
 
             for (int i = 0; i < m + 1; i++)
-                M[i, 0] = i * p;
+                DpTable[i, 0] = i * p;
             for (int j = 0; j < n + 1; j++)
-                M[0, j] = j * p;
+                DpTable[0, j] = j * p;
 
-            T[0, 0] = DONE;
+            backtrack[0, 0] = DONE;
             for (int i = 1; i < m + 1; i++)
-                T[i, 0] = UP;
+                backtrack[i, 0] = UP;
             for (int j = 1; j < n + 1; j++)
-                T[0, j] = LEFT;
+                backtrack[0, j] = LEFT;
 
             // calc
             for (int i = 1; i < m + 1; i++)
@@ -150,13 +150,13 @@ namespace BioInformaticsConsoleApp
 
                     var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
 
-                    var diag = alpha + M[i - 1, j - 1];
-                    var up = p + M[i - 1, j];
-                    var left = p + M[i, j - 1];
+                    var diag = alpha + DpTable[i - 1, j - 1];
+                    var up = p + DpTable[i - 1, j];
+                    var left = p + DpTable[i, j - 1];
                     var skip = ZERO;
 
                     var max = Max(diag, up, left, skip);
-                    M[i, j] = max;
+                    DpTable[i, j] = max;
 
                     if (max > overallMaxScore)
                     {
@@ -166,20 +166,19 @@ namespace BioInformaticsConsoleApp
                     }
 
                     if (max == ZERO)
-                        T[i, j] = SKIP;
+                        backtrack[i, j] = SKIP;
                     else if (max == up)
-                        T[i, j] = UP;
+                        backtrack[i, j] = UP;
                     else if (max == left)
-                        T[i, j] = LEFT;
+                        backtrack[i, j] = LEFT;
                     else
-                        T[i, j] = DIAG;
+                        backtrack[i, j] = DIAG;
                 }
             }
 
-            var traceBack = ParseTraceBack2(T, maxI + 1, maxJ + 1, true);
+            var traceBack = ParseTraceBack2(backtrack, maxI + 1, maxJ + 1, true);
 
             string[] vals = BuildAlignment2(traceBack, xs, ys, maxI, maxJ);
-
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             //            PL("\nScore table");
@@ -197,18 +196,18 @@ namespace BioInformaticsConsoleApp
             int distance = 0;
             int m = s.Length + 1;
             int n = t.Length + 1;
-            int[,] d = new int[m, n];
+            int[,] DpTable = new int[m, n];
             int substituationCost = 0;
 
             for (int i = 0; i < m; i++)
                 for (int j = 0; j < n; j++)
-                    d[i, j] = 0;
+                    DpTable[i, j] = 0;
 
             for (int i = 0; i < m; i++)
-                d[i, 0] = i;
+                DpTable[i, 0] = i;
 
             for (int j = 0; j < n; j++)
-                d[0, j] = j;
+                DpTable[0, j] = j;
 
             for (int j = 1; j < n; j++)
             {
@@ -219,13 +218,13 @@ namespace BioInformaticsConsoleApp
                     else
                         substituationCost = 1;
 
-                    d[i, j] = Min(d[i - 1, j] + 1,
-                                  d[i, j - 1] + 1,
-                                  d[i - 1, j - 1] + substituationCost);
+                    DpTable[i, j] = Min(DpTable[i - 1, j] + 1,
+                                        DpTable[i, j - 1] + 1,
+                                        DpTable[i - 1, j - 1] + substituationCost);
                 }
             }
 
-            distance = d[m-1, n-1];
+            distance = DpTable[m-1, n-1];
 
             return distance;
         }
@@ -236,19 +235,19 @@ namespace BioInformaticsConsoleApp
             int n = ys.Length;
 
             // init the matrix
-            var M = new int[m + 1, n + 1]; // dynamic programming buttom up memory table
-            var T = new string[m + 1, n + 1]; // trace back
+            var DpTable = new int[m + 1, n + 1]; // dynamic programming buttom up memory table
+            var backtrack = new string[m + 1, n + 1]; // trace back
 
             for (int i = 0; i < m + 1; i++)
-                M[i, 0] = i * p;
+                DpTable[i, 0] = i * p;
             for (int j = 0; j < n + 1; j++)
-                M[0, j] = j * p;
+                DpTable[0, j] = j * p;
 
-            T[0, 0] = DONE;
+            backtrack[0, 0] = DONE;
             for (int i = 1; i < m + 1; i++)
-                T[i, 0] = UP;
+                backtrack[i, 0] = UP;
             for (int j = 1; j < n + 1; j++)
-                T[0, j] = LEFT;
+                backtrack[0, j] = LEFT;
 
             // calc
             for (int i = 1; i < m + 1; i++)
@@ -260,23 +259,23 @@ namespace BioInformaticsConsoleApp
 
                     var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
 
-                    var diag = alpha + M[i - 1, j - 1];
-                    var up = p + M[i - 1, j];
-                    var left = p + M[i, j - 1];
+                    var diag = alpha + DpTable[i - 1, j - 1];
+                    var up = p + DpTable[i - 1, j];
+                    var left = p + DpTable[i, j - 1];
 
                     var max = Max(diag, up, left);
-                    M[i, j] = max;
+                    DpTable[i, j] = max;
 
                     if (max == up)
-                        T[i, j] = UP;
+                        backtrack[i, j] = UP;
                     else if (max == left)
-                        T[i, j] = LEFT;
+                        backtrack[i, j] = LEFT;
                     else
-                        T[i, j] = DIAG; 
+                        backtrack[i, j] = DIAG; 
                 }
             }
 
-            var traceBack = ParseTraceBack(T, m + 1, n + 1);
+            var traceBack = ParseTraceBack(backtrack, m + 1, n + 1);
 
             string[] vals = BuildAlignment(traceBack, xs, ys);
 
@@ -321,76 +320,92 @@ namespace BioInformaticsConsoleApp
 //            PrintMatrix(T, m + 1, n + 1);
 //            PL();
 
-            var sequence = new Sequence() { Score = M[m, n], Path = traceBack, One = vals[0], Two = vals[1] };
+            var sequence = new Sequence() { Score = DpTable[m, n], Path = traceBack, One = vals[0], Two = vals[1] };
             return sequence;
         }
 
-        public List<string> OverlapAlignment(string s1, string s2)
+        public List<string> OverlapAlignment(string s, string t)
         {
             List<string> result = new List<string>();
-/*
-            int[][] S = new int[s.length() + 1][t.length() + 1];
-            int[][] opt = new int[s.length() + 1][t.length() + 1]; // 1 = right, 2 = down, 3 = diag, 4 = STOP
+            int m = s.Length + 1;
+            int n = t.Length + 1;
+
+            int[,] DpTable = new int[m, n];
+            int[,] backtrack = new int[m, n]; // 1 = right, 2 = down, 3 = diag, 4 = STOP
             int bi = -1;
             int bj = -1;
-            int max = Integer.MIN_VALUE;
-            for (int i = 1; i <= s.length(); ++i)
+            int max = -9999;
+            int indel = 2;
+
+            for (int i = 1; i < m; i++)
             {
-                for (int j = 1; j <= t.length(); ++j)
+                for (int j = 1; j < n; j++)
                 {
-                    int opt1 = S[i][j - 1] - indel; // right
-                    int opt2 = S[i - 1][j] - indel; // down
-                    int opt3 = S[i - 1][j - 1]; // diag
-                    if (s.charAt(i - 1) == t.charAt(j - 1))
+                    int opt1 = DpTable[i, j - 1] - indel; // right
+                    int opt2 = DpTable[i - 1, j] - indel; // down
+                    int opt3 = DpTable[i - 1, j - 1]; // diag
+
+                    if (s[i - 1] == t[j - 1])
                     {
-                        ++opt3;
+                        opt3++;
                     }
                     else
                     {
                         opt3 -= 2;
                     }
-                    S[i][j] = opt1;
-                    opt[i][j] = 1;
-                    if (opt2 > S[i][j])
+
+                    DpTable[i, j] = opt1;
+                    backtrack[i,j] = 1;
+
+                    if (opt2 > DpTable[i, j])
                     {
-                        S[i][j] = opt2;
-                        opt[i][j] = 2;
+                        DpTable[i, j] = opt2;
+                        backtrack[i, j] = 2;
                     }
-                    if (opt3 > S[i][j])
+                    if (opt3 > DpTable[i, j])
                     {
-                        S[i][j] = opt3;
-                        opt[i][j] = 3;
+                        DpTable[i, j] = opt3;
+                        backtrack[i, j] = 3;
                     }
 
-                    if (i == s.length() || j == t.length())
+                    if (i == s.Length || j == t.Length)
                     {
-                        if (S[i][j] > max)
+                        if (DpTable[i, j] > max)
                         {
-                            max = S[i][j];
+                            max = DpTable[i, j];
                             bi = i;
                             bj = j;
                         }
                     }
                 }
             }
-            String[] out = new String[3];
-        out[1] = "";
-        out[2] = "";
-        out[0] = "" + max;
-        while(bi > 0 && bj > 0) {
-            if(opt[bi][bj] == 1) { // right
-                out[1] = '-' + out[1];
-                out[2] = t.charAt(bj-- - 1) + out[2];
-            }
-            else if(opt[bi][bj] == 2) { // down
-                out[1] = s.charAt(bi-- - 1) + out[1];
-                out[2] = '-' + out[2];
-            }
-            else if(opt[bi][bj] == 3) { // diag
-                out[1] = s.charAt(bi-- - 1) + out[1];
-                out[2] = t.charAt(bj-- - 1) + out[2];
-            }
-        }   */
+
+            string[] output = new string[3];
+            output[1] = "";
+            output[2] = "";
+            output[0] = "" + max;
+
+            while (bi > 0 && bj > 0) 
+            {
+                if(backtrack[bi, bj] == 1)  // right
+                { 
+                    output[1] = '-' + output[1];
+                    output[2] = t[bj-- - 1] + output[2];
+                }
+                else if(backtrack[bi, bj] == 2)   // down
+                { 
+                    output[1] = s[bi-- - 1] + output[1];
+                    output[2] = '-' + output[2];
+                }
+                else if(backtrack[bi, bj] == 3)   // diag
+                { 
+                    output[1] = s[bi-- - 1] + output[1];
+                    output[2] = t[bj-- - 1] + output[2];
+                }
+            }   
+                                
+            foreach (string str in output)
+                result.Add(str);
 
             return result;
         }
@@ -414,7 +429,7 @@ namespace BioInformaticsConsoleApp
             int m = s.Length + 1;
             int n = t.Length + 1;
 
-            int[,] SS = new int[m, n];
+            int[,] DpTable = new int[m, n];
             int[,] backtrack = new int[m, n];
 
 
@@ -422,27 +437,27 @@ namespace BioInformaticsConsoleApp
             {
                 for (int j = 1; j < n; j++)
                 {
-                    int opt1 = SS[i - 1, j] - 1;    // up
-                    int opt2 = SS[i, j - 1] - 1;    // left
-                    int opt3 = SS[i - 1, j - 1];    // diag
+                    int opt1 = DpTable[i - 1, j] - 1;    // up
+                    int opt2 = DpTable[i, j - 1] - 1;    // left
+                    int opt3 = DpTable[i - 1, j - 1];    // diag
 
                     if (s[i - 1] == t[j - 1])
                         opt3++;
                     else
                         opt3--;
 
-                    SS[i, j] = opt1;
+                    DpTable[i, j] = opt1;
                     backtrack[i, j] = UPi;
 
-                    if (opt2 > SS[i, j])
+                    if (opt2 > DpTable[i, j])
                     {
-                        SS[i, j] = opt2;
+                        DpTable[i, j] = opt2;
                         backtrack[i, j] = LEFTi;
                     }
 
-                    if (opt3 > SS[i, j])
+                    if (opt3 > DpTable[i, j])
                     {
-                        SS[i, j] = opt3;
+                        DpTable[i, j] = opt3;
                         backtrack[i, j] = DIAGi;
                     }
                 }
@@ -454,9 +469,9 @@ namespace BioInformaticsConsoleApp
 
             for (int x = t.Length; x < m; x++)
             {
-                if (SS[x,jj] > max)
+                if (DpTable[x,jj] > max)
                 {
-                    max = SS[x, jj];
+                    max = DpTable[x, jj];
                     index = x;
                 }
             }
