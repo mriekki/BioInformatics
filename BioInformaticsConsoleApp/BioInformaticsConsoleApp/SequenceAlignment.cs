@@ -116,32 +116,34 @@ namespace BioInformaticsConsoleApp
                         }   */
         }
 
+
         public List<string> AlignmentWithAffineGapPenalties(string s, string t)
         {
             List<string> result = new List<string>();
             int m = s.Length + 1;
             int n = t.Length + 1;
-            int ge = 11;
-            int go = 1;
+            int ge = 1;     // gap extenstion penalty
+            int go = 11;    // gap opending penalty
 
-          
+            ParseMatrixFile();
+
             // Uses BLOSUM62. PASS go AND ge AS POSITIVE INTEGER, NOT NEGATIVE!
             int[,,] DpTable = new int[3, m, n];       // S[0] = lower, S[1] = middle, S[2] = upper
-            int[, ,] backtrack = new int[3, m, n];    // 1 = right, 2 = down, 3 = diag
+            int[,,] backtrack = new int[3, m, n];    // 1 = right, 2 = down, 3 = diag
 
-            for (int i = 1; i < m; ++i)
+            for (int i = 1; i < m; i++)
             {
                 DpTable[0, i, 0] = -1 * (go + (i - 1) * ge);
                 DpTable[1, i, 0] = -1 * (go + (i - 1) * ge);
-                DpTable[2, i, 0] = -10 * go;
+                DpTable[2, i, 0] = -9999 * go;
                 backtrack[0, i, 0] = 0;
                 backtrack[1, i, 0] = 0;
                 backtrack[2, i, 0] = 0;
             }
 
-            for (int j = 1; j < n; ++j)
+            for (int j = 1; j < n; j++)
             {
-                DpTable[0, 0, j] = -10 * go;
+                DpTable[0, 0, j] = -9999 * go;
                 DpTable[1, 0, j] = -1 * (go + (j - 1) * ge);
                 DpTable[2, 0, j] = -1 * (go + (j - 1) * ge);
                 backtrack[0, 0, j] = 1;
@@ -149,9 +151,9 @@ namespace BioInformaticsConsoleApp
                 backtrack[2, 0, j] = 1;
             }
 
-            for (int i = 1; i < m; ++i)
+            for (int i = 1; i < m; i++)
             {
-                for (int j = 1; j < n; ++j)
+                for (int j = 1; j < n; j++)
                 {
                     int low1 = DpTable[0, i - 1, j] - ge;
                     int low2 = DpTable[1, i - 1, j] - go;
@@ -183,11 +185,11 @@ namespace BioInformaticsConsoleApp
 
                     int opt1 = DpTable[0, i, j];
                     int opt2 = DpTable[1, i - 1, j - 1] + alpha;
-
-                    //int opt2 = DpTable[1, i - 1, j - 1] + blosum62[aminosAlpha.indexOf(s.charAt(i - 1))][aminosAlpha.indexOf(t.charAt(j - 1))];
                     int opt3 = DpTable[2, i, j];
+
                     DpTable[1, i, j] = opt1;
                     backtrack[1, i, j] = 0;
+
                     if (opt2 > DpTable[1, i, j])
                     {
                         DpTable[1, i, j] = opt2;
@@ -216,6 +218,7 @@ namespace BioInformaticsConsoleApp
                 best = DpTable[2, index, jj];
                 bestSIJ = 2;
             }
+
             String[] output = new String[3];
             output[0] = "" + best;
             output[1] = "";
@@ -225,16 +228,16 @@ namespace BioInformaticsConsoleApp
             {
                 if (bestSIJ == 0)
                 {
-                    if(backtrack[0, index, jj] == 1)
+                    if (backtrack[0, index, jj] == 1)
                     {
                         bestSIJ = 1;
                     }
                     output[1] = s[index-- - 1] + output[1];
                     output[2] = '-' + output[2];
                 }
-                else if(bestSIJ == 1)
+                else if (bestSIJ == 1)
                 {
-                    if(backtrack[1, index, jj] == 0)
+                    if (backtrack[1, index, jj] == 0)
                     {
                         bestSIJ = 0;
                     }
@@ -263,18 +266,18 @@ namespace BioInformaticsConsoleApp
             {
                 output[1] = s.Substring(0, index) + output[1];
                 String add = "";
-                for (int x = 0; x < index; ++x)
+                for (int x = 0; x < index; x++)
                 {
                     add += '-';
                 }
                 output[2] = add + output[2];
             }
 
-            if(jj > 0)
+            if (jj > 0)
             {
                 output[2] = t.Substring(0, jj) + output[2];
                 String add = "";
-                for(int x = 0; x < jj; ++x)
+                for (int x = 0; x < jj; x++)
                 {
                     add += '-';
                 }
@@ -286,6 +289,7 @@ namespace BioInformaticsConsoleApp
 
             return result;
         }
+
 
         Sequence LocalAlignment(string xs, string ys)
         {

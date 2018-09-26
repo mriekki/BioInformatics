@@ -52,8 +52,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_248_7.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_249_8.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "AlignmentWithAffineGapPenalties";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
