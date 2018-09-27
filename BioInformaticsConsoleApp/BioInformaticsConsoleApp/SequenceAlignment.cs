@@ -116,6 +116,103 @@ namespace BioInformaticsConsoleApp
                         }   */
         }
 
+        public string FindMiddleEdge(string xs, string ys)
+        {
+            string result = "";
+
+            const int p = -5; //gap penalty, knowledge by looking at matrix file
+            int m = xs.Length;
+//            int n = ys.Length;
+            decimal nn = ys.Length;
+            nn = nn / 2;
+            decimal n = Math.Ceiling(nn);
+
+            ParseMatrixFile();
+
+            // init the matrix
+            var DpTable = new int[m + 1, (int)n + 1]; // dynamic programming buttom up memory table
+//            var backtrack = new string[m + 1, n + 1]; // trace back
+
+            for (int i = 0; i < m + 1; i++)
+                DpTable[i, 0] = i * p;
+            for (int j = 0; j < n + 1; j++)
+                DpTable[0, j] = j * p;
+
+            //            backtrack[0, 0] = DONE;
+            //            for (int i = 1; i < m + 1; i++)
+            //                backtrack[i, 0] = UP;
+            //            for (int j = 1; j < n + 1; j++)
+            //                backtrack[0, j] = LEFT;
+
+            int MaxScore = -9999;
+            int iEdge = 0;
+            int iPrevEdge = 0;
+            int jEdge = 0;
+            int jPrevEdge = 0;
+
+            // calc
+            for (int i = 1; i < m + 1; i++)
+            {
+                for (int j = 1; j < n + 1; j++)
+                {
+                    char vi = xs.ElementAt(i - 1);
+                    char wj = ys.ElementAt(j - 1);
+
+                    var alpha = Alpha(xs.ElementAt(i - 1).ToString(), ys.ElementAt(j - 1).ToString());
+
+                    var diag = alpha + DpTable[i - 1, j - 1];
+                    var up = p + DpTable[i - 1, j];
+                    var left = p + DpTable[i, j - 1];
+
+                    var max = Max(diag, up, left);
+                    DpTable[i, j] = max;
+
+                    if (j == n)     // middle column
+                    {
+                        if (max > MaxScore)
+                        {
+                            MaxScore = max;
+                            iEdge = i;
+                            jEdge = j;
+
+                            if (max == up)
+                            {
+                                iPrevEdge = iEdge - 1;
+                                jPrevEdge = jEdge;
+                            }
+                            else if (max == left)
+                            {
+                                iPrevEdge = iEdge;
+                                jPrevEdge = jEdge -1;
+                            }
+                            else
+                            {
+                                iPrevEdge = iEdge - 1;
+                                jPrevEdge = jEdge - 1;
+                            }
+
+                        }
+                    }
+
+/*                    if (max == up)
+                        backtrack[i, j] = UP;
+                    else if (max == left)
+                        backtrack[i, j] = LEFT;
+                    else
+                        backtrack[i, j] = DIAG; */
+                }
+            }
+
+            //            var traceBack = ParseTraceBack(backtrack, m + 1, n + 1);
+
+            //            string[] vals = BuildAlignment(traceBack, xs, ys);
+
+            //            var sequence = new Sequence() { Score = DpTable[m, n], Path = traceBack, One = vals[0], Two = vals[1] };
+
+            result = "(" + iPrevEdge.ToString() + ", " + jPrevEdge.ToString() + ") " + "(" + iEdge.ToString() + ", " + jEdge.ToString() + ")";
+
+            return result;
+        }
 
         public List<string> AlignmentWithAffineGapPenalties(string s, string t)
         {

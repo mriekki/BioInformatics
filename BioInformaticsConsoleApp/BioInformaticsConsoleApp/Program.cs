@@ -52,9 +52,9 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_249_8.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_250_12.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "AlignmentWithAffineGapPenalties";
+        private const string method = "FindMiddleEdge";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
@@ -3968,6 +3968,14 @@ namespace BioInformaticsConsoleApp
                 List<string> result = new List<string>();
 
                 result = seq.AlignmentWithAffineGapPenalties(fileText[0], fileText[1]);
+            }
+
+            if ("FindMiddleEdge" == method)
+            {
+                SequenceAlignment seq = new SequenceAlignment();
+                string result = "";
+
+                result = seq.FindMiddleEdge(fileText[0], fileText[1]);
             }
 
         }
