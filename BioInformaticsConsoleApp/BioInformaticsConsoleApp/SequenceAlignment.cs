@@ -79,7 +79,7 @@ namespace BioInformaticsConsoleApp
         }
 
 
-        static string ReverseString(string s)
+        public static string ReverseString(string s)
         {
             char[] arr = s.ToCharArray();
             Array.Reverse(arr);
@@ -115,14 +115,12 @@ namespace BioInformaticsConsoleApp
                             }
                         }   */
         }
-
         public string FindMiddleEdge(string xs, string ys)
         {
             string result = "";
 
             const int p = -5; //gap penalty, knowledge by looking at matrix file
             int m = xs.Length;
-//            int n = ys.Length;
             decimal nn = ys.Length;
             nn = nn / 2;
             decimal n = Math.Ceiling(nn);
@@ -131,18 +129,12 @@ namespace BioInformaticsConsoleApp
 
             // init the matrix
             var DpTable = new int[m + 1, (int)n + 1]; // dynamic programming buttom up memory table
-//            var backtrack = new string[m + 1, n + 1]; // trace back
 
             for (int i = 0; i < m + 1; i++)
                 DpTable[i, 0] = i * p;
             for (int j = 0; j < n + 1; j++)
                 DpTable[0, j] = j * p;
 
-            //            backtrack[0, 0] = DONE;
-            //            for (int i = 1; i < m + 1; i++)
-            //                backtrack[i, 0] = UP;
-            //            for (int j = 1; j < n + 1; j++)
-            //                backtrack[0, j] = LEFT;
 
             int MaxScore = -9999;
             int iEdge = 0;
@@ -193,21 +185,8 @@ namespace BioInformaticsConsoleApp
 
                         }
                     }
-
-/*                    if (max == up)
-                        backtrack[i, j] = UP;
-                    else if (max == left)
-                        backtrack[i, j] = LEFT;
-                    else
-                        backtrack[i, j] = DIAG; */
                 }
             }
-
-            //            var traceBack = ParseTraceBack(backtrack, m + 1, n + 1);
-
-            //            string[] vals = BuildAlignment(traceBack, xs, ys);
-
-            //            var sequence = new Sequence() { Score = DpTable[m, n], Path = traceBack, One = vals[0], Two = vals[1] };
 
             result = "(" + iPrevEdge.ToString() + ", " + jPrevEdge.ToString() + ") " + "(" + iEdge.ToString() + ", " + jEdge.ToString() + ")";
 
@@ -500,11 +479,13 @@ namespace BioInformaticsConsoleApp
 
             return distance;
         }
-        Sequence SequenceAlign(string xs, string ys)
+        public Sequence SequenceAlign(string xs, string ys)
         {
             const int p = -5; //gap penalty, knowledge by looking at matrix file
             int m = xs.Length;
             int n = ys.Length;
+
+            ParseMatrixFile();
 
             // init the matrix
             var DpTable = new int[m + 1, n + 1]; // dynamic programming buttom up memory table
@@ -970,7 +951,7 @@ namespace BioInformaticsConsoleApp
             public string DNA { get; set; }
         }
 
-        class Sequence
+        public class Sequence
         {
             public int Score { get; set; }
             public string Path { get; set; }

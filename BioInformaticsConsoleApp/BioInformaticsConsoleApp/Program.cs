@@ -52,9 +52,9 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_250_12.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "FindMiddleEdge";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_250_12.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "SequenceAlignment";
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
@@ -3932,10 +3932,9 @@ namespace BioInformaticsConsoleApp
 
             if ("SequenceAlignment" == method)
             {
-                new SequenceAlignment().Run(fileText[0], fileText[1]);
+                SequenceAlignment seq = new SequenceAlignment();
 
-                PL("Press a key to exit.");
-                Console.ReadKey();
+                seq.SequenceAlign(fileText[0], fileText[1]);
             }
 
             if ("EditDistance" == method)
@@ -3978,9 +3977,18 @@ namespace BioInformaticsConsoleApp
                 result = seq.FindMiddleEdge(fileText[0], fileText[1]);
             }
 
+            if ("LinearSpaceAlignment" == method)
+            {
+                HirschbergAlgorithm seq = new HirschbergAlgorithm();
+                string result = "";
+
+                result = seq.LinearSpaceAlignment(fileText[0].Length, fileText[1].Length, fileText[0], fileText[1]);
+                int ddd = 9;
+            }
+
         }
 
-        static int Max(params int[] numbers)
+        public static int Max(params int[] numbers)
         {
             return numbers.Max();
         }
