@@ -115,6 +115,139 @@ namespace BioInformaticsConsoleApp
                             }
                         }   */
         }
+
+        public string[] multipleSequenceAlignment(string r, string s, string t)
+        {
+            int[,,] DpTable = new int[r.Length + 1, s.Length + 1, t.Length + 1];
+            int[,,] backtrack = new int[r.Length + 1, s.Length + 1, t.Length + 1];
+
+            for (int i = 1; i < r.Length + 1; i++)
+            {
+                for (int j = 1; j < s.Length + 1; j++)
+                {
+                    for (int k = 1; k < t.Length + 1; k++)
+                    {
+                        int opt1 = DpTable[i - 1, j, k];            // (r_i, -,   -)
+                        int opt2 = DpTable[i, j - 1, k];            // (-,   s_j, -)
+                        int opt3 = DpTable[i, j, k - 1];            // (-,   -,   t_k)
+                        int opt4 = DpTable[i - 1, j - 1, k];        // (r_i, s_j, -)
+                        int opt5 = DpTable[i - 1, j, k - 1];        // (r_i, -,   t_k)
+                        int opt6 = DpTable[i, j - 1, k - 1];        // (-,   s_j, t_k)
+                        int opt7 = DpTable[i - 1, j - 1, k - 1];    // (r_i, s_j, t_k)
+
+                        if (r[i - 1] == s[j - 1] && s[j - 1] == t[k - 1])
+                        {
+                            opt7++;
+                        }
+
+                        DpTable[i, j, k] = opt1;
+                        backtrack[i, j, k] = 1;
+
+                        if (opt2 > DpTable[i, j, k])
+                        {
+                            DpTable[i, j, k] = opt2;
+                            backtrack[i, j, k] = 2;
+                        }
+                        if (opt3 > DpTable[i, j, k])
+                        {
+                            DpTable[i, j, k] = opt3;
+                            backtrack[i, j, k] = 3;
+                        }
+                        if (opt4 > DpTable[i, j, k])
+                        {
+                            DpTable[i, j, k] = opt4;
+                            backtrack[i, j, k] = 4;
+                        }
+                        if (opt5 > DpTable[i, j, k])
+                        {
+                            DpTable[i, j, k] = opt5;
+                            backtrack[i, j, k] = 5;
+                        }
+                        if (opt6 > DpTable[i, j, k])
+                        {
+                            DpTable[i, j, k] = opt6;
+                            backtrack[i, j, k] = 6;
+                        }
+                        if (opt7 > DpTable[i, j, k])
+                        {
+                            DpTable[i, j, k] = opt7;
+                            backtrack[i, j, k] = 7;
+                        }
+                    }
+                }
+            }
+            String[] output = new String[4];
+            int ii = r.Length;
+            int jj = s.Length;
+            int kk = t.Length;
+
+            output[0] = "" + DpTable[ii, jj, kk];
+            output[1] = "";
+            output[2] = "";
+            output[3] = "";
+            int backT = 0;
+
+            while(ii > 0 && jj > 0 && kk > 0) {
+                backT = backtrack[ii, jj, kk];
+                switch (backT) {
+                    case 1:
+                        output[1] = r[ii-- - 1] + output[1];
+                        output[2] = '-' + output[2];
+                        output[3] = '-' + output[3];
+                            break;
+                    case 2:
+                        output[1] = '-' + output[1];
+                        output[2] = s[jj-- - 1] + output[2];
+                        output[3] = '-' + output[3];
+                            break;
+                    case 3:
+                        output[1] = '-' + output[1];
+                        output[2] = '-' + output[2];
+                        output[3] = t[kk-- - 1] + output[3];
+                            break;
+                    case 4:
+                        output[1] = r[ii-- - 1] + output[1];
+                        output[2] = s[jj-- - 1] + output[2];
+                        output[3] = '-' + output[3];
+                            break;
+                    case 5:
+                        output[1] = r[ii-- - 1] + output[1];
+                        output[2] = '-' + output[2];
+                        output[3] = t[kk-- - 1] + output[3];
+                            break;
+                    case 6:
+                        output[1] = '-' + output[1];
+                        output[2] = s[jj-- - 1] + output[2];
+                        output[3] = t[kk-- - 1] + output[3];
+                            break;
+                    case 7:
+                        output[1] = r[ii-- - 1] + output[1];
+                        output[2] = s[jj-- - 1] + output[2];
+                        output[3] = t[kk-- - 1] + output[3];
+                            break;
+                }
+            }
+
+            while(ii > 0) {
+                output[1] = r[ii-- - 1] + output[1];
+                output[2] = '-' + output[2];
+                output[3] = '-' + output[3];
+            }
+
+            while(jj > 0) {
+                    output[1] = '-' + output[1];
+                    output[2] = s[jj-- - 1] + output[2];
+                    output[3] = '-' + output[3];
+            }
+
+            while(kk > 0) {
+                    output[1] = '-' + output[1];
+                    output[2] = '-' + output[2];
+                    output[3] = t[kk-- - 1] + output[3];
+            }
+
+            return output;
+    }
         public string FindMiddleEdge(string xs, string ys)
         {
             string result = "";
