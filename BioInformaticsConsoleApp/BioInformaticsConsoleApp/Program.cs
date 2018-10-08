@@ -52,9 +52,93 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_251_5.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_286_4.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "multipleSequenceAlignment";
+        private const string method = "GreedySorting";
+
+        public static string GreedySortingOutput(List<int> sortedList)
+        {
+            string output = "";
+            output += "(";
+
+            foreach(int i in sortedList)
+            {
+                if (i < 0)
+                    output += i.ToString() + " ";
+                else
+                {
+                    output += "+" + i.ToString() + " ";
+                }
+            }
+            output = output.TrimEnd();
+            output += ")";
+
+            return output;
+        }
+
+        public static List<string> GreedySorting(string P)
+        {
+            List<string> result = new List<string>();
+            int approxReversalDistance = 0;
+            string input = P.Substring(1, P.Length - 2);
+            string[] permutations = input.Split(" ");
+            List<int> sortedList = new List<int>();
+
+            foreach (string s in permutations)
+            {
+                int value = Int32.Parse(s);
+                sortedList.Add(value);
+            }
+
+            for (int k = 1; k <= sortedList.Count(); k++)
+            {
+                if (Math.Abs(sortedList[k-1]) == k)
+                {
+                    if (sortedList[k - 1] == k * -1)
+                    {
+                        sortedList[k - 1] *= -1;
+                        approxReversalDistance++;
+                        result.Add(GreedySortingOutput(sortedList));
+                    }
+                }
+                else
+                {
+                    bool reverseSign = false;
+                    List<int> tmpList = new List<int>();
+
+                    for (int j = k; j <= P.Length; j++)
+                    {
+                        int v = sortedList[j - 1];
+                        tmpList.Add(v * - 1);
+                        if (Math.Abs(v) == k)
+                            break;
+                    }
+                    if (tmpList[tmpList.Count() - 1] == k * -1)
+                        reverseSign = true;
+
+                    tmpList.Reverse();
+                    int tmpIndex = 0;
+                    int nCount = k + tmpList.Count();
+                    for (int t = k ; t < nCount; t++)
+                    {
+                        sortedList[t - 1] = tmpList[tmpIndex++];
+                    }
+                    approxReversalDistance++;
+                    result.Add(GreedySortingOutput(sortedList));
+
+
+                    if (reverseSign)
+                    {
+                         sortedList[k - 1] *= -1;
+                         approxReversalDistance++;
+                        result.Add(GreedySortingOutput(sortedList));
+                    }
+                }
+            }
+
+
+            return result;
+        }
 
         public static List<string> LongestPathInDAG(int startingNode, int endingNode, List<string> edgeList)
         {
@@ -3984,6 +4068,17 @@ namespace BioInformaticsConsoleApp
 
                 result = seq.multipleSequenceAlignment(fileText[0], fileText[1], fileText[2]);
             }
+
+            if ("GreedySorting" == method)
+            {
+                List<string> result = new List<string>();
+
+                result = GreedySorting(fileText[0]);
+
+                WriteListToFile("C:\\Temp\\output.txt", result);
+
+            }
+
 
         }
 

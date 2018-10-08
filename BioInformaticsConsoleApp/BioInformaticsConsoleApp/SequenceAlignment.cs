@@ -332,7 +332,8 @@ namespace BioInformaticsConsoleApp
             int m = s.Length + 1;
             int n = t.Length + 1;
             int ge = 1;     // gap extenstion penalty
-            int go = 11;    // gap opending penalty
+            int go = 4;    // gap opending penalty
+//            int go = 11;    // gap opending penalty
 
             ParseMatrixFile();
 
