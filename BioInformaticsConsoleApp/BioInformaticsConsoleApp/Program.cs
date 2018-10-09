@@ -52,8 +52,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_287_6.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_287_6.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "NumberOfBreakpoints";
 
         public static int NumberOfBreakpoints(string P)
@@ -135,8 +135,9 @@ namespace BioInformaticsConsoleApp
                     bool reverseSign = false;
                     List<int> tmpList = new List<int>();
 
-                    for (int j = k; j <= P.Length; j++)
-                    {
+////                    for (int j = k; j <= P.Length; j++)
+                    for (int j = k; j <= sortedList.Count(); j++)
+                        {
                         int v = sortedList[j - 1];
                         tmpList.Add(v * - 1);
                         if (Math.Abs(v) == k)
