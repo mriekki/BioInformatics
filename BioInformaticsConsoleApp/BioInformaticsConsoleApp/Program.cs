@@ -52,9 +52,36 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_286_4.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_287_6.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "GreedySorting";
+        private const string method = "NumberOfBreakpoints";
+
+        public static int NumberOfBreakpoints(string P)
+        {
+            int numBreakpoints = 0;
+            string input = P.Substring(1, P.Length - 2);
+            string[] permutations = input.Split(" ");
+            List<int> myList = new List<int>();
+
+            myList.Add(0);
+            foreach (string s in permutations)
+            {
+                int value = Int32.Parse(s);
+                myList.Add(value);
+            }
+            myList.Add(permutations.Length + 1);
+
+            for (int i = 1; i < myList.Count(); i++)
+            {
+                int prevVal = myList[i - 1];
+                int val = myList[i];
+
+                if (prevVal > val || prevVal < val - 1)
+                    numBreakpoints++;
+            }
+
+            return numBreakpoints;
+        }
 
         public static string GreedySortingOutput(List<int> sortedList)
         {
@@ -83,6 +110,7 @@ namespace BioInformaticsConsoleApp
             string input = P.Substring(1, P.Length - 2);
             string[] permutations = input.Split(" ");
             List<int> sortedList = new List<int>();
+            string output = "";
 
             foreach (string s in permutations)
             {
@@ -98,7 +126,8 @@ namespace BioInformaticsConsoleApp
                     {
                         sortedList[k - 1] *= -1;
                         approxReversalDistance++;
-                        result.Add(GreedySortingOutput(sortedList));
+                        output = GreedySortingOutput(sortedList);
+                        result.Add(output);
                     }
                 }
                 else
@@ -124,14 +153,16 @@ namespace BioInformaticsConsoleApp
                         sortedList[t - 1] = tmpList[tmpIndex++];
                     }
                     approxReversalDistance++;
-                    result.Add(GreedySortingOutput(sortedList));
+                    output = GreedySortingOutput(sortedList);
+                    result.Add(output);
 
 
                     if (reverseSign)
                     {
-                         sortedList[k - 1] *= -1;
-                         approxReversalDistance++;
-                        result.Add(GreedySortingOutput(sortedList));
+                        sortedList[k - 1] *= -1;
+                        approxReversalDistance++;
+                        output = GreedySortingOutput(sortedList);
+                        result.Add(output);
                     }
                 }
             }
@@ -4077,6 +4108,13 @@ namespace BioInformaticsConsoleApp
 
                 WriteListToFile("C:\\Temp\\output.txt", result);
 
+            }
+
+            if ("NumberOfBreakpoints" == method)
+            {
+                int result = 0;
+
+                result = NumberOfBreakpoints(fileText[0]);
             }
 
 
