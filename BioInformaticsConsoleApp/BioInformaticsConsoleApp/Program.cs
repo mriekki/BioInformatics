@@ -52,9 +52,119 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_287_6.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "NumberOfBreakpoints";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_8222_7.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "ColoredEdges";
+
+        public static string ColoredEdges(string input)
+        {
+            string Edges = "";
+            string Nodes = "";
+            string[] chromosome = input.Split(")");
+            List<Tuple<string, string>> edgeList = new List<Tuple<string, string>>();
+
+            foreach (string s in chromosome)
+            {
+                if (s.Length > 0)
+                {
+                    string val = s.Substring(1, s.Length - 1);
+                    string[] val2 = val.Split(" ");          
+
+                    Nodes = ChromosomeToCycle(val + " " + val2[0]);
+
+                    Nodes = Nodes.Substring(1, Nodes.Length - 2);
+                    string[] nodeArray = Nodes.Split(" ");
+
+                    for (int j = 1; j < nodeArray.Length - 1; j+= 2)
+                    {
+                        edgeList.Add(Tuple.Create(nodeArray[j], nodeArray[j + 1]));
+                    }   
+                }
+            }
+            
+            foreach (var ed in edgeList)
+            {
+                Edges += "(" + ed.Item1 + ", " + ed.Item2 + "), ";
+            }
+
+            Edges = Edges.Substring(0, Edges.Length - 2);
+
+            return Edges;
+        }
+
+        public static string CycleToChromosome(string input)
+        {
+            string Chromosome = "";
+            string Nodes = input.Substring(1, input.Length - 2);
+            string[] permutations = Nodes.Split(" ");
+            List<int> myList = new List<int>();
+
+            for (int j = 1; j < permutations.Length; j+= 2)
+            {
+                int prevVal = Int32.Parse(permutations[j - 1]);
+                int Val = Int32.Parse(permutations[j]);
+
+                if (prevVal < Val)
+                    myList.Add(Val / 2);
+                else
+                    myList.Add((prevVal / 2) * -1);
+            }
+
+            Chromosome = "(";
+            foreach (int k in myList)
+            {
+                if (k > 0)
+                    Chromosome += "+" + k.ToString() + " ";
+                else
+                    Chromosome += k.ToString() + " ";
+            }
+
+            Chromosome = Chromosome.TrimEnd();
+            Chromosome += ")";
+
+            return Chromosome;
+
+        }
+
+        public static string ChromosomeToCycle(string input)
+        {
+            string Nodes = "";
+            string Chromosome = "";
+
+            if (input[0].ToString() == "(")
+                Chromosome = input.Substring(1, input.Length - 2);
+            else
+                Chromosome = input;
+        
+            string[] permutations = Chromosome.Split(" ");
+            List<int> myList = new List<int>();
+
+            for (int j = 0; j < permutations.Length; j++)
+            {
+                int value = Int32.Parse(permutations[j]);
+                if (value > 0)
+                {
+                    myList.Add((value * 2) - 1);
+                    myList.Add(value * 2);
+                }
+                else
+                {
+                    myList.Add(value * -2);
+                    myList.Add((value * -2) - 1);
+                }
+            }
+
+            Nodes = "(";
+            foreach (int k in myList)
+            {
+                Nodes += k.ToString() + " ";
+            }
+
+            Nodes = Nodes.TrimEnd();
+            Nodes += ")";
+
+            return Nodes;
+        }
 
         public static int NumberOfBreakpoints(string P)
         {
@@ -135,9 +245,8 @@ namespace BioInformaticsConsoleApp
                     bool reverseSign = false;
                     List<int> tmpList = new List<int>();
 
-////                    for (int j = k; j <= P.Length; j++)
                     for (int j = k; j <= sortedList.Count(); j++)
-                        {
+                    {
                         int v = sortedList[j - 1];
                         tmpList.Add(v * - 1);
                         if (Math.Abs(v) == k)
@@ -4118,6 +4227,26 @@ namespace BioInformaticsConsoleApp
                 result = NumberOfBreakpoints(fileText[0]);
             }
 
+            if ("ChromosomeToCycle" == method)
+            {
+                string result = "";
+
+                result = ChromosomeToCycle(fileText[0]);
+            }
+
+            if ("CycleToChromosome" == method)
+            {
+                string result = "";
+
+                result = CycleToChromosome(fileText[0]);
+            }
+
+            if ("ColoredEdges" == method)
+            {
+                string result = "";
+
+                result = ColoredEdges(fileText[0]);
+            }
 
         }
 
