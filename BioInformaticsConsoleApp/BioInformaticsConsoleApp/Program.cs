@@ -52,14 +52,69 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_8222_8.txt";
-        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "GraphToGenome";
+        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_8222_8.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string method = "TwoBreakDistance";
+
+        public static int TwoBreakDistance(string P, string Q)
+        {
+            int numBreaks = 0;
+            string pColoredEdges = "";
+            string qColoredEdges = "";
+            int numCycles = 0;
+
+            pColoredEdges = ColoredEdges(P);
+
+            qColoredEdges = ColoredEdges(Q);
+
+            string combinedColoredEdges = pColoredEdges + ", " + qColoredEdges;
+
+            string[] cycle = combinedColoredEdges.Split("), ");
+            List<Tuple<int, int>> coloredList = new List<Tuple<int, int>>();
+
+            foreach (string str in cycle)
+            {
+                string val = str.Substring(1, str.Length - 1);
+
+                if (val[val.Length - 1] == ')')
+                    val = val.Substring(0, val.Length - 1);
+
+                string[] items = val.Split(", ");
+                coloredList.Add(Tuple.Create(Int32.Parse(items[0]), Int32.Parse(items[1])));
+            }
+
+            coloredList.Add(coloredList[0]);
+            coloredList.Insert(0, coloredList[coloredList.Count() - 2]);
+
+            List<List<Tuple<int, int>>> cycleList = new List<List<Tuple<int, int>>>();
+            List<Tuple<int, int>> valList = new List<Tuple<int, int>>();
+
+            for (int i = 1; i < coloredList.Count - 1; i++)
+            {
+                int diff = Math.Abs(coloredList[i].Item2 - coloredList[i + 1].Item1);
+                valList.Add(Tuple.Create(coloredList[i].Item1, coloredList[i].Item2));
+
+                if (diff > 1)   // end of cycle
+                {
+                    valList.Insert(0, valList[valList.Count() - 1]);    // hack for connecting later on
+                    List<Tuple<int, int>> tmpList = new List<Tuple<int, int>>(valList);
+
+                    cycleList.Add(tmpList);
+
+                    valList.Clear();
+
+                    numCycles++;
+                }
+            }
+
+
+            return numBreaks;
+        }
 
         public static string GraphToGenome(string GenomeGraph)
         {
             string P = "";
-            string tmpVal = GenomeGraph.Replace('(', ' ');
+//            string tmpVal = GenomeGraph.Replace('(', ' ');
             string[] cycle = GenomeGraph.Split("), ");
             List<Tuple<int, int>> coloredList = new List<Tuple<int, int>>();
 
@@ -4313,6 +4368,13 @@ namespace BioInformaticsConsoleApp
                 string result = "";
 
                 result = GraphToGenome(fileText[0]);
+            }
+
+            if ("TwoBreakDistance" == method)
+            {
+                int result = 0;
+
+                result = TwoBreakDistance(fileText[0], fileText[1]);
             }
 
         }
