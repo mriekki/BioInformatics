@@ -56,6 +56,51 @@ namespace BioInformaticsConsoleApp
         private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "TwoBreakDistance";
 
+        public static List<Tuple<int, int>> MergeEdgeLists(List<Tuple<int, int>> pList, List<Tuple<int, int>> qList)
+        {
+            List<Tuple<int, int>> combinedEdgeList = new List<Tuple<int, int>>();
+
+            bool onP = true;
+
+            while (pList.Count > 0 || qList.Count > 0)
+            {
+                if (onP)
+                {
+                    combinedEdgeList.Add(Tuple.Create(pList[0].Item1, pList[0].Item2));
+                    pList.RemoveAt(0);
+
+                    onP = false;
+                }
+                else
+                {
+                    combinedEdgeList.Add(Tuple.Create(qList[0].Item1, qList[0].Item2));
+                    qList.RemoveAt(0);
+                    onP = true;
+                }
+            }
+
+            return combinedEdgeList;
+        }
+
+        public static List<Tuple<int, int>> CreateEdgeList(string P)
+        {
+            List<Tuple<int, int>> edgeList = new List<Tuple<int, int>>();
+
+            string[] pEdge = P.Split("), ");
+
+            foreach (string str in pEdge)
+            {
+                string val = str.Substring(1, str.Length - 1);
+
+                if (val[val.Length - 1] == ')')
+                    val = val.Substring(0, val.Length - 1);
+
+                string[] items = val.Split(", ");
+                edgeList.Add(Tuple.Create(Int32.Parse(items[0]), Int32.Parse(items[1])));
+            }
+            return edgeList;
+        }
+
         public static int TwoBreakDistance(string P, string Q)
         {
             int numBreaks = 0;
@@ -64,35 +109,28 @@ namespace BioInformaticsConsoleApp
             int numCycles = 0;
 
             pColoredEdges = ColoredEdges(P);
+            List<Tuple<int, int>> pEdgeList = new List<Tuple<int, int>>();
+            pEdgeList = CreateEdgeList(pColoredEdges);
 
             qColoredEdges = ColoredEdges(Q);
+            List<Tuple<int, int>> qEdgeList = new List<Tuple<int, int>>();
+            qEdgeList = CreateEdgeList(qColoredEdges);
 
-            string combinedColoredEdges = pColoredEdges + ", " + qColoredEdges;
+            List<Tuple<int, int>> combinedEdgeList = new List<Tuple<int, int>>();
 
-            string[] cycle = combinedColoredEdges.Split("), ");
-            List<Tuple<int, int>> coloredList = new List<Tuple<int, int>>();
+            combinedEdgeList = MergeEdgeLists(pEdgeList, qEdgeList);
 
-            foreach (string str in cycle)
-            {
-                string val = str.Substring(1, str.Length - 1);
-
-                if (val[val.Length - 1] == ')')
-                    val = val.Substring(0, val.Length - 1);
-
-                string[] items = val.Split(", ");
-                coloredList.Add(Tuple.Create(Int32.Parse(items[0]), Int32.Parse(items[1])));
-            }
-
-            coloredList.Add(coloredList[0]);
-            coloredList.Insert(0, coloredList[coloredList.Count() - 2]);
+            combinedEdgeList.Add(combinedEdgeList[0]);
+            combinedEdgeList.Insert(0, combinedEdgeList[combinedEdgeList.Count() - 2]);
 
             List<List<Tuple<int, int>>> cycleList = new List<List<Tuple<int, int>>>();
             List<Tuple<int, int>> valList = new List<Tuple<int, int>>();
 
-            for (int i = 1; i < coloredList.Count - 1; i++)
+            for (int i = 1; i < combinedEdgeList.Count - 1; i++)
             {
-                int diff = Math.Abs(coloredList[i].Item2 - coloredList[i + 1].Item1);
-                valList.Add(Tuple.Create(coloredList[i].Item1, coloredList[i].Item2));
+                int diff = Math.Abs(combinedEdgeList[i].Item2 - combinedEdgeList[i + 1].Item1);
+
+                valList.Add(Tuple.Create(combinedEdgeList[i].Item1, combinedEdgeList[i].Item2));
 
                 if (diff > 1)   // end of cycle
                 {
@@ -103,10 +141,36 @@ namespace BioInformaticsConsoleApp
 
                     valList.Clear();
 
-                    numCycles++;
+//                    numCycles++;
                 }
             }
 
+            foreach (var v in cycleList)
+            {
+                if (v.Count > 1)
+                {
+                    int prevItem1 = 0;
+                    int prevItem2 = 0;
+                    int index = 0;
+
+                    foreach (var x in v)
+                    {
+                        if (index > 0)
+                        {
+                            if (x.Item1 != prevItem1 || x.Item2 != prevItem2)
+                            {
+                                numCycles++;
+                                break;
+                            }
+                        }
+                        prevItem1 = x.Item1;
+                        prevItem2 = x.Item2;
+                        index++;
+                    }
+                }
+            }
+
+            numBreaks = (((combinedEdgeList.Count - 2) / 2) - numCycles);
 
             return numBreaks;
         }
@@ -114,7 +178,6 @@ namespace BioInformaticsConsoleApp
         public static string GraphToGenome(string GenomeGraph)
         {
             string P = "";
-//            string tmpVal = GenomeGraph.Replace('(', ' ');
             string[] cycle = GenomeGraph.Split("), ");
             List<Tuple<int, int>> coloredList = new List<Tuple<int, int>>();
 
