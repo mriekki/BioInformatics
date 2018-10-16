@@ -52,8 +52,8 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        //private const string inputFile = "..\\..\\..\\Data Files\\dataset_8222_8.txt";
-        private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_288_4.txt";
+        //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
         private const string method = "TwoBreakDistance";
 
         public static List<Tuple<int, int>> MergeEdgeLists(List<Tuple<int, int>> pList, List<Tuple<int, int>> qList)
@@ -100,77 +100,375 @@ namespace BioInformaticsConsoleApp
             }
             return edgeList;
         }
-
-        public static int TwoBreakDistance(string P, string Q)
+        public static int GetCycles(List<Tuple<int, int>> bp)
         {
-            int numBreaks = 0;
-            string pColoredEdges = "";
-            string qColoredEdges = "";
-            int numCycles = 0;
+            bool[] visited = new bool[bp.Count()];
+            int c = 0;
 
-            pColoredEdges = ColoredEdges(P);
-            List<Tuple<int, int>> pEdgeList = new List<Tuple<int, int>>();
-            pEdgeList = CreateEdgeList(pColoredEdges);
-
-            qColoredEdges = ColoredEdges(Q);
-            List<Tuple<int, int>> qEdgeList = new List<Tuple<int, int>>();
-            qEdgeList = CreateEdgeList(qColoredEdges);
-
-            List<Tuple<int, int>> combinedEdgeList = new List<Tuple<int, int>>();
-
-            combinedEdgeList = MergeEdgeLists(pEdgeList, qEdgeList);
-
-            combinedEdgeList.Add(combinedEdgeList[0]);
-            combinedEdgeList.Insert(0, combinedEdgeList[combinedEdgeList.Count() - 2]);
-
-            List<List<Tuple<int, int>>> cycleList = new List<List<Tuple<int, int>>>();
-            List<Tuple<int, int>> valList = new List<Tuple<int, int>>();
-
-            for (int i = 1; i < combinedEdgeList.Count - 1; i++)
+            for (int i = 1; i < bp.Count(); i++)
             {
-                int diff = Math.Abs(combinedEdgeList[i].Item2 - combinedEdgeList[i + 1].Item1);
-
-                valList.Add(Tuple.Create(combinedEdgeList[i].Item1, combinedEdgeList[i].Item2));
-
-                if (diff > 1)   // end of cycle
+                if (!visited[i])
                 {
-                    valList.Insert(0, valList[valList.Count() - 1]);    // hack for connecting later on
-                    List<Tuple<int, int>> tmpList = new List<Tuple<int, int>>(valList);
+                    int curr = i;
+                    while (!visited[curr])
+                    {
+                        visited[curr] = true;
+                        int val = bp[curr].Item1;
+                        int val2 = bp[curr].Item2;
 
-                    cycleList.Add(tmpList);
-
-                    valList.Clear();
-
-//                    numCycles++;
+                        if (!visited[bp[curr].Item1])
+                        {
+                            curr = bp[curr].Item1;
+                        }
+                        else
+                        {
+                            curr = bp[curr].Item2;
+                        }   
+                    }
+                    c++;
                 }
             }
+            return c;
+        }
 
-            foreach (var v in cycleList)
+
+        public static List<Tuple<int, int>> breakpointGraph(string g1, string g2)
+        {
+            string[] g1chroms = g1.Substring(1, g1.Length - 2).Split(")(");
+            List<Tuple<int, int>> breakpointGraph = new List<Tuple<int, int>>();
+
+            int[][] g1chromsInt = new int[g1chroms.Length][];
+
+            int n = 0;
+            for (int i = 0; i < g1chroms.Length; i++)
             {
-                if (v.Count > 1)
+                string[] parts = g1chroms[i].Split(" ");
+                g1chromsInt[i] = new int[parts.Length];
+                for (int j = 0; j < parts.Length; j++)
                 {
-                    int prevItem1 = 0;
-                    int prevItem2 = 0;
-                    int index = 0;
-
-                    foreach (var x in v)
+                    g1chromsInt[i][j] = Int32.Parse(parts[j]);
+                    if (Math.Abs(g1chromsInt[i][j]) > n)
                     {
-                        if (index > 0)
-                        {
-                            if (x.Item1 != prevItem1 || x.Item2 != prevItem2)
-                            {
-                                numCycles++;
-                                break;
-                            }
-                        }
-                        prevItem1 = x.Item1;
-                        prevItem2 = x.Item2;
-                        index++;
+                        n = Math.Abs(g1chromsInt[i][j]);
                     }
                 }
             }
 
-            numBreaks = (((combinedEdgeList.Count - 2) / 2) - numCycles);
+            string[] g2chroms = g2.Substring(1, g2.Length - 2).Split(")(");
+            int[][] g2chromsInt = new int[g2chroms.Length][];
+            for (int i = 0; i < g2chroms.Length; i++)
+            {
+                string[] parts = g2chroms[i].Split(" ");
+                g2chromsInt[i] = new int[parts.Length];
+                for (int j = 0; j < parts.Length; ++j)
+                {
+                    g2chromsInt[i][j] = Int32.Parse(parts[j]);
+                }
+            }
+
+            int[,] bp = new int[2 * n + 1, 2]; // each arrow has 2 nodes (front and back) and each node has 2 edges. Front = 1 to n. Back = n+1 to 2n
+
+            for (int i = 0; i < bp.GetLength(0); i++)
+            {
+                bp[i, 0] = -1;
+                bp[i, 1] = -1;
+            }
+
+            for (int i = 0; i < g1chromsInt.Length; i++)
+            {
+                for (int j = 0; j < g1chromsInt[i].Length; j++)
+                {
+                    int curr = Math.Abs(g1chromsInt[i][j]);
+                    int sign = g1chromsInt[i][j] / curr; // +1 for positive, -1 for negative
+                    int next = -1;
+                    int nextSign = 0;
+
+                    if (j == g1chromsInt[i].Length - 1)
+                    {
+                        next = Math.Abs(g1chromsInt[i][0]);
+                        nextSign = g1chromsInt[i][0] / next;
+                    }
+                    else
+                    {
+                        next = Math.Abs(g1chromsInt[i][j + 1]);
+                        nextSign = g1chromsInt[i][j + 1] / next;
+                    }
+                    int prev = -1;
+                    int prevSign = 0;
+                    if (j == 0)
+                    {
+                        prev = Math.Abs(g1chromsInt[i][g1chromsInt[i].Length - 1]);
+                        prevSign = g1chromsInt[i][g1chromsInt[i].Length - 1] / prev;
+                    }
+                    else
+                    {
+                        prev = Math.Abs(g1chromsInt[i][j - 1]);
+                        prevSign = g1chromsInt[i][j - 1] / prev;
+                    }
+
+                    // If I'm negative and my next is negative, then my back goes to his forward
+                    if (sign == -1 && nextSign == -1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = next;
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = next;
+                        }
+                    }
+                    // If I'm negative and my next is positive, then my back goes to his back
+                    else if (sign == -1 && nextSign == 1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = frontToBack(n, next);
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = frontToBack(n, next);
+                        }
+                    }
+                    // If I'm positive and my next is negative, then my forward goes to his forward
+                    else if (sign == 1 && nextSign == -1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = next;
+                        }
+                        else
+                        {
+                            bp[curr, 1] = next;
+                        }
+                    }
+                    // If I'm positive and my next is positive, then my forward goes to his back
+                    else if (sign == 1 && nextSign == 1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = frontToBack(n, next);
+                        }
+                        else
+                        {
+                            bp[curr, 1] = frontToBack(n, next);
+                        }
+                    }
+
+                    // If I'm negative and my prev is negative, then my forward goes to his back
+                    if (sign == -1 && prevSign == -1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = frontToBack(n, prev);
+                        }
+                        else
+                        {
+                            bp[curr, 1] = frontToBack(n, prev);
+                        }
+                    }
+                    // If I'm negative and my prev is positive, then my forward goes to his forward
+                    else if (sign == -1 && prevSign == 1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = prev;
+                        }
+                        else
+                        {
+                            bp[curr, 1] = prev;
+                        }
+                    }
+                    // If I'm positive and my prev is negative, then my back goes to his back
+                    else if (sign == 1 && prevSign == -1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = frontToBack(n, prev);
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = frontToBack(n, prev);
+                        }
+                    }
+                    // If I'm positive and my prev is positive, then my back goes to his forward
+                    else if (sign == 1 && prevSign == 1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = prev;
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = prev;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < g2chromsInt.Length; i++)
+            {
+                for (int j = 0; j < g2chromsInt[i].Length; j++)
+                {
+                    int curr = Math.Abs(g2chromsInt[i][j]);
+
+                    int sign = g2chromsInt[i][j] / curr; // +1 for positive, -1 for negative
+                    int next = -1;
+                    int nextSign = 0;
+                    if (j == g2chromsInt[i].Length - 1)
+                    {
+                        next = Math.Abs(g2chromsInt[i][0]);
+                        nextSign = g2chromsInt[i][0] / next;
+                    }
+                    else
+                    {
+                        next = Math.Abs(g2chromsInt[i][j + 1]);
+                        nextSign = g2chromsInt[i][j + 1] / next;
+                    }
+                    int prev = -1;
+                    int prevSign = 0;
+                    if (j == 0)
+                    {
+                        prev = Math.Abs(g2chromsInt[i][g2chromsInt[i].Length - 1]);
+                        prevSign = g2chromsInt[i][g2chromsInt[i].Length - 1] / prev;
+                    }
+                    else
+                    {
+                        prev = Math.Abs(g2chromsInt[i][j - 1]);
+                        prevSign = g2chromsInt[i][j - 1] / prev;
+                    }
+
+                    // If I'm negative and my next is negative, then my back goes to his forward
+                    if (sign == -1 && nextSign == -1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = next;
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = next;
+                        }
+                    }
+                    // If I'm negative and my next is positive, then my back goes to his back
+                    else if (sign == -1 && nextSign == 1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = frontToBack(n, next);
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = frontToBack(n, next);
+                        }
+                    }
+                    // If I'm positive and my next is negative, then my forward goes to his forward
+                    else if (sign == 1 && nextSign == -1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = next;
+                        }
+                        else
+                        {
+                            bp[curr, 1] = next;
+                        }
+                    }
+                    // If I'm positive and my next is positive, then my forward goes to his back
+                    else if (sign == 1 && nextSign == 1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = frontToBack(n, next);
+                        }
+                        else
+                        {
+                            bp[curr, 1] = frontToBack(n, next);
+                        }
+                    }
+
+                    // If I'm negative and my prev is negative, then my forward goes to his back
+                    if (sign == -1 && prevSign == -1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = frontToBack(n, prev);
+                        }
+                        else
+                        {
+                            bp[curr, 1] = frontToBack(n, prev);
+                        }
+                    }
+                    // If I'm negative and my prev is positive, then my forward goes to his forward
+                    else if (sign == -1 && prevSign == 1)
+                    {
+                        if (bp[curr, 0] == -1)
+                        {
+                            bp[curr, 0] = prev;
+                        }
+                        else
+                        {
+                            bp[curr, 1] = prev;
+                        }
+                    }
+                    // If I'm positive and my prev is negative, then my back goes to his back
+                    else if (sign == 1 && prevSign == -1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = frontToBack(n, prev);
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = frontToBack(n, prev);
+                        }
+                    }
+                    // If I'm positive and my prev is positive, then my back goes to his forward
+                    else if (sign == 1 && prevSign == 1)
+                    {
+                        if (bp[frontToBack(n, curr), 0] == -1)
+                        {
+                            bp[frontToBack(n, curr), 0] = prev;
+                        }
+                        else
+                        {
+                            bp[frontToBack(n, curr), 1] = prev;
+                        }
+                    }
+                }
+            }
+
+            for (int k = 0; k < bp.GetLength(0); k++)
+            {
+                int first = bp[k, 0];
+                int second = bp[k, 1];
+                breakpointGraph.Add(Tuple.Create(first, second));
+            }
+
+            return breakpointGraph;
+        }
+
+        public static int frontToBack(int n, int i)
+        {
+            return i + n;
+        }
+
+        public static int backToFront(int n, int i)
+        {
+            return i - n;
+        }
+
+
+        public static int TwoBreakDistance(string P, string Q)
+        {
+            int numBreaks = 0;
+
+            List<Tuple<int, int>> combinedEdgeList = breakpointGraph(P, Q);
+
+            int mycylces = GetCycles(combinedEdgeList);
+
+            int n = (combinedEdgeList.Count() - 1) / 2;
+            numBreaks =  n - mycylces;
 
             return numBreaks;
         }
