@@ -52,11 +52,100 @@ namespace BioInformaticsConsoleApp
               {129 }, {131 }, {137 }, 
               {147 }, {156 }, {163 }, {186 } };
 
-        private const string inputFile = "..\\..\\..\\Data Files\\dataset_288_4.txt";
+        private const string inputFile = "..\\..\\..\\Data Files\\dataset_289_5.txt";
         //private const string inputFile = "..\\..\\..\\Data Files\\MyData.txt";
-        private const string method = "TwoBreakDistance";
+        private const string method = "sharedKmers";
 
-        public static List<Tuple<int, int>> MergeEdgeLists(List<Tuple<int, int>> pList, List<Tuple<int, int>> qList)
+        public static List<string> sharedKmers(int k, string x, string y)
+        {
+            Dictionary<string, List<int>> xKmers = new Dictionary<string, List<int>>();
+            for (int i = 0; i < x.Length - k + 1; i++)
+            {
+                string sub = x.Substring(i, k);
+                string rev = reverseComplement(sub);
+                List<int> entry = new List<int>();
+
+                if (!xKmers.ContainsKey(sub))
+                {
+                    List<int> temp = new List<int>();
+                    temp.Add(i);
+                    xKmers.Add(sub, temp);
+                }
+                else
+                {
+                    entry = xKmers[sub];
+                    entry.Add(i);
+                }
+
+                if (!xKmers.ContainsKey(rev))
+                {
+                    List<int> temp = new List<int>();
+                    temp.Add(i);
+                    xKmers.Add(rev, temp);
+                }
+                else
+                {
+                    entry = xKmers[rev];
+                    entry.Add(i);
+                }
+            }
+
+            List<int[]> pairs = new List<int[]>();
+            for (int i = 0; i < y.Length - k + 1; i++)
+            {
+                string sub = y.Substring(i, k);
+
+                List<int> xInds = new List<int>();
+                if (xKmers.ContainsKey(sub))
+                {
+                    xInds = xKmers[sub];
+                    for (int j = 0; j < xInds.Count(); j++)
+                    {
+                        int[] pair = new int[2];
+                        int xInd = xInds[j];
+                        pair[0] = xInd;
+                        pair[1] = i;
+                        pairs.Add(pair);
+                    }
+                }
+            }
+            xKmers = null;
+
+            pairs.Sort(arrayComparator);
+            string val = "";
+
+            List<string> output = new List<string>();
+
+            for (int i = 0; i < pairs.Count(); ++i) 
+            {
+                val = "(" + pairs[i][0] + ", " + pairs[i][1] + ")";
+                output.Add(val);
+            }   
+
+            return output;
+        }
+
+
+
+    public static string reverseComplement(string dna)
+    {
+        string output = "";
+        for (int i = dna.Length - 1; i >= 0; i--)
+        {
+            char curr = dna[i];
+            if (curr == 'A')
+                    output += 'T';
+                else if (curr == 'T')
+                    output += 'A';
+                else if (curr == 'C')
+                    output += 'G';
+                else if (curr == 'G')
+                    output += 'C';
+        }
+        return output;
+    }
+
+public static List<Tuple<int, int>> MergeEdgeLists(List<Tuple<int, int>> pList, List<Tuple<int, int>> qList)
         {
             List<Tuple<int, int>> combinedEdgeList = new List<Tuple<int, int>>();
 
@@ -100,6 +189,80 @@ namespace BioInformaticsConsoleApp
             }
             return edgeList;
         }
+
+        public static string TwoBreakOnGenome(string P, int i1, int i2, int i3, int i4)
+        {
+            string result = "";
+            string g = ColoredEdges(P);
+
+            g = TwoBreakOnGenomeGraph(g, i1, i2, i3, i4);
+
+            result = GraphToGenome(g);
+
+            return result;
+        }
+
+        public static string TwoBreakOnGenomeGraph(string GenomeGraph, int i1, int i2, int i3, int i4)
+        {
+            string result = "";
+            List<Tuple<int, int>> breakpointGraph = new List<Tuple<int, int>>();
+            List<Tuple<int, int>> coloredList = new List<Tuple<int, int>>();
+            List<Tuple<int, int>> indicesList = new List<Tuple<int, int>>();
+
+            string[] cycle = GenomeGraph.Split("), ");
+            foreach (string str in cycle)
+            {
+                string val = str.Substring(1, str.Length - 1);
+
+                if (val[val.Length - 1] == ')')
+                    val = val.Substring(0, val.Length - 1);
+
+                string[] items = val.Split(", ");
+                coloredList.Add(Tuple.Create(Int32.Parse(items[0]), Int32.Parse(items[1])));
+            }
+
+            indicesList.Add(Tuple.Create(i1, i2));
+            indicesList.Add(Tuple.Create(i2, i1));
+            indicesList.Add(Tuple.Create(i3, i4));
+            indicesList.Add(Tuple.Create(i4, i3));
+
+            foreach (var t in coloredList)
+            {
+                bool found = false;
+
+                foreach (var x in indicesList)
+                {
+                    if (EdgesEqual(t, x))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    breakpointGraph.Add(t);
+            }
+            breakpointGraph.Add(Tuple.Create(i1, i3));
+            breakpointGraph.Add(Tuple.Create(i2, i4));
+
+            foreach (var s in breakpointGraph)
+            {
+                result += "(" + s.Item1 + ", " + s.Item2 + "), ";
+            }
+
+            result = result.Substring(0, result.Length - 2);
+
+            return result;
+        }
+
+        public static bool EdgesEqual(Tuple<int, int> t1, Tuple<int, int> t2)
+        {
+            bool equal = false;
+
+            if (t1.Item1 == t2.Item1 && t1.Item2 == t2.Item2)
+                equal = true;
+
+            return equal;
+        }
         public static int GetCycles(List<Tuple<int, int>> bp)
         {
             bool[] visited = new bool[bp.Count()];
@@ -131,6 +294,103 @@ namespace BioInformaticsConsoleApp
             return c;
         }
 
+        public static List<Tuple<int, int>> getCycles(List<Tuple<int, int>> edges)
+        {
+            List<Tuple<int, int>> cycles = new List<Tuple<int, int>>();
+
+            List<Tuple<int, int>> edgesPCopy = new List<Tuple<int, int>>(edges);
+
+            bool isNewCycle = true;
+
+            int first, second;
+            int firstElementOfCycle = -1;
+            int lastNode = -1;
+
+            while (edgesPCopy.Count() > 0)
+            {
+                if (isNewCycle)
+                {
+                    first = edgesPCopy[0].Item1;
+                    second = edgesPCopy[0].Item2;
+                    cycles.Add(Tuple.Create(first, second));
+
+                    edgesPCopy.RemoveAt(0);
+
+                    firstElementOfCycle = first;
+                    if (second % 2 == 0)
+                    {
+                        lastNode = second - 1;
+                    }
+                    else
+                    {
+                        lastNode = second + 1;
+                    }
+                    isNewCycle = false;
+                }
+                else
+                {
+                    //indexList = new ArrayList<>();
+                    List<Tuple<int, int>> indexList = new List<Tuple<int, int>>();
+
+                    int index = 0;
+                    int dd = 0;
+                    foreach (var v in edgesPCopy)
+                    {
+                        indexList.Add(v);
+                        dd++;
+                        if (v.Item2 == lastNode)
+                            index = dd - 1;
+                    }
+
+                    first = edgesPCopy[index].Item1;
+                    second = edgesPCopy[index].Item2;
+                    edgesPCopy.RemoveAt(index);
+
+                    if (lastNode == first)
+                    {
+                        cycles.Add(Tuple.Create(first, second));
+
+                        if (second % 2 == 0)
+                        {
+                            lastNode = second - 1;
+                        }
+                        else
+                        {
+                            lastNode = second + 1;
+                        }
+                    }
+                    else
+                    {
+                        cycles.Add(Tuple.Create(second, first));
+
+                        if (first % 2 == 0)
+                        {
+                            lastNode = first - 1;
+                        }
+                        else
+                        {
+                            lastNode = first + 1;
+                        }
+                    }
+                    if (lastNode == firstElementOfCycle)
+                    {
+                        //cycles = Rotate(cycles, 1);
+                        int tmpFirst = cycles[cycles.Count() - 1].Item1;
+                        int tmpSecond = cycles[cycles.Count() - 1].Item2;
+                        cycles[cycles.Count - 1] = Tuple.Create(tmpSecond, tmpFirst);
+
+                        isNewCycle = true;
+
+                    }
+                }
+            }
+            return cycles;
+        }
+
+        public static List<Tuple<int,int>> Rotate(List<Tuple<int,int>> list, int offset)
+        {
+            return list.Skip(offset).Concat(list.Take(offset)).ToList();
+        }
 
         public static List<Tuple<int, int>> breakpointGraph(string g1, string g2)
         {
@@ -490,6 +750,12 @@ namespace BioInformaticsConsoleApp
                 coloredList.Add(Tuple.Create(Int32.Parse(items[0]), Int32.Parse(items[1])));
             }
 
+            //            List<Tuple<int, int>> cycleList = new List<Tuple<int, int>>();
+
+//            List<Tuple<int, int>> cycleList1 = new List<Tuple<int, int>>();
+
+//           cycleList1 = getCycles(coloredList);
+ 
             coloredList.Add(coloredList[0]);
             coloredList.Insert(0, coloredList[coloredList.Count() - 2]);
 
@@ -526,7 +792,7 @@ namespace BioInformaticsConsoleApp
                 val3 += ")";
 
                 P += CycleToChromosome(val3) + " ";
-            }
+            }   
 
             P = P.TrimEnd();
 
@@ -4738,9 +5004,73 @@ namespace BioInformaticsConsoleApp
                 result = TwoBreakDistance(fileText[0], fileText[1]);
             }
 
+            if ("TwoBreakOnGenomeGraph" == method)
+            {
+                string result = "";
+                string[] myInput = fileText[1].Split(",");
+                int i1, i2, i3, i4;
+
+                i1 = Int32.Parse(myInput[0]);
+                i2 = Int32.Parse(myInput[1]);
+                i3 = Int32.Parse(myInput[2]);
+                i4 = Int32.Parse(myInput[3]);
+
+                result = TwoBreakOnGenomeGraph(fileText[0], i1, i2, i3, i4);
+            }
+
+            if ("TwoBreakOnGenome" == method)
+            {
+                string result = "";
+                string[] myInput = fileText[1].Split(",");
+                int i1, i2, i3, i4;
+
+                i1 = Int32.Parse(myInput[0]);
+                i2 = Int32.Parse(myInput[1]);
+                i3 = Int32.Parse(myInput[2]);
+                i4 = Int32.Parse(myInput[3]);
+
+                result = TwoBreakOnGenome(fileText[0], i1, i2, i3, i4);
+            }
+
+            if ("sharedKmers" == method)
+            {
+                List<string> result = new List<string>();
+                k = Int32.Parse(fileText[0]);
+
+                result = sharedKmers(k, fileText[1], fileText[2]);
+
+                WriteListToFile("C:\\Temp\\output.txt", result);
+            }
+
         }
 
-        public static int Max(params int[] numbers)
+
+        private static int arrayComparator(int[] o1, int[] o2)
+        {
+            if (o1[0] < o2[0])
+            {
+                return -1;
+            }
+            else if (o1[0] > o2[0])
+            {
+                return 1;
+            }
+            else
+            {
+                if (o1[1] < o2[1])
+                {
+                    return 1;
+                }
+                else if (o1[1] > o2[1])
+                {
+                    return -1;
+                }
+                else
+                    return 0;
+            }
+         }
+
+    public static int Max(params int[] numbers)
         {
             return numbers.Max();
         }
